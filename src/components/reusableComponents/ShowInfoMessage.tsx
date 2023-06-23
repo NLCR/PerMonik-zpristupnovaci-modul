@@ -1,17 +1,24 @@
 import { FC } from 'react'
-import SmsFailedOutlinedIcon from '@mui/icons-material/SmsFailedOutlined'
-import { Container } from '@mui/material'
+import { Container, createStyles } from '@mantine/core'
+import { IconMessageCircleExclamation } from '@tabler/icons-react'
 
 type TShowErrorProps = {
   message: string
 }
 
+const useStyles = createStyles(() => ({
+  icon: {
+    display: 'block',
+    margin: '0 auto',
+  },
+}))
+
 const ShowInfoMessage: FC<TShowErrorProps> = ({ message }) => {
+  const { classes } = useStyles()
+
   return (
-    <Container sx={{ textAlign: 'center' }}>
-      <SmsFailedOutlinedIcon
-        sx={{ display: 'block', mx: 'auto', fontSize: 50, mb: 3 }}
-      />
+    <Container sx={{ textAlign: 'center', marginTop: 50, marginBottom: 50 }}>
+      <IconMessageCircleExclamation size={50} className={classes.icon} />
       <span>{message}</span>
     </Container>
   )

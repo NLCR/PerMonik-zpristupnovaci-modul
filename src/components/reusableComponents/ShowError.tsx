@@ -1,6 +1,14 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Container } from '@mui/material'
+import { Container, createStyles } from '@mantine/core'
+import { IconTimelineEventExclamation } from '@tabler/icons-react'
+
+const useStyles = createStyles(() => ({
+  icon: {
+    display: 'block',
+    margin: '0 auto',
+  },
+}))
 
 type TShowErrorProps = {
   error?: string
@@ -8,10 +16,11 @@ type TShowErrorProps = {
 
 const ShowError: FC<TShowErrorProps> = ({ error = undefined }) => {
   const { t } = useTranslation()
+  const { classes } = useStyles()
 
   return (
-    <Container xs={{ my: 16, textAlign: 'center' }}>
-      <h2>Ooops</h2>
+    <Container sx={{ marginTop: 50, marginBottom: 50, textAlign: 'center' }}>
+      <IconTimelineEventExclamation size={50} className={classes.icon} />
       <span>{error || t('common.error_occurred_when_loading_data')}</span>
     </Container>
   )

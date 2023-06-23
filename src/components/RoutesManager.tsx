@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 // import { useTranslation } from 'react-i18next'
 import { Route, Routes } from 'react-router-dom'
-import { Container } from '@mui/material'
+import { Container } from '@mantine/core'
 import { useKeepAlive } from '../utils/auth'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'

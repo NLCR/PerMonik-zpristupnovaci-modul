@@ -1,1 +1,25 @@
-{}
+{
+  "urls": {
+    "login": "prihlaseni"
+  },
+  "common": {
+    "error_occurred_when_loading_data": "Nastala chyba při načítání dat",
+    "error_occurred_somewhere": "Někde nastala chyba, zkuste to prosím znovu později"
+  },
+  "home": {
+    "header": "Domovská stránka",
+    "title": "Evidence periodik",
+    "description": "systém pro správu a evidenci periodik",
+    "records": "Záznamy",
+    "specimens": "Exempláře",
+    "mutations": "Mutace",
+    "owners": "Vlastníci"
+  },
+  "header": {
+    "home": "Domů",
+    "login": "Přihlášení"
+  },
+  "not_found": {
+    "page_dont_exists": "Tato stránka neexistuje"
+  }
+}

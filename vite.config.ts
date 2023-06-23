@@ -1,37 +1,36 @@
 /// <reference types="vite/client" />
 import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import svgr from 'vite-plugin-svgr'
 import eslintPlugin from 'vite-plugin-eslint'
-import viteSentry from 'vite-plugin-sentry'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
+  const env = loadEnv(mode, process.cwd(), '')
 
   return {
     plugins: [
       react(),
       svgr(),
       eslintPlugin(),
-      viteSentry({
-        url: 'https://newsentry.inqool.cz/',
-        authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
-        org: 'inqool',
-        project: 'permonik-frontend',
-        deploy: {
-          env: 'production',
+      sentryVitePlugin({
+        url: env.VITE_SENTRY_URL,
+        authToken: env.VITE_SENTRY_AUTH_TOKEN,
+        org: env.VITE_SENTRY_ORG,
+        project: env.VITE_SENTRY_PROJECT,
+        release: {
+          create: !!env.SENTRY_DEPLOY_ENV,
+          deploy: {
+            env: env.SENTRY_DEPLOY_ENV || 'Not specified',
+          },
+          setCommits: {
+            auto: true,
+            ignoreMissing: true,
+          },
         },
-        setCommits: {
-          auto: true,
-          ignoreMissing: true,
-        },
-        sourceMaps: {
-          include: ['./dist/assets'],
-          ignore: ['node_modules'],
-          ignoreFile: './.gitignore',
-          urlPrefix: '~/assets',
-        },
+        // telemetry: false,
+        // debug: true,
       }),
     ],
     build: {
@@ -41,6 +40,13 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8080/',
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     },
   }
 })

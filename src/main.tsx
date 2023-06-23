@@ -3,22 +3,17 @@ import ReactDOM from 'react-dom/client'
 import { I18nextProvider } from 'react-i18next'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import { init as SentryInit, BrowserTracing } from '@sentry/react'
-import { ThemeProvider } from '@mui/material'
+import { MantineProvider } from '@mantine/core'
 import i18next from './i18next'
 import { queryClient } from './api'
-import 'virtual:vite-plugin-sentry/sentry-config'
 import { WrappedApp } from './App'
-import theme from './utils/theme'
 
-// development or production
-const { MODE } = import.meta.env
+const { MODE, VITE_SENTRY_DNS } = import.meta.env
 
 // Setup Sentry for errors reporting in production
 SentryInit({
-  dsn: import.meta.env.VITE_SENTRY_DNS,
+  dsn: VITE_SENTRY_DNS,
   integrations: [
     new BrowserTracing({
       tracePropagationTargets: [
@@ -32,7 +27,7 @@ SentryInit({
   environment: MODE,
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
-  tracesSampleRate: MODE === 'development' ? 0 : 0.2,
+  tracesSampleRate: MODE === 'development' ? 0 : 0.5,
   beforeSend(event) {
     return MODE === 'development' ? null : event
   },
@@ -42,23 +37,19 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <I18nextProvider i18n={i18next}>
-        <ThemeProvider theme={theme}>
+        <MantineProvider
+          withGlobalStyles
+          withNormalizeCSS
+          theme={{
+            loader: 'bars',
+            fontFamily: 'Verdana, sans-serif',
+            colorScheme: 'light',
+          }}
+        >
           <WrappedApp />
-        </ThemeProvider>
+        </MantineProvider>
       </I18nextProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
-    <ToastContainer
-      position="bottom-left"
-      autoClose={5000}
-      hideProgressBar={false}
-      newestOnTop
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="light"
-    />
   </React.StrictMode>
 )

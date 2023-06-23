@@ -3,4 +3,5 @@ module.exports = {
   tabWidth: 2,
   semi: false,
   singleQuote: true,
+  plugins: [require('@mantine/eslint-config/prettier.config')]
 }
