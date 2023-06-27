@@ -7,11 +7,12 @@ import ScrollToTop from './components/ScrollToTop'
 import { useInitialLogin } from './utils/auth'
 import Loader from './components/reusableComponents/Loader'
 import Header from './components/Header'
+// import Footer from './components/Footer'
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
     minHeight: 'calc(100vh - 60px)',
-    paddingTop: 60,
+    paddingTop: 40,
     backgroundColor: theme.colors.gray[0],
   },
 }))
@@ -35,7 +36,13 @@ const App: FC = () => {
     <>
       <Header />
       <div className={classes.wrapper}>
-        <Container size="xl">
+        <Container
+          size="xxl"
+          sx={(theme) => ({
+            paddingTop: theme.spacing.xl,
+            paddingBottom: 50,
+          })}
+        >
           <RoutesManager />
         </Container>
       </div>

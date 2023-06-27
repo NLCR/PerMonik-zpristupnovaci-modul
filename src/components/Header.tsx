@@ -70,7 +70,7 @@ const Header = () => {
 
   return (
     <MHeader height={60} className={classes.headerContainer}>
-      <Container className={classes.header} size="lg">
+      <Container className={classes.header} size="xxl">
         <Link to="/">
           <img src={Logo} alt="Logo" />
         </Link>

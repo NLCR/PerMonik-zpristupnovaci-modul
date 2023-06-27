@@ -44,6 +44,20 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             loader: 'bars',
             fontFamily: 'Verdana, sans-serif',
             colorScheme: 'light',
+            components: {
+              Container: {
+                defaultProps: {
+                  sizes: {
+                    xs: 540,
+                    sm: 720,
+                    md: 960,
+                    lg: 1140,
+                    xl: 1320,
+                    xxl: 1600,
+                  },
+                },
+              },
+            },
           }}
         >
           <WrappedApp />

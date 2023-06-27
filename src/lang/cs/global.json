@@ -1,6 +1,8 @@
 {
   "urls": {
-    "login": "prihlaseni"
+    "login": "prihlaseni",
+    "specimens_overview": "exempláře",
+    "volume": "svazek"
   },
   "common": {
     "error_occurred_when_loading_data": "Nastala chyba při načítání dat",
@@ -14,6 +16,67 @@
     "specimens": "Exempláře",
     "mutations": "Mutace",
     "owners": "Vlastníci"
+  },
+  "specimens_overview": {
+    "meta_title_not_found": "Tento metatitul nebyl nalezen",
+    "specimens_not_found": "Nebyly nalezeny žádné exempláře",
+    "date": "Datum",
+    "volume": "Svazek",
+    "name": "Název na titulní straně",
+    "mutation": "Mutace",
+    "publication": "Vydání",
+    "publication_mark": "Mutační vydání",
+    "owner": "Vlastník",
+    "state": "Stav"
+  },
+  "table": {
+    "mutations": "Mutace",
+    "publication_date": "Datum publikace",
+    "name": "Název",
+    "publication": "Vydání",
+    "number": "Číslo",
+    "pages_count": "Počet stran",
+    "owners": "Vlastníci",
+    "basic_info": "Základní údaje"
+  },
+  "publications": {
+    "0": "Bez označení",
+    "1": "Ranní",
+    "2": "Polední",
+    "3": "Odpolední",
+    "4": "Večerní",
+    "5": "Jiné",
+    "6": "Jiná příloha",
+    "7": "Pravidelná příloha"
+  },
+  "tooltip_states": {
+    "uncontrolled": "Nekontrolováno",
+    "missing_page": "Chybějící strany",
+    "damaged_document": "Poškozený dokument",
+    "complete": "Ověřeno"
+  },
+  "facet_states": {
+    "OK": "Ověřeno",
+    "ChCC": "Chybí číslo",
+    "ChS": "Chybí strany",
+    "PP": "Poškozený dokument",
+    "Deg": "Degradace",
+    "ChPag": "Chybná paginace",
+    "ChCis": "Chybné číslování",
+    "ChSv": "Chybně svázáno",
+    "ChDatum": "Chybné datum",
+    "Cz": "Cenzurováno",
+    "CzV": "Cenzurní výtisk",
+    "Z": "Není vůbec (zničeno/ztráta)",
+    "PolS": "Polité strany",
+    "NT": "Nečitelný tisk",
+    "PopS": "Popsané strany",
+    "Prl": "Přelepeno",
+    "ChCl": "Chybí článek",
+    "NS": "Nečitelně svázáno",
+    "ZV": "Záměna vydání",
+    "NeS": "Nesvázáno",
+    "notVerified": "Nekontrolováno"
   },
   "header": {
     "home": "Domů",

@@ -1,11 +1,12 @@
 import React, { Suspense } from 'react'
-// import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { Route, Routes } from 'react-router-dom'
 import { Container } from '@mantine/core'
 import { useKeepAlive } from '../utils/auth'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
 import Loader from './reusableComponents/Loader'
+import SpecimensOverview from '../pages/SpecimensOverview'
 
 const SuspenseLoader = () => {
   return (
@@ -16,7 +17,7 @@ const SuspenseLoader = () => {
 }
 
 const RoutesManager = () => {
-  // const { t } = useTranslation('global', { keyPrefix: 'urls' })
+  const { t } = useTranslation('global', { keyPrefix: 'urls' })
 
   useKeepAlive()
 
@@ -24,10 +25,10 @@ const RoutesManager = () => {
     <Suspense fallback={<SuspenseLoader />}>
       <Routes>
         <Route index element={<Home />} />
-        {/* <Route */}
-        {/*  path={`/${t('category')}/:categorySlug`} */}
-        {/*  element={<Category />} */}
-        {/* /> */}
+        <Route
+          path={`/${t('specimens_overview')}/:metaTitleId`}
+          element={<SpecimensOverview />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

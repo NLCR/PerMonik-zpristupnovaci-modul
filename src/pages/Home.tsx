@@ -1,12 +1,15 @@
-import { Container, createStyles, SimpleGrid, Text, Title } from '@mantine/core'
+import { Box, createStyles, SimpleGrid, Text, Title } from '@mantine/core'
 import { useTranslation } from 'react-i18next'
-import useMetaTitlesOverviewQuery from '../api/query/useMetaTitlesOverviewQuery'
+import { Link } from 'react-router-dom'
+import useMetaTitlesWithStatsQuery from '../api/query/useMetaTitlesWithStatsQuery'
 import Loader from '../components/reusableComponents/Loader'
 import ShowError from '../components/reusableComponents/ShowError'
 import { formatDate } from '../utils/helperFunctions'
 
 const useStyles = createStyles((theme) => ({
   card: {
+    color: theme.colors.dark[9],
+    textDecoration: 'none',
     padding: theme.spacing.md,
     backgroundColor: 'white',
     textAlign: 'left',
@@ -23,10 +26,10 @@ const useStyles = createStyles((theme) => ({
 const Home = () => {
   const { classes } = useStyles()
   const { t } = useTranslation()
-  const { data, isLoading, isError } = useMetaTitlesOverviewQuery()
+  const { data, isLoading, isError } = useMetaTitlesWithStatsQuery()
 
   return (
-    <Container size="xl" sx={{ textAlign: 'center' }}>
+    <Box sx={{ textAlign: 'center' }}>
       <Title order={1} color="blue.9">
         {t('home.title')}
       </Title>
@@ -34,9 +37,13 @@ const Home = () => {
       {isLoading ? <Loader /> : null}
       {isError && !isLoading ? <ShowError /> : null}
       {data ? (
-        <SimpleGrid mt={50} cols={3}>
+        <SimpleGrid mt={50} cols={4}>
           {data.map((mt) => (
-            <div key={mt.id} className={classes.card}>
+            <Link
+              to={`${t('urls.specimens_overview')}/${mt.id}`}
+              key={mt.id}
+              className={classes.card}
+            >
               <Title order={5}>{mt.name}</Title>
               {mt.specimens.publicationDayMin &&
               mt.specimens.publicationDayMax ? (
@@ -59,11 +66,11 @@ const Home = () => {
                   {t('home.owners')}: {mt.specimens.ownersCount}
                 </Text>
               </SimpleGrid>
-            </div>
+            </Link>
           ))}
         </SimpleGrid>
       ) : null}
-    </Container>
+    </Box>
   )
 }
 
