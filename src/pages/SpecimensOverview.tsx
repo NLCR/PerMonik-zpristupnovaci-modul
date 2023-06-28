@@ -10,6 +10,7 @@ import {
   Tooltip,
   Divider,
   TextInput,
+  Button,
 } from '@mantine/core'
 import { Link, useParams } from 'react-router-dom'
 import { FC, useState } from 'react'
@@ -22,7 +23,7 @@ import {
   useMantineReactTable,
 } from 'mantine-react-table'
 import { MRT_Localization_CS } from 'mantine-react-table/locales/cs'
-import { IconFileSymlink } from '@tabler/icons-react'
+import { IconEraser, IconFileSymlink } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'
 import useMetaTitleQuery from '../api/query/useMetaTitleQuery'
 import useSpecimensWithFacetsQuery from '../api/query/useSpecimensWithFacetsQuery'
@@ -33,6 +34,7 @@ import { TSpecimen } from '../@types/specimen'
 import { mutations, owners, publications, states } from '../utils/constants'
 import i18next from '../i18next'
 import { formatDateWithDashes } from '../utils/helperFunctions'
+import FacetGroup from '../components/reusableComponents/FacetGroup'
 
 const useStyles = createStyles((theme) => ({
   flexWrapper: {
@@ -50,6 +52,8 @@ const useStyles = createStyles((theme) => ({
     textAlign: 'left',
     borderRadius: theme.spacing.xs,
     boxShadow: theme.shadows.xs,
+    display: 'flex',
+    flexDirection: 'column',
   },
   tableWrapper: {
     width: '80%',
@@ -69,6 +73,9 @@ const useStyles = createStyles((theme) => ({
       color: theme.colors.blue[9],
     },
   },
+  facetCheckboxLabelWrapper: {
+    width: '100%',
+  },
 }))
 
 const getSpecimenState = (sp: TSpecimen) => {
@@ -81,6 +88,7 @@ const getSpecimenState = (sp: TSpecimen) => {
               width: 15,
               height: 15,
               borderRadius: '50%',
+              border: `1px solid ${theme.colors.gray[7]}`,
               backgroundColor: theme.colors.gray[0],
             })}
           />
@@ -95,6 +103,7 @@ const getSpecimenState = (sp: TSpecimen) => {
               width: 15,
               height: 15,
               borderRadius: '50%',
+              border: `1px solid ${theme.colors.gray[7]}`,
               backgroundColor: theme.colors.red[7],
             })}
           />
@@ -109,6 +118,7 @@ const getSpecimenState = (sp: TSpecimen) => {
               width: 15,
               height: 15,
               borderRadius: '50%',
+              border: `1px solid ${theme.colors.gray[7]}`,
               backgroundColor: theme.colors.orange[7],
             })}
           />
@@ -123,6 +133,7 @@ const getSpecimenState = (sp: TSpecimen) => {
             width: 15,
             height: 15,
             borderRadius: '50%',
+            border: `1px solid ${theme.colors.gray[7]}`,
             backgroundColor: theme.colors.green[7],
           })}
         />
@@ -137,6 +148,7 @@ const getSpecimenState = (sp: TSpecimen) => {
           width: 15,
           height: 15,
           borderRadius: '50%',
+          border: `1px solid ${theme.colors.gray[7]}`,
           backgroundColor: theme.colors.gray[0],
         })}
       />
@@ -234,17 +246,31 @@ const columns: MRT_ColumnDef<TSpecimen>[] = [
 export type TParams = {
   dateStart: number
   dateEnd: number
+  names: string[]
+  mutations: string[]
+  publications: string[]
+  publicationMarks: string[]
+  owners: string[]
+  states: string[]
+}
+
+const initialParams = {
+  dateStart: 0,
+  dateEnd: 0,
+  names: [],
+  mutations: [],
+  publications: [],
+  publicationMarks: [],
+  owners: [],
+  states: [],
 }
 
 const SpecimensOverview = () => {
   const { metaTitleId } = useParams()
   const { classes } = useStyles()
   const { t } = useTranslation()
-  const [params, setParams] = useState<TParams>({
-    dateStart: 0,
-    dateEnd: 0,
-  })
-  const [volumeInput, setVolumeInput] = useDebouncedState('', 300)
+  const [params, setParams] = useState<TParams>(initialParams)
+  const [volumeInput, setVolumeInput] = useDebouncedState('', 250)
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 25,
@@ -263,7 +289,7 @@ const SpecimensOverview = () => {
   } = useSpecimensWithFacetsQuery({
     idTitle: metaTitleId as string,
     ...pagination,
-    ...params,
+    params,
     volume: volumeInput,
   })
 
@@ -280,13 +306,14 @@ const SpecimensOverview = () => {
     },
     state: {
       pagination,
-      isLoading: specimensRefetching,
+      showSkeletons: false,
+      showProgressBars: specimensRefetching,
     },
     manualPagination: true,
     rowCount: specimens?.count,
     onPaginationChange: setPagination,
     mantinePaginationProps: {
-      rowsPerPageOptions: ['25', '50', '100', '250'],
+      rowsPerPageOptions: ['25', '50', '100'],
     },
     mantineTableHeadRowProps: {
       sx: (theme) => ({
@@ -350,7 +377,7 @@ const SpecimensOverview = () => {
               {metaTitle.name}
             </Title>
             <Divider mt={10} mb={10} />
-            <Text mt={10} fz="sm" fw={700}>
+            <Text fz="sm" fw={700}>
               {t('specimens_overview.date')}
             </Text>
             <RangeSlider
@@ -358,6 +385,7 @@ const SpecimensOverview = () => {
               step={1}
               min={datesMin}
               max={datesMax}
+              disabled={specimensRefetching}
               onChangeEnd={(value) =>
                 setParams((prevState) => ({
                   ...prevState,
@@ -382,11 +410,110 @@ const SpecimensOverview = () => {
             </Text>
             <TextInput
               defaultValue={volumeInput}
+              // disabled={specimensRefetching}
               onChange={(event) => setVolumeInput(event.target.value)}
             />
-            <Text mt={10} mb={5} fz="sm" fw={700}>
-              {t('specimens_overview.name')}
-            </Text>
+            <Divider mt={10} />
+            <Box sx={{ overflowY: 'auto', width: '100%' }}>
+              <FacetGroup
+                disabled={specimensRefetching}
+                facets={specimens.facets.names}
+                header={t('specimens_overview.name')}
+                onChange={(value) =>
+                  setParams((prevState) => ({ ...prevState, names: value }))
+                }
+                values={params.names}
+              />
+              <FacetGroup
+                disabled={specimensRefetching}
+                facets={specimens.facets.mutations.map((m) => ({
+                  name: m.name,
+                  count: m.count,
+                  displayedName: mutations.find(
+                    (mc) => mc.id === Number(m.name)
+                  )?.name,
+                }))}
+                header={t('specimens_overview.mutation')}
+                onChange={(value) =>
+                  setParams((prevState) => ({ ...prevState, mutations: value }))
+                }
+                values={params.mutations}
+              />
+              <FacetGroup
+                disabled={specimensRefetching}
+                facets={specimens.facets.publications.map((m) => ({
+                  name: m.name,
+                  count: m.count,
+                  displayedName: publications.find(
+                    (mc) => mc.id === Number(m.name)
+                  )?.name,
+                }))}
+                header={t('specimens_overview.publication')}
+                onChange={(value) =>
+                  setParams((prevState) => ({
+                    ...prevState,
+                    publications: value,
+                  }))
+                }
+                values={params.publications}
+              />
+              <FacetGroup
+                disabled={specimensRefetching}
+                facets={specimens.facets.publicationMarks}
+                header={t('specimens_overview.publication_mark')}
+                onChange={(value) =>
+                  setParams((prevState) => ({
+                    ...prevState,
+                    publicationMarks: value,
+                  }))
+                }
+                values={params.publicationMarks}
+              />
+              <FacetGroup
+                disabled={specimensRefetching}
+                facets={specimens.facets.owners.map((m) => ({
+                  name: m.name,
+                  count: m.count,
+                  displayedName: owners.find((mc) => mc.id === Number(m.name))
+                    ?.name,
+                }))}
+                header={t('specimens_overview.owner')}
+                onChange={(value) =>
+                  setParams((prevState) => ({
+                    ...prevState,
+                    owners: value,
+                  }))
+                }
+                values={params.owners}
+              />
+              <FacetGroup
+                disabled={specimensRefetching}
+                facets={specimens.facets.states.map((m) => ({
+                  name: m.name,
+                  count: m.count,
+                  displayedName: t(
+                    `facet_states.${m.name as (typeof states)[number]}`
+                  ),
+                }))}
+                header={t('specimens_overview.state')}
+                onChange={(value) =>
+                  setParams((prevState) => ({
+                    ...prevState,
+                    states: value,
+                  }))
+                }
+                values={params.states}
+              />
+            </Box>
+            <Divider mb={10} />
+            <Button
+              leftIcon={<IconEraser />}
+              variant="white"
+              color="red"
+              onClick={() => setParams(initialParams)}
+            >
+              {t('specimens_overview.delete_filters')}
+            </Button>
           </>
         ) : null}
       </Box>

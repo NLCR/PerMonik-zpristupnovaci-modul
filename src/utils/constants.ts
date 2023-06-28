@@ -38,7 +38,7 @@ export const publications = [
 ] as const
 
 export const mutations = [
-  { id: 0, name: '' },
+  { id: 0, name: i18next.t('facet_states.empty') },
   { id: 1, name: 'Brno' },
   { id: 2, name: 'Praha' },
   { id: 3, name: 'Ostrava' },

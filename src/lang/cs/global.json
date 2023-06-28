@@ -27,7 +27,8 @@
     "publication": "Vydání",
     "publication_mark": "Mutační vydání",
     "owner": "Vlastník",
-    "state": "Stav"
+    "state": "Stav",
+    "delete_filters": "Vymazat filtry"
   },
   "table": {
     "mutations": "Mutace",
@@ -76,7 +77,8 @@
     "NS": "Nečitelně svázáno",
     "ZV": "Záměna vydání",
     "NeS": "Nesvázáno",
-    "notVerified": "Nekontrolováno"
+    "notVerified": "Nekontrolováno",
+    "empty": "Bez označení"
   },
   "header": {
     "home": "Domů",

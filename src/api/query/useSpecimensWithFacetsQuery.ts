@@ -5,6 +5,7 @@ import {
   TSpecimensFacets,
   TSpecimensPublicationDays,
 } from '../../@types/specimen'
+import type { TParams } from '../../pages/SpecimensOverview'
 
 export interface TSpecimensWithFacets extends TSpecimensPublicationDays {
   specimens: TSpecimen[]
@@ -14,31 +15,26 @@ export interface TSpecimensWithFacets extends TSpecimensPublicationDays {
 
 type TInput = {
   idTitle: string
-  dateStart: number
-  dateEnd: number
-  volume: string
+  params: TParams
   pageIndex: number
   pageSize: number
+  volume: string
 }
 
 const useSpecimensWithFacetsQuery = ({
   idTitle,
-  dateStart,
-  dateEnd,
-  volume,
+  params,
   pageIndex,
   pageSize,
+  volume,
 }: TInput) =>
   useQuery(
-    ['specimens', idTitle, dateStart, dateEnd, volume, pageIndex, pageSize],
+    ['specimens', idTitle, pageIndex, pageSize, params, volume],
     () => {
       const formData = new FormData()
       formData.set('offset', pageIndex.toString())
       formData.set('rows', pageSize.toString())
-      if (dateStart > 0 && dateEnd > 0) {
-        formData.set('dateStart', dateStart.toString())
-        formData.set('dateEnd', dateEnd.toString())
-      }
+      formData.set('facets', JSON.stringify({ ...params, volume }))
 
       return api()
         .post(`v1/specimen/${idTitle}`, {

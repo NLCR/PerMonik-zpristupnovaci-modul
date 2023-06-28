@@ -41,7 +41,7 @@ export interface TSpecimensFacets {
   names: TSpecimenFacet[]
   mutations: TSpecimenFacet[]
   publications: TSpecimenFacet[]
-  publicationSigns: TSpecimenFacet[]
+  publicationMarks: TSpecimenFacet[]
   owners: TSpecimenFacet[]
   states: TSpecimenFacet[]
 }
