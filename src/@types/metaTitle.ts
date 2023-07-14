@@ -6,7 +6,7 @@ export interface TMetaTitlesWithStats {
   specimens: {
     mutationsCount: number
     ownersCount: number
-    groupedSpecimens: number
+    // groupedSpecimens: number
     matchedSpecimens: number
   } & TSpecimensPublicationDays
 }

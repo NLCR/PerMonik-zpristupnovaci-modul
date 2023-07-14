@@ -33,5 +33,6 @@ module.exports = {
     'prettier/prettier': 'error',
     'import/no-extraneous-dependencies': 0,
     'no-continue': 0,
+    "@typescript-eslint/no-unused-vars": 1
   },
 }

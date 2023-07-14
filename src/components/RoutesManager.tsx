@@ -6,7 +6,8 @@ import { useKeepAlive } from '../utils/auth'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
 import Loader from './reusableComponents/Loader'
-import SpecimensOverview from '../pages/SpecimensOverview'
+import SpecimensOverview from '../pages/specimensOverview/SpecimensOverview'
+import VolumeOverview from '../pages/volumeOverview/VolumeOverview'
 
 const SuspenseLoader = () => {
   return (
@@ -28,6 +29,10 @@ const RoutesManager = () => {
         <Route
           path={`/${t('specimens_overview')}/:metaTitleId`}
           element={<SpecimensOverview />}
+        />
+        <Route
+          path={`/${t('volume_overview')}/:volumeId`}
+          element={<VolumeOverview />}
         />
         <Route path="*" element={<NotFound />} />
       </Routes>

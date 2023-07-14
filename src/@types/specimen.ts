@@ -1,4 +1,9 @@
-import { states } from '../utils/constants'
+import {
+  mutationsFromBE,
+  ownersFromBE,
+  publicationsFromBE,
+  states,
+} from '../utils/constants'
 
 export interface TSpecimen {
   id: string
@@ -8,16 +13,17 @@ export interface TSpecimen {
   numExists: boolean
   numMissing: boolean
   signature: string
-  owner: string
-  states: typeof states
+  owner: (typeof ownersFromBE)[number]['id']
+  states: typeof states | null
+  state: 'ok' | 'auto'
   stateDescription: string
-  pages: string
+  pages: { damaged: string[]; missing: string[] }
   note: string
   name: string
   subName: string
-  publication: string
-  mutation: string
-  releaseMark: string
+  publication: (typeof publicationsFromBE)[number]['id']
+  mutation: (typeof mutationsFromBE)[number]['id']
+  publicationMark: string
   publicationDate: string
   publicationDay: string
   periodicity: string

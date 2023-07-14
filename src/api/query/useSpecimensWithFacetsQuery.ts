@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
+import { useDebouncedValue } from '@mantine/hooks'
+import dayjs from 'dayjs'
 import { api } from '../index'
 import {
   TSpecimen,
   TSpecimensFacets,
   TSpecimensPublicationDays,
 } from '../../@types/specimen'
-import type { TParams } from '../../pages/SpecimensOverview'
+import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
 
 export interface TSpecimensWithFacets extends TSpecimensPublicationDays {
   specimens: TSpecimen[]
@@ -13,28 +15,45 @@ export interface TSpecimensWithFacets extends TSpecimensPublicationDays {
   count: number
 }
 
-type TInput = {
-  idTitle: string
-  params: TParams
-  pageIndex: number
-  pageSize: number
-  volume: string
-}
+const useSpecimensWithFacetsQuery = (idTitle: string, enabled: boolean) => {
+  const { params, pagination, volumeInput, view, calendarDate } =
+    useSpecimensOverviewStore()
+  const [debouncedVolumeInput] = useDebouncedValue(volumeInput, 400)
 
-const useSpecimensWithFacetsQuery = ({
-  idTitle,
-  params,
-  pageIndex,
-  pageSize,
-  volume,
-}: TInput) =>
-  useQuery(
-    ['specimens', idTitle, pageIndex, pageSize, params, volume],
+  return useQuery(
+    [
+      'specimens',
+      view,
+      idTitle,
+      pagination.pageIndex,
+      pagination.pageSize,
+      params,
+      calendarDate,
+      debouncedVolumeInput,
+    ],
     () => {
+      const dayJsDate = dayjs(calendarDate)
+      const startOfMonth = dayJsDate.startOf('month')
+      const endOfMonth = dayJsDate.endOf('month')
+
       const formData = new FormData()
-      formData.set('offset', pageIndex.toString())
-      formData.set('rows', pageSize.toString())
-      formData.set('facets', JSON.stringify({ ...params, volume }))
+      if (view === 'table') {
+        formData.set('offset', pagination.pageIndex.toString())
+        formData.set('rows', pagination.pageSize.toString())
+      } else {
+        formData.set('offset', '0')
+        formData.set('rows', '10000000')
+      }
+      formData.set(
+        'facets',
+        JSON.stringify({
+          ...params,
+          volume: debouncedVolumeInput,
+          calendarDateStart: startOfMonth,
+          calendarDateEnd: endOfMonth,
+        })
+      )
+      formData.set('view', view)
 
       return api()
         .post(`v1/specimen/${idTitle}`, {
@@ -42,7 +61,14 @@ const useSpecimensWithFacetsQuery = ({
         })
         .json<TSpecimensWithFacets>()
     },
-    { keepPreviousData: true }
+    {
+      keepPreviousData: true,
+      enabled:
+        enabled &&
+        (view === 'table' ||
+          (view === 'calendar' && calendarDate !== undefined)),
+    }
   )
+}
 
 export default useSpecimensWithFacetsQuery

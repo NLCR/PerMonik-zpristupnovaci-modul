@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 import useMetaTitlesWithStatsQuery from '../api/query/useMetaTitlesWithStatsQuery'
 import Loader from '../components/reusableComponents/Loader'
 import ShowError from '../components/reusableComponents/ShowError'
-import { formatDate } from '../utils/helperFunctions'
+import { formatDateToString } from '../utils/helperFunctions'
+// import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -27,6 +28,7 @@ const Home = () => {
   const { classes } = useStyles()
   const { t } = useTranslation()
   const { data, isLoading, isError } = useMetaTitlesWithStatsQuery()
+  // const { resetAll } = useSpecimensOverviewStore()
 
   return (
     <Box sx={{ textAlign: 'center' }}>
@@ -43,20 +45,21 @@ const Home = () => {
               to={`${t('urls.specimens_overview')}/${mt.id}`}
               key={mt.id}
               className={classes.card}
+              // onClick={() => resetAll()}
             >
               <Title order={5}>{mt.name}</Title>
               {mt.specimens.publicationDayMin &&
               mt.specimens.publicationDayMax ? (
                 <Text fz="xs" color="dimmed">
-                  {formatDate(mt.specimens.publicationDayMin)} -{' '}
-                  {formatDate(mt.specimens.publicationDayMax)}
+                  {formatDateToString(mt.specimens.publicationDayMin)} -{' '}
+                  {formatDateToString(mt.specimens.publicationDayMax)}
                 </Text>
               ) : null}
               <SimpleGrid cols={2} mt={20}>
+                {/* <Text fz="sm" color="blue.9"> */}
+                {/*  {t('home.records')}: {mt.specimens.groupedSpecimens} */}
+                {/* </Text> */}
                 <Text fz="sm" color="blue.9">
-                  {t('home.records')}: {mt.specimens.groupedSpecimens}
-                </Text>
-                <Text fz="sm">
                   {t('home.specimens')}: {mt.specimens.matchedSpecimens}
                 </Text>
                 <Text fz="sm">

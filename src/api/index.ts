@@ -21,17 +21,17 @@ type BaseOptions = {
   throwErrorFromKy?: boolean
 }
 
-const processError = (
-  response: Response,
-  error: { [key: string]: string[] }
-) => {
-  // if (response.status === 410) {
-  //   return i18next.t('common.session_expired')
-  // }
-  return `${response.status}: ${
-    Array.isArray(error) ? error[0].join(', ') : error
-  }`
-}
+// const processError = (
+//   response: Response,
+//   error: { [key: string]: string[] }
+// ) => {
+//   // if (response.status === 410) {
+//   //   return i18next.t('common.session_expired')
+//   // }
+//   return `${response.status}: ${
+//     Array.isArray(error) ? error[0].join(', ') : error
+//   }`
+// }
 
 const baseApi = ({ handledCodes, throwErrorFromKy = true }: BaseOptions) =>
   ky.extend({
@@ -51,7 +51,7 @@ const baseApi = ({ handledCodes, throwErrorFromKy = true }: BaseOptions) =>
           }
 
           try {
-            const error = await response.json()
+            // const error = await response.json()
             // toast.error(processError(response, error))
           } catch (e: unknown) {
             /* empty */
