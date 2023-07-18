@@ -2,20 +2,29 @@ import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import cs from './lang/cs/cs'
+import sk from './lang/sk/sk'
+import en from './lang/en/en'
 
-export const supportedLanguages = ['cs'] as const
+export const supportedLanguages = ['cs', 'sk', 'en'] as const
 export type TSupportedLanguages = (typeof supportedLanguages)[number]
 export const defaultLang = 'cs'
 
 export const defaultNS = 'global'
 export const resources = {
   cs,
+  sk,
+  en,
 } as const
 
 export const changeLanguage = (lang: TSupportedLanguages) => {
   i18next.changeLanguage(lang).then(() => {
-    // eslint-disable-next-line no-console
-    console.log(`Language changed to: ${lang}`)
+    const location = window.location.href
+    const hasLang = /\/[a-z][a-z]\//.test(location)
+    window.history.replaceState(
+      null,
+      '',
+      hasLang ? location.replace(/\/[a-z][a-z]\//, `/${lang}/`) : `${lang}/`
+    )
   })
 }
 
@@ -36,7 +45,10 @@ if (!i18next.isInitialized) {
     },
     defaultNS,
     resources,
-    debug: false,
+    debug: true,
+    detection: {
+      order: ['path', 'cookie', 'localStorage', 'sessionStorage', 'navigator'],
+    },
   })
 }
 

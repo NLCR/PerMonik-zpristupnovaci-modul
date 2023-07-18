@@ -33,6 +33,12 @@ module.exports = {
     'prettier/prettier': 'error',
     'import/no-extraneous-dependencies': 0,
     'no-continue': 0,
-    "@typescript-eslint/no-unused-vars": 1
+    '@typescript-eslint/no-unused-vars': 1,
+    "react/no-unstable-nested-components": [
+      "error",
+      {
+        "allowAsProps": true,
+      }
+    ]
   },
 }

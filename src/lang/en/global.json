@@ -1,0 +1,136 @@
+{
+  "urls": {
+    "login": "login",
+    "specimens_overview": "specimens",
+    "volume_overview": "volume"
+  },
+  "common": {
+    "error_occurred_when_loading_data": "An error occurred while loading data",
+    "error_occurred_somewhere": "There is an error somewhere, please try again later"
+  },
+  "home": {
+    "header": "Homepage",
+    "title": "Evidence of periodicals",
+    "description": "system for management and registration of periodicals",
+    "records": "Records",
+    "specimens": "Specimens",
+    "mutations": "Mutations",
+    "owners": "Owners"
+  },
+  "specimens_overview": {
+    "meta_title_not_found": "This metatitle has not been found",
+    "specimens_not_found": "No specimens have been found",
+    "date": "Date",
+    "volume": "Volume",
+    "name": "Title on the front page",
+    "sub_name": "Subtitle",
+    "mutation": "Mutation",
+    "publication": "Publication",
+    "publication_mark": "Publication mark",
+    "owner": "Owner",
+    "state": "State",
+    "delete_filters": "Clear filters",
+    "without_mark": "Without marking",
+    "table": "Table",
+    "calendar": "Calendar",
+    "row_modal_title": "Overview of the day",
+    "volumes": "Volumes",
+    "specimens": "Specimens",
+    "digitization": "Digitization"
+  },
+  "volume_overview": {
+    "not_found": "This volume has not been found",
+    "input_data": "Input data",
+    "name": "Name",
+    "value": "Value",
+    "meta_title": "Metatitle",
+    "mutation": "Mutation",
+    "publication_mark": "Publication mark",
+    "bar_code": "Barcode",
+    "signature": "Signature",
+    "year": "Year",
+    "date_from": "Date from",
+    "first_number": "First number",
+    "date_to": "Date to",
+    "last_number": "Last number",
+    "owner": "Owner",
+    "note": "Note",
+    "daily_releases": "Daily releases",
+    "releasing": "Coming out",
+    "is_in_volume": "Is in volume",
+    "publication": "Publication",
+    "pages_count": "Pages count",
+    "sub_name": "Subtitle",
+    "days": {
+      "Monday": "Monday",
+      "Tuesday": "Tuesday",
+      "Wednesday": "Wednesday",
+      "Thursday": "Thursday",
+      "Friday": "Friday",
+      "Saturday": "Saturday",
+      "Sunday": "Sunday"
+    },
+    "volume_description": "Volume description",
+    "date": "Date",
+    "missing_number": "Number missing",
+    "number": "Number",
+    "attachment_number": "Attachment number"
+  },
+  "table": {
+    "mutations": "Mutations",
+    "publication_date": "Publication date",
+    "name": "Name",
+    "publication": "Coming out",
+    "number": "Number",
+    "pages_count": "Pages count",
+    "owners": "Owners",
+    "basic_info": "Basic info"
+  },
+  "publications": {
+    "0": "Without marking",
+    "1": "Morning",
+    "2": "Midday",
+    "3": "Afternoon",
+    "4": "Evening",
+    "5": "Other",
+    "6": "Another attachment",
+    "7": "Periodic attachment"
+  },
+  "tooltip_states": {
+    "uncontrolled": "Unchecked",
+    "missing_page": "Missing pages",
+    "damaged_document": "Damaged document",
+    "complete": "Verified"
+  },
+  "facet_states": {
+    "OK": "Verified",
+    "ChCC": "Missing number",
+    "ChS": "Missing pages",
+    "PP": "Damaged document",
+    "Deg": "Degradation",
+    "ChPag": "Incorrect paginatione",
+    "ChCis": "Incorrect numbering",
+    "ChSv": "Incorrectly tied",
+    "ChDatum": "Wrong date",
+    "Cz": "Censored",
+    "CzV": "Censored copy",
+    "Z": "Not at all (destroyed/lost)",
+    "PolS": "Polished pages",
+    "NT": "Unreadable print",
+    "PopS": "Described pages",
+    "Prl": "Retagged",
+    "ChCl": "Missing article",
+    "NS": "Unreadably tied",
+    "ZV": "Change of edition",
+    "NeS": "Unbound",
+    "notVerified": "Unchecked",
+    "empty": "Without marking"
+  },
+  "header": {
+    "home": "Home",
+    "login": "Login"
+  },
+  "not_found": {
+    "page_dont_exists": "This page does not exist"
+  }
+}

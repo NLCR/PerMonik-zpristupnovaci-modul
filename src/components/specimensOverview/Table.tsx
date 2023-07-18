@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import { Box, createStyles, Flex, Tooltip } from '@mantine/core'
-import { FC, memo, useEffect, useState } from 'react'
+import { Box, createStyles, Flex, rem, Tooltip } from '@mantine/core'
+import { FC, memo, useEffect, useMemo, useState } from 'react'
 import {
   MantineReactTable,
   MRT_ColumnDef,
@@ -11,12 +11,15 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { IconFileSymlink } from '@tabler/icons-react'
-import { MRT_Localization_CS } from 'mantine-react-table/locales/cs'
-import { mutations, owners, publications, states } from '../../utils/constants'
+import { owners, states } from '../../utils/constants'
 import i18next from '../../i18next'
 import { TSpecimen } from '../../@types/specimen'
 import { formatDateWithDashesToString } from '../../utils/helperFunctions'
 import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
+import {
+  useMantineTableLang,
+  useTranslatedConstants,
+} from '../../utils/helperHooks'
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -38,10 +41,10 @@ const getSpecimenState = (sp: TSpecimen) => {
         <Tooltip label={i18next.t('tooltip_states.uncontrolled')}>
           <Box
             sx={(theme) => ({
-              width: 15,
-              height: 15,
+              width: rem(15),
+              height: rem(15),
               borderRadius: '50%',
-              border: `1px solid ${theme.colors.gray[7]}`,
+              border: `${rem(1)} solid ${theme.colors.gray[7]}`,
               backgroundColor: theme.colors.gray[0],
             })}
           />
@@ -53,10 +56,10 @@ const getSpecimenState = (sp: TSpecimen) => {
         <Tooltip label={i18next.t('tooltip_states.missing_page')}>
           <Box
             sx={(theme) => ({
-              width: 15,
-              height: 15,
+              width: rem(15),
+              height: rem(15),
               borderRadius: '50%',
-              border: `1px solid ${theme.colors.gray[7]}`,
+              border: `${rem(1)} solid ${theme.colors.gray[7]}`,
               backgroundColor: theme.colors.red[7],
             })}
           />
@@ -68,10 +71,10 @@ const getSpecimenState = (sp: TSpecimen) => {
         <Tooltip label={i18next.t('tooltip_states.damaged_document')}>
           <Box
             sx={(theme) => ({
-              width: 15,
-              height: 15,
+              width: rem(15),
+              height: rem(15),
               borderRadius: '50%',
-              border: `1px solid ${theme.colors.gray[7]}`,
+              border: `${rem(1)} solid ${theme.colors.gray[7]}`,
               backgroundColor: theme.colors.orange[7],
             })}
           />
@@ -83,10 +86,10 @@ const getSpecimenState = (sp: TSpecimen) => {
       <Tooltip label={i18next.t('tooltip_states.complete')}>
         <Box
           sx={(theme) => ({
-            width: 15,
-            height: 15,
+            width: rem(15),
+            height: rem(15),
             borderRadius: '50%',
-            border: `1px solid ${theme.colors.gray[7]}`,
+            border: `${rem(1)} solid ${theme.colors.gray[7]}`,
             backgroundColor: theme.colors.green[7],
           })}
         />
@@ -98,10 +101,10 @@ const getSpecimenState = (sp: TSpecimen) => {
     <Tooltip label={i18next.t('tooltip_states.uncontrolled')}>
       <Box
         sx={(theme) => ({
-          width: 15,
-          height: 15,
+          width: rem(15),
+          height: rem(15),
           borderRadius: '50%',
-          border: `1px solid ${theme.colors.gray[7]}`,
+          border: `${rem(1)} solid ${theme.colors.gray[7]}`,
           backgroundColor: theme.colors.gray[0],
         })}
       />
@@ -114,7 +117,7 @@ const OwnersBarCodeCell: FC<{
   ownerRow: 0 | 1 | 2 | 3
 }> = ({ row, ownerRow }) => {
   const { classes } = useStyles()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   return Number(row.original.owner) === owners[ownerRow].id ? (
     <Flex
@@ -127,7 +130,9 @@ const OwnersBarCodeCell: FC<{
       {row.original.barCode}
       <Link
         className={classes.link}
-        to={`/${t('urls.volume_overview')}/${row.original.barCode}`}
+        to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
+          row.original.barCode
+        }`}
       >
         <IconFileSymlink size={20} />
       </Link>
@@ -135,66 +140,6 @@ const OwnersBarCodeCell: FC<{
     </Flex>
   ) : undefined
 }
-
-const columns: MRT_ColumnDef<TSpecimen>[] = [
-  {
-    accessorKey: 'mutation',
-    header: i18next.t('table.mutations'),
-    maxSize: 110,
-    Cell: ({ cell }) =>
-      mutations.find((m) => m.id === Number(cell.getValue<string>()))?.name,
-  },
-  {
-    accessorKey: 'publicationDate',
-    header: i18next.t('table.publication_date'),
-    Cell: ({ cell }) => formatDateWithDashesToString(cell.getValue<string>()),
-  },
-  {
-    accessorKey: 'name',
-    header: i18next.t('table.name'),
-  },
-  {
-    accessorKey: 'publication',
-    header: i18next.t('table.publication'),
-    maxSize: 110,
-    Cell: ({ cell }) =>
-      publications.find((p) => p.id === Number(cell.getValue<string>()))?.name,
-  },
-  {
-    accessorKey: 'number',
-    header: i18next.t('table.number'),
-    maxSize: 110,
-  },
-  {
-    accessorKey: 'pagesCount',
-    header: i18next.t('table.pages_count'),
-    maxSize: 110,
-  },
-  {
-    id: `owner${owners[0].name}`,
-    accessorKey: 'owner',
-    header: owners[0].name,
-    Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={0} />,
-  },
-  {
-    id: `owner${owners[1].name}`,
-    accessorKey: 'owner',
-    header: owners[1].name,
-    Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={1} />,
-  },
-  {
-    id: `owner${owners[2].name}`,
-    accessorKey: 'owner',
-    header: owners[2].name,
-    Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={2} />,
-  },
-  {
-    id: `owner${owners[3].name}`,
-    accessorKey: 'owner',
-    header: owners[3].name,
-    Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={3} />,
-  },
-]
 
 type TProps = {
   specimens: TSpecimen[]
@@ -207,24 +152,90 @@ const Table: FC<TProps> = memo(function Table({
   count,
   specimensRefetching,
 }) {
+  const { publications, mutations } = useTranslatedConstants()
   const [localPagination, setLocalPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 25,
   })
   const { setPagination } = useSpecimensOverviewStore()
+  const { mantineTableLocale } = useMantineTableLang()
 
   useEffect(() => {
     setPagination(localPagination)
   }, [localPagination, setPagination])
 
+  const columns = useMemo<MRT_ColumnDef<TSpecimen>[]>(
+    () => [
+      {
+        accessorKey: 'mutation',
+        header: i18next.t('table.mutations'),
+        maxSize: 110,
+        Cell: ({ cell }) =>
+          mutations.find((m) => m.id === Number(cell.getValue<string>()))?.name,
+      },
+      {
+        accessorKey: 'publicationDate',
+        header: i18next.t('table.publication_date'),
+        Cell: ({ cell }) =>
+          formatDateWithDashesToString(cell.getValue<string>()),
+      },
+      {
+        accessorKey: 'name',
+        header: i18next.t('table.name'),
+      },
+      {
+        accessorKey: 'publication',
+        header: i18next.t('table.publication'),
+        maxSize: 110,
+        Cell: ({ cell }) =>
+          publications.find((p) => p.id === Number(cell.getValue<string>()))
+            ?.name,
+      },
+      {
+        accessorKey: 'number',
+        header: i18next.t('table.number'),
+        maxSize: 110,
+      },
+      {
+        accessorKey: 'pagesCount',
+        header: i18next.t('table.pages_count'),
+        maxSize: 110,
+      },
+      {
+        id: `owner${owners[0].name}`,
+        accessorKey: 'owner',
+        header: owners[0].name,
+        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={0} />,
+      },
+      {
+        id: `owner${owners[1].name}`,
+        accessorKey: 'owner',
+        header: owners[1].name,
+        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={1} />,
+      },
+      {
+        id: `owner${owners[2].name}`,
+        accessorKey: 'owner',
+        header: owners[2].name,
+        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={2} />,
+      },
+      {
+        id: `owner${owners[3].name}`,
+        accessorKey: 'owner',
+        header: owners[3].name,
+        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={3} />,
+      },
+    ],
+    [mutations, publications]
+  )
+
   const table = useMantineReactTable({
     columns,
     data: specimens || [],
-    localization: MRT_Localization_CS,
+    localization: mantineTableLocale,
     enableStickyHeader: true,
     enableFilters: false,
     enableSorting: false,
-    // enableRowVirtualization: true,
     initialState: {
       density: 'xs',
     },
@@ -238,17 +249,11 @@ const Table: FC<TProps> = memo(function Table({
     onPaginationChange: setLocalPagination,
     mantinePaginationProps: {
       rowsPerPageOptions: ['25', '50', '100'],
-      // variant: 'mantine',
     },
     mantineTableHeadRowProps: {
       sx: (theme) => ({
         boxShadow: `${theme.shadows.xs} !important`,
       }),
-    },
-    mantineTableBodyProps: {
-      // sx: (theme) => ({
-      //   maxHeight: `100% !important`,
-      // }),
     },
     mantineTableContainerProps: {
       sx: () => ({
@@ -264,9 +269,6 @@ const Table: FC<TProps> = memo(function Table({
       }),
     },
     mantineTableProps: {
-      // sx: () => ({
-      //
-      // }),
       striped: false,
       highlightOnHover: true,
       withBorder: false,

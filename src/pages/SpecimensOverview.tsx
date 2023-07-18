@@ -10,18 +10,22 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import React, { Suspense, useEffect, useState } from 'react'
 import { IconCalendarSearch, IconTableRow } from '@tabler/icons-react'
-import useMetaTitleQuery from '../../api/query/useMetaTitleQuery'
-import useSpecimensWithFacetsQuery from '../../api/query/useSpecimensWithFacetsQuery'
-import Loader from '../../components/reusableComponents/Loader'
-import ShowError from '../../components/reusableComponents/ShowError'
-import ShowInfoMessage from '../../components/reusableComponents/ShowInfoMessage'
-import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
-import useSpecimensStartDateForCalendar from '../../api/query/useSpecimensStartDateForCalendar'
-import { createDate } from '../../utils/helperFunctions'
+import useMetaTitleQuery from '../api/query/useMetaTitleQuery'
+import useSpecimensWithFacetsQuery from '../api/query/useSpecimensWithFacetsQuery'
+import Loader from '../components/reusableComponents/Loader'
+import ShowError from '../components/reusableComponents/ShowError'
+import ShowInfoMessage from '../components/reusableComponents/ShowInfoMessage'
+import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
+import useSpecimensStartDateForCalendar from '../api/query/useSpecimensStartDateForCalendar'
+import { createDate } from '../utils/helperFunctions'
 
-const Facets = React.lazy(() => import('./Facets'))
-const Table = React.lazy(() => import('./Table'))
-const Calendar = React.lazy(() => import('./Calendar'))
+const Facets = React.lazy(
+  () => import('../components/specimensOverview/Facets')
+)
+const Table = React.lazy(() => import('../components/specimensOverview/Table'))
+const Calendar = React.lazy(
+  () => import('../components/specimensOverview/Calendar')
+)
 
 const useStyles = createStyles((theme) => ({
   flexWrapper: {
@@ -32,7 +36,7 @@ const useStyles = createStyles((theme) => ({
   },
   facets: {
     width: '20%',
-    maxWidth: 280,
+    maxWidth: rem(280),
     // color: theme.colors.dark[9],
     padding: theme.spacing.md,
     backgroundColor: 'white',
@@ -194,7 +198,10 @@ const SpecimensOverview = () => {
             </Tabs>
             <Suspense fallback={<Loader />}>
               {view === 'calendar' ? (
-                <Calendar specimens={specimens.specimens} />
+                <Calendar
+                  specimens={specimens.specimens}
+                  metaTitle={metaTitle}
+                />
               ) : (
                 <Table
                   count={specimens.count}

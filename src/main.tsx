@@ -4,7 +4,7 @@ import { I18nextProvider } from 'react-i18next'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { init as SentryInit, BrowserTracing } from '@sentry/react'
-import { MantineProvider } from '@mantine/core'
+import { MantineProvider, rem } from '@mantine/core'
 import i18next from './i18next'
 import { queryClient } from './api'
 import { WrappedApp } from './App'
@@ -48,12 +48,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
               Container: {
                 defaultProps: {
                   sizes: {
-                    xs: 540,
-                    sm: 720,
-                    md: 960,
-                    lg: 1140,
-                    xl: 1320,
-                    xxl: 1600,
+                    xs: rem(540),
+                    sm: rem(720),
+                    md: rem(960),
+                    lg: rem(1140),
+                    xl: rem(1320),
+                    xxl: rem(1600),
                   },
                 },
               },

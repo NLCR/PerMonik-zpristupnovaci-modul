@@ -13,7 +13,7 @@ export interface TSpecimen {
   numExists: boolean
   numMissing: boolean
   signature: string
-  owner: (typeof ownersFromBE)[number]['id']
+  owner: typeof ownersFromBE
   states: typeof states | null
   state: 'ok' | 'auto'
   stateDescription: string
@@ -21,8 +21,8 @@ export interface TSpecimen {
   note: string
   name: string
   subName: string
-  publication: (typeof publicationsFromBE)[number]['id']
-  mutation: (typeof mutationsFromBE)[number]['id']
+  publication: typeof publicationsFromBE
+  mutation: typeof mutationsFromBE
   publicationMark: string
   publicationDate: string
   publicationDay: string

@@ -1,8 +1,8 @@
 {
   "urls": {
-    "login": "prihlaseni",
-    "specimens_overview": "exempláře",
-    "volume_overview": "svazek"
+    "login": "login",
+    "specimens_overview": "specimens",
+    "volume_overview": "volume"
   },
   "common": {
     "error_occurred_when_loading_data": "Nastala chyba při načítání dat",
@@ -23,6 +23,7 @@
     "date": "Datum",
     "volume": "Svazek",
     "name": "Název na titulní straně",
+    "sub_name": "Podnázev",
     "mutation": "Mutace",
     "publication": "Vydání",
     "publication_mark": "Mutační vydání",
@@ -31,7 +32,11 @@
     "delete_filters": "Vymazat filtry",
     "without_mark": "Bez označení",
     "table": "Tabulka",
-    "calendar": "Kalendář"
+    "calendar": "Kalendář",
+    "row_modal_title": "Přehled dne",
+    "volumes": "Svazky",
+    "specimens": "Exempláře",
+    "digitization": "Digitalizát"
   },
   "volume_overview": {
     "not_found": "Tento svazek nebyl nalezen",

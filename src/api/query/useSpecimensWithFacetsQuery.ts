@@ -48,7 +48,7 @@ const useSpecimensWithFacetsQuery = (idTitle: string, enabled: boolean) => {
         'facets',
         JSON.stringify({
           ...params,
-          volume: debouncedVolumeInput,
+          volume: debouncedVolumeInput.trim().replaceAll(' ', ''),
           calendarDateStart: startOfMonth,
           calendarDateEnd: endOfMonth,
         })

@@ -9,16 +9,17 @@ import {
   Title,
 } from '@mantine/core'
 import { IconEraser } from '@tabler/icons-react'
-import { FC, memo, useState } from 'react'
+import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MonthPicker } from '@mantine/dates'
-import FacetGroup from '../../components/reusableComponents/FacetGroup'
-import { mutations, owners, publications, states } from '../../utils/constants'
+import FacetGroup from './FacetGroup'
+import { owners, states } from '../../utils/constants'
 import {
   TSpecimensFacets,
   TSpecimensPublicationDays,
 } from '../../@types/specimen'
 import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
+import { useTranslatedConstants } from '../../utils/helperHooks'
 
 type TProps = {
   metaTitleName: string
@@ -26,14 +27,15 @@ type TProps = {
   facets: TSpecimensFacets
 } & TSpecimensPublicationDays
 
-const Facets: FC<TProps> = memo(function Facets({
+const Facets: FC<TProps> = ({
   metaTitleName,
   specimensRefetching,
   facets,
   publicationDayMin,
   publicationDayMax,
-}) {
+}) => {
   const { t } = useTranslation()
+  const { publications, mutations } = useTranslatedConstants()
   const {
     volumeInput,
     params,
@@ -207,6 +209,6 @@ const Facets: FC<TProps> = memo(function Facets({
       </Button>
     </>
   )
-})
+}
 
 export default Facets

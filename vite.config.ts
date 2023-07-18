@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react-swc'
 import svgr from 'vite-plugin-svgr'
 import eslintPlugin from 'vite-plugin-eslint'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -32,6 +33,14 @@ export default defineConfig(({ mode }) => {
         // telemetry: false,
         // debug: true,
       }),
+      visualizer({
+        template: 'treemap', // or sunburst
+        open: false,
+        gzipSize: true,
+        brotliSize: true,
+        filename: 'analyse.html', // will be saved in project's root
+      }),
+      // splitVendorChunkPlugin(),
     ],
     build: {
       // required for sentry: tells vite to create source maps

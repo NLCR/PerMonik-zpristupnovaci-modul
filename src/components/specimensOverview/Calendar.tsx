@@ -1,20 +1,26 @@
 /* eslint-disable react/prop-types */
 import { Flex, Grid, rem, Text } from '@mantine/core'
-import { FC, memo } from 'react'
-import _ from 'lodash'
+import { FC } from 'react'
+import { flow, groupBy, map } from 'lodash-es'
 import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
+import { modals } from '@mantine/modals'
 import { TSpecimen } from '../../@types/specimen'
 import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
-import { mutations } from '../../utils/constants'
+import Modal from './Modal'
+import { TMetaTitle } from '../../@types/metaTitle'
+
+import { useTranslatedConstants } from '../../utils/helperHooks'
 
 type TProps = {
   specimens: TSpecimen[]
+  metaTitle: TMetaTitle
 }
 
-const Calendar: FC<TProps> = memo(function Calendar({ specimens }) {
+const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
   const { t } = useTranslation()
   const { calendarDate } = useSpecimensOverviewStore()
+  const { mutations } = useTranslatedConstants()
   const dayJs = dayjs(calendarDate)
   const daysInMonth = dayJs.daysInMonth()
   const daysArray: string[] = []
@@ -22,10 +28,12 @@ const Calendar: FC<TProps> = memo(function Calendar({ specimens }) {
     daysArray.push(dayJs.set('date', i).format('YYYY-MM-DD'))
   }
 
-  const groupedSpecimensByDay = _(specimens)
-    .groupBy((s) => s.publicationDate)
-    .map((value, key) => ({ day: key, specimens: value }))
-    .value()
+  const groupedSpecimensByDay = flow(
+    (rawSpecimens: TSpecimen[]) =>
+      groupBy(rawSpecimens, (s) => s.publicationDate),
+    (groupedSpecimens) =>
+      map(groupedSpecimens, (value, key) => ({ day: key, specimens: value }))
+  )(specimens)
 
   const specimensInDay: { day: string; specimens: TSpecimen[][] }[] = []
 
@@ -33,7 +41,7 @@ const Calendar: FC<TProps> = memo(function Calendar({ specimens }) {
     const found = groupedSpecimensByDay.find((group) => group.day === day)
     if (found) {
       const groupedBySameAttributes = Object.values(
-        _.groupBy(
+        groupBy(
           found.specimens,
           (obj) =>
             `${obj.mutation}_${obj.publicationMark}_${obj.number}_${obj.state}`
@@ -54,48 +62,71 @@ const Calendar: FC<TProps> = memo(function Calendar({ specimens }) {
         overflowY: 'auto',
       })}
     >
-      {specimensInDay.map((d) => (
+      {specimensInDay.map((day) => (
         <Grid.Col
           span={2}
-          key={d.day}
+          key={day.day}
           sx={(theme) => ({
             backgroundColor: theme.colors.gray[1],
-            border: '2px solid white',
+            border: `${rem(2)} solid white`,
             borderRadius: theme.radius.sm,
             paddingTop: rem(2),
           })}
         >
           <Text size="sm">
             <Text color="blue.9" mb={4}>
-              {dayjs(d.day).format('dd DD')}
+              {dayjs(day.day).format('dd DD')}
             </Text>
-            {/* grouping by same values and displaying same specimens on one line (when clicked, individual specimens are shown) */}
-            {d.specimens.map((a) => {
-              const first = a.find(Boolean)
-              if (first) {
+            {/* specimens grouped by same values and displayed on one line (when clicked, individual specimens are shown) */}
+            {day.specimens.map((row) => {
+              const firstInRow = row.find(Boolean)
+              if (firstInRow) {
                 return (
                   <Flex
-                    key={first.id}
+                    key={firstInRow.id}
                     my={2}
                     py={2}
                     px={6}
-                    bg={first.state === 'ok' ? 'green.7' : 'orange.7'}
+                    bg={firstInRow.state === 'ok' ? 'green.7' : 'orange.7'}
                     sx={(theme) => ({
                       borderRadius: theme.radius.sm,
                       color: theme.colors.gray[0],
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       fontSize: rem(13),
+                      cursor: 'pointer',
                     })}
+                    onClick={() => {
+                      modals.open({
+                        centered: true,
+                        size: 'auto',
+                        title: (
+                          <>
+                            <Text
+                              sx={(theme) => ({
+                                color: theme.colors.blue[9],
+                                fontSize: theme.fontSizes.xl,
+                                fontWeight: 'bold',
+                              })}
+                            >
+                              {metaTitle.name}
+                            </Text>
+                            {dayjs(day.day).format('dddd DD.MM.YYYY')}
+                          </>
+                        ),
+                        children: <Modal row={row} />,
+                      })
+                    }}
                   >
                     <Text>
-                      {first.number}{' '}
+                      {firstInRow.number}{' '}
                       {
-                        mutations.find((m) => m.id === Number(first.mutation))
-                          ?.name
+                        mutations.find(
+                          (m) => m.id === Number(firstInRow.mutation)
+                        )?.name
                       }{' '}
-                      {first.publicationMark.length
-                        ? first.publicationMark
+                      {firstInRow.publicationMark.length
+                        ? firstInRow.publicationMark
                         : t('specimens_overview.without_mark')}
                     </Text>
                     <Flex
@@ -109,7 +140,7 @@ const Calendar: FC<TProps> = memo(function Calendar({ specimens }) {
                         justifyContent: 'center',
                       })}
                     >
-                      {a.length}
+                      {row.length}
                     </Flex>
                   </Flex>
                 )
@@ -121,6 +152,6 @@ const Calendar: FC<TProps> = memo(function Calendar({ specimens }) {
       ))}
     </Grid>
   )
-})
+}
 
 export default Calendar

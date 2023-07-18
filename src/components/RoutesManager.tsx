@@ -6,8 +6,9 @@ import { useKeepAlive } from '../utils/auth'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
 import Loader from './reusableComponents/Loader'
-import SpecimensOverview from '../pages/specimensOverview/SpecimensOverview'
-import VolumeOverview from '../pages/volumeOverview/VolumeOverview'
+import SpecimensOverview from '../pages/SpecimensOverview'
+
+const VolumeOverview = React.lazy(() => import('../pages/VolumeOverview'))
 
 const SuspenseLoader = () => {
   return (
@@ -26,12 +27,13 @@ const RoutesManager = () => {
     <Suspense fallback={<SuspenseLoader />}>
       <Routes>
         <Route index element={<Home />} />
+        <Route path="/:lang" element={<Home />} />
         <Route
-          path={`/${t('specimens_overview')}/:metaTitleId`}
+          path={`/:lang/${t('specimens_overview')}/:metaTitleId`}
           element={<SpecimensOverview />}
         />
         <Route
-          path={`/${t('volume_overview')}/:volumeId`}
+          path={`/:lang/${t('volume_overview')}/:volumeId`}
           element={<VolumeOverview />}
         />
         <Route path="*" element={<NotFound />} />

@@ -26,7 +26,7 @@ const useStyles = createStyles((theme) => ({
 
 const Home = () => {
   const { classes } = useStyles()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { data, isLoading, isError } = useMetaTitlesWithStatsQuery()
   // const { resetAll } = useSpecimensOverviewStore()
 
@@ -42,7 +42,9 @@ const Home = () => {
         <SimpleGrid mt={50} cols={4}>
           {data.map((mt) => (
             <Link
-              to={`${t('urls.specimens_overview')}/${mt.id}`}
+              to={`/${i18n.resolvedLanguage}/${t('urls.specimens_overview')}/${
+                mt.id
+              }`}
               key={mt.id}
               className={classes.card}
               // onClick={() => resetAll()}

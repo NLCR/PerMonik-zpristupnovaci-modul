@@ -1,0 +1,136 @@
+{
+  "urls": {
+    "login": "login",
+    "specimens_overview": "specimens",
+    "volume_overview": "volume"
+  },
+  "common": {
+    "error_occurred_when_loading_data": "Pri načítavaní údajov došlo k chybe",
+    "error_occurred_somewhere": "Niekde sa vyskytla chyba, skúste to prosím neskôr"
+  },
+  "home": {
+    "header": "Domovská stránka",
+    "title": "Evidencia periodík",
+    "description": "systém správy a registrácie periodík",
+    "records": "Záznamy",
+    "specimens": "Vzorky",
+    "mutations": "Mutácie",
+    "owners": "Vlastníci"
+  },
+  "specimens_overview": {
+    "meta_title_not_found": "Tento metatitul nebol nájdený",
+    "specimens_not_found": "Neboli nájdené žiadne exempláre",
+    "date": "Dátum",
+    "volume": "Zväzok",
+    "name": "Názov na titulnej strane",
+    "sub_name": "Podnázov",
+    "mutation": "Mutácie",
+    "publication": "Vydanie",
+    "publication_mark": "Vydanie mutácie",
+    "owner": "Vlastník",
+    "state": "Stav",
+    "delete_filters": "Vymazať filtre",
+    "without_mark": "Bez označenia",
+    "table": "Tabuľka",
+    "calendar": "Kalendár",
+    "row_modal_title": "Prehľad dňa",
+    "volumes": "Zväzky",
+    "specimens": "Vzorky",
+    "digitization": "Digitalizácia"
+  },
+  "volume_overview": {
+    "not_found": "Tento zväzok nebol nájdený",
+    "input_data": "Vstupné dáta",
+    "name": "Názov",
+    "value": "Hodnota",
+    "meta_title": "Metatitul",
+    "mutation": "Mutácie",
+    "publication_mark": "Vydanie mutácie",
+    "bar_code": "Čiarový kód",
+    "signature": "Podpísané",
+    "year": "Ročník",
+    "date_from": "Dátum od",
+    "first_number": "Prvé vydanie",
+    "date_to": "Dátum do",
+    "last_number": "Posledné vydanie",
+    "owner": "Vlastník",
+    "note": "Poznámka",
+    "daily_releases": "Denné vydanie",
+    "releasing": "Vychádzajúci",
+    "is_in_volume": "Je vo zväzku",
+    "publication": "Vydanie",
+    "pages_count": "Počet strán",
+    "sub_name": "Podnázov",
+    "days": {
+      "Monday": "Pondelok",
+      "Tuesday": "Utorok",
+      "Wednesday": "Streda",
+      "Thursday": "Štvrtok",
+      "Friday": "Piatok",
+      "Saturday": "Sobota",
+      "Sunday": "Nedeľa"
+    },
+    "volume_description": "Popis zväzku",
+    "date": "Dátum",
+    "missing_number": "Číslo chýba",
+    "number": "Číslo",
+    "attachment_number": "Číslo prílohy"
+  },
+  "table": {
+    "mutations": "Mutácie",
+    "publication_date": "Dátum zverejnenia",
+    "name": "Názov",
+    "publication": "Vydanie",
+    "number": "Číslo",
+    "pages_count": "Počet strán",
+    "owners": "Vlastníci",
+    "basic_info": "Základné údaje"
+  },
+  "publications": {
+    "0": "Bez označenia",
+    "1": "Ranné",
+    "2": "Poludnie",
+    "3": "Popoludnie",
+    "4": "Večerné",
+    "5": "Iné",
+    "6": "Iná príloha",
+    "7": "Pravidelná príloha"
+  },
+  "tooltip_states": {
+    "uncontrolled": "Nekontrolované",
+    "missing_page": "Chýbajúce strany",
+    "damaged_document": "Poškodený dokument",
+    "complete": "Overené"
+  },
+  "facet_states": {
+    "OK": "Overené",
+    "ChCC": "Chýbajúce číslo",
+    "ChS": "Chýbajúce strany",
+    "PP": "Poškodený dokument",
+    "Deg": "Degradácia",
+    "ChPag": "Chybné stránkovanie",
+    "ChCis": "Chybné číslovanie",
+    "ChSv": "Nesprávne zviazané",
+    "ChDatum": "Chybný dátum",
+    "Cz": "Cenzurované",
+    "CzV": "Cenzurovaná kópia",
+    "Z": "Vôbec nieje (zničené/stratené)",
+    "PolS": "Polité strany",
+    "NT": "Nečitateľná tlač",
+    "PopS": "Popísané strany",
+    "Prl": "Přelepeno",
+    "ChCl": "Chýbajúci článok",
+    "NS": "Nečitateľne zviazané",
+    "ZV": "Výmena vydania",
+    "NeS": "Bez väzieby",
+    "notVerified": "Nekontrolované",
+    "empty": "Bez označenia"
+  },
+  "header": {
+    "home": "Domov",
+    "login": "Prihlásenie"
+  },
+  "not_found": {
+    "page_dont_exists": "Táto stránka neexistuje"
+  }
+}
