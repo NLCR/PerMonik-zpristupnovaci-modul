@@ -157,6 +157,7 @@ const Table: FC<TProps> = memo(function Table({
     pageIndex: 0,
     pageSize: 25,
   })
+  const { t } = useTranslation()
   const { setPagination } = useSpecimensOverviewStore()
   const { mantineTableLocale } = useMantineTableLang()
 
@@ -168,24 +169,24 @@ const Table: FC<TProps> = memo(function Table({
     () => [
       {
         accessorKey: 'mutation',
-        header: i18next.t('table.mutations'),
+        header: t('table.mutations'),
         maxSize: 110,
         Cell: ({ cell }) =>
           mutations.find((m) => m.id === Number(cell.getValue<string>()))?.name,
       },
       {
         accessorKey: 'publicationDate',
-        header: i18next.t('table.publication_date'),
+        header: t('table.publication_date'),
         Cell: ({ cell }) =>
           formatDateWithDashesToString(cell.getValue<string>()),
       },
       {
         accessorKey: 'name',
-        header: i18next.t('table.name'),
+        header: t('table.name'),
       },
       {
         accessorKey: 'publication',
-        header: i18next.t('table.publication'),
+        header: t('table.publication'),
         maxSize: 110,
         Cell: ({ cell }) =>
           publications.find((p) => p.id === Number(cell.getValue<string>()))
@@ -193,12 +194,12 @@ const Table: FC<TProps> = memo(function Table({
       },
       {
         accessorKey: 'number',
-        header: i18next.t('table.number'),
+        header: t('table.number'),
         maxSize: 110,
       },
       {
         accessorKey: 'pagesCount',
-        header: i18next.t('table.pages_count'),
+        header: t('table.pages_count'),
         maxSize: 110,
       },
       {
@@ -226,7 +227,7 @@ const Table: FC<TProps> = memo(function Table({
         Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={3} />,
       },
     ],
-    [mutations, publications]
+    [mutations, publications, t]
   )
 
   const table = useMantineReactTable({

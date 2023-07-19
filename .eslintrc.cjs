@@ -34,11 +34,11 @@ module.exports = {
     'import/no-extraneous-dependencies': 0,
     'no-continue': 0,
     '@typescript-eslint/no-unused-vars': 1,
-    "react/no-unstable-nested-components": [
-      "error",
+    'react/no-unstable-nested-components': [
+      'error',
       {
-        "allowAsProps": true,
-      }
-    ]
+        allowAsProps: true,
+      },
+    ],
   },
 }

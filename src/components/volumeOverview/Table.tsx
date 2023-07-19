@@ -6,8 +6,8 @@ import {
 } from 'mantine-react-table'
 import { Checkbox } from '@mantine/core'
 import { FC, memo, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { TSpecimen } from '../../@types/specimen'
-import i18next from '../../i18next'
 import { formatDateWithDashesToString } from '../../utils/helperFunctions'
 import { TVolumeDetail } from '../../@types/volume'
 import {
@@ -22,19 +22,20 @@ type TProps = {
 const Table: FC<TProps> = memo(function Table({ volume }) {
   const { publications, mutations } = useTranslatedConstants()
   const { mantineTableLocale } = useMantineTableLang()
+  const { t } = useTranslation()
 
   const columns = useMemo<MRT_ColumnDef<TSpecimen>[]>(
     () => [
       {
         accessorKey: 'publicationDate',
-        header: i18next.t('volume_overview.date'),
+        header: t('volume_overview.date'),
         maxSize: 110,
         Cell: ({ row }) =>
           formatDateWithDashesToString(row.original.publicationDate),
       },
       {
         accessorKey: 'numExists',
-        header: i18next.t('volume_overview.is_in_volume'),
+        header: t('volume_overview.is_in_volume'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.numExists} readOnly />
@@ -42,7 +43,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       },
       {
         accessorKey: 'numMissing',
-        header: i18next.t('volume_overview.missing_number'),
+        header: t('volume_overview.missing_number'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.numMissing} readOnly />
@@ -50,27 +51,27 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       },
       {
         accessorKey: 'number',
-        header: i18next.t('volume_overview.number'),
+        header: t('volume_overview.number'),
         maxSize: 60,
       },
       {
         accessorKey: 'number',
         id: 'attachment_number',
-        header: i18next.t('volume_overview.attachment_number'),
+        header: t('volume_overview.attachment_number'),
         maxSize: 110,
         Cell: ({ row }) =>
           row.original.isAttachment ? row.original.number : undefined,
       },
       {
         accessorKey: 'mutation',
-        header: i18next.t('volume_overview.mutation'),
+        header: t('volume_overview.mutation'),
         maxSize: 110,
         Cell: ({ row }) =>
           mutations.find((m) => m.id === Number(row.original.mutation))?.name,
       },
       {
         accessorKey: 'publication',
-        header: i18next.t('volume_overview.publication'),
+        header: t('volume_overview.publication'),
         maxSize: 110,
         Cell: ({ row }) =>
           publications.find((p) => p.id === Number(row.original.publication))
@@ -78,28 +79,28 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       },
       {
         accessorKey: 'name',
-        header: i18next.t('volume_overview.name'),
+        header: t('volume_overview.name'),
         maxSize: 110,
       },
       {
         accessorKey: 'subName',
-        header: i18next.t('volume_overview.sub_name'),
+        header: t('volume_overview.sub_name'),
         maxSize: 110,
       },
       {
         accessorKey: 'pagesCount',
-        header: i18next.t('volume_overview.pages_count'),
+        header: t('volume_overview.pages_count'),
         maxSize: 110,
       },
       {
         accessorKey: 'publicationMark',
-        header: i18next.t('volume_overview.publication_mark'),
+        header: t('volume_overview.publication_mark'),
         maxSize: 110,
       },
       {
         accessorKey: 'states',
         id: 'reviewed',
-        header: i18next.t('facet_states.OK'),
+        header: t('facet_states.OK'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.states?.includes('OK')} readOnly />
@@ -108,7 +109,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'states',
         id: 'damaged_pages',
-        header: i18next.t('facet_states.PP'),
+        header: t('facet_states.PP'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.states?.includes('PP')} readOnly />
@@ -117,7 +118,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'states',
         id: 'degradation',
-        header: i18next.t('facet_states.Deg'),
+        header: t('facet_states.Deg'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.states?.includes('Deg')} readOnly />
@@ -126,7 +127,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'states',
         id: 'missing_pages',
-        header: i18next.t('facet_states.ChS'),
+        header: t('facet_states.ChS'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.states?.includes('ChS')} readOnly />
@@ -135,7 +136,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'states',
         id: 'bad_pagination',
-        header: i18next.t('facet_states.ChPag'),
+        header: t('facet_states.ChPag'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.states?.includes('ChPag')} readOnly />
@@ -144,7 +145,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'states',
         id: 'bad_date',
-        header: i18next.t('facet_states.ChDatum'),
+        header: t('facet_states.ChDatum'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox
@@ -156,7 +157,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'states',
         id: 'bad_numbering',
-        header: i18next.t('facet_states.ChCis'),
+        header: t('facet_states.ChCis'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.states?.includes('ChCis')} readOnly />
@@ -165,7 +166,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'states',
         id: 'bad_bound',
-        header: i18next.t('facet_states.ChSv'),
+        header: t('facet_states.ChSv'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.states?.includes('ChSv')} readOnly />
@@ -174,7 +175,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'states',
         id: 'cenzured',
-        header: i18next.t('facet_states.Cz'),
+        header: t('facet_states.Cz'),
         maxSize: 110,
         Cell: ({ row }) => (
           <Checkbox checked={row.original.states?.includes('Cz')} readOnly />
@@ -182,11 +183,11 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       },
       {
         accessorKey: 'note',
-        header: i18next.t('volume_overview.note'),
+        header: t('volume_overview.note'),
         maxSize: 110,
       },
     ],
-    [mutations, publications]
+    [mutations, publications, t]
   )
 
   const table = useMantineReactTable({

@@ -79,23 +79,23 @@ const VolumeOverview = () => {
 
   return (
     <Flex
-      gap={20}
       sx={{
         alignItems: 'stretch',
+        justifyContent: 'space-between',
       }}
     >
       <Flex
         direction="column"
-        gap={20}
         sx={() => ({
           width: '35%',
           maxHeight: '80vh',
+          justifyContent: 'space-between',
         })}
       >
         <Flex
           direction="column"
           sx={(theme) => ({
-            maxHeight: '48%',
+            maxHeight: '49%',
             padding: theme.spacing.md,
             backgroundColor: 'white',
             borderRadius: theme.spacing.xs,
@@ -199,7 +199,7 @@ const VolumeOverview = () => {
         <Flex
           direction="column"
           sx={(theme) => ({
-            maxHeight: '48%',
+            maxHeight: '49%',
             padding: theme.spacing.md,
             backgroundColor: 'white',
             borderRadius: theme.spacing.xs,
@@ -270,7 +270,7 @@ const VolumeOverview = () => {
           backgroundColor: 'white',
           borderRadius: theme.spacing.xs,
           boxShadow: theme.shadows.xs,
-          width: '65%',
+          width: '64%',
         })}
       >
         <Title

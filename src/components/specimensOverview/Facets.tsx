@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import {
-  Box,
   Button,
   Divider,
   RangeSlider,
+  ScrollArea,
   Text,
   TextInput,
   Title,
@@ -112,7 +112,11 @@ const Facets: FC<TProps> = ({
       ) : null}
 
       <Divider mt={10} />
-      <Box sx={{ overflowY: 'auto', width: '100%' }}>
+      <ScrollArea
+        sx={(theme) => ({
+          paddingRight: theme.spacing.xs,
+        })}
+      >
         <FacetGroup
           disabled={specimensRefetching}
           facets={facets.names}
@@ -195,7 +199,7 @@ const Facets: FC<TProps> = ({
           }
           values={params.states}
         />
-      </Box>
+      </ScrollArea>
       <Divider mb={10} />
       <Button
         leftIcon={<IconEraser />}
