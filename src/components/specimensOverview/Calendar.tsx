@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Flex, Grid, rem, Text } from '@mantine/core'
+import { Box, Flex, rem, SimpleGrid, Text } from '@mantine/core'
 import { FC } from 'react'
 import { flow, groupBy, map } from 'lodash-es'
 import dayjs from 'dayjs'
@@ -54,7 +54,10 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
   })
 
   return (
-    <Grid
+    <SimpleGrid
+      cols={7}
+      spacing={2}
+      verticalSpacing={2}
       sx={(theme) => ({
         paddingTop: theme.spacing.md,
         paddingBottom: theme.spacing.md,
@@ -63,14 +66,16 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
       })}
     >
       {specimensInDay.map((day) => (
-        <Grid.Col
-          span={2}
+        <Box
           key={day.day}
           sx={(theme) => ({
             backgroundColor: theme.colors.gray[1],
             border: `${rem(2)} solid white`,
             borderRadius: theme.radius.sm,
-            paddingTop: rem(2),
+            paddingTop: rem(4),
+            paddingLeft: rem(8),
+            paddingRight: rem(8),
+            paddingBottom: rem(8),
           })}
         >
           <Text size="sm">
@@ -148,9 +153,9 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
               return null
             })}
           </Text>
-        </Grid.Col>
+        </Box>
       ))}
-    </Grid>
+    </SimpleGrid>
   )
 }
 

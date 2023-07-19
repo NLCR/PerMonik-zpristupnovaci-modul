@@ -35,8 +35,8 @@ const useStyles = createStyles((theme) => ({
     position: 'relative',
   },
   facets: {
-    width: '20%',
-    maxWidth: rem(280),
+    // width: '20%',
+    width: rem(280),
     // color: theme.colors.dark[9],
     padding: theme.spacing.md,
     backgroundColor: 'white',
@@ -47,7 +47,7 @@ const useStyles = createStyles((theme) => ({
     flexDirection: 'column',
   },
   viewWrapper: {
-    width: '80%',
+    width: '100%',
     paddingLeft: theme.spacing.md,
     paddingRight: theme.spacing.md,
     backgroundColor: 'white',

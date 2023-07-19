@@ -53,7 +53,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     md: rem(960),
                     lg: rem(1140),
                     xl: rem(1320),
-                    xxl: rem(1600),
+                    xxl: rem(1700),
                   },
                 },
               },
