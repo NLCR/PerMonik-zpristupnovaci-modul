@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Box, Flex, rem, SimpleGrid, Text } from '@mantine/core'
 import { FC } from 'react'
 import { flow, groupBy, map } from 'lodash-es'
@@ -7,20 +6,28 @@ import { useTranslation } from 'react-i18next'
 import { modals } from '@mantine/modals'
 import { TSpecimen } from '../../@types/specimen'
 import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
-import Modal from './Modal'
+import CalendarModal from './CalendarModal'
 import { TMetaTitle } from '../../@types/metaTitle'
 
 import { useTranslatedConstants } from '../../utils/helperHooks'
+import { getFirstMondayOfMonth } from '../../utils/helperFunctions'
 
 type TProps = {
   specimens: TSpecimen[]
   metaTitle: TMetaTitle
 }
 
+type TSpecimensDay = {
+  day: string
+  isPreviousMonth: boolean
+  specimens: TSpecimen[][]
+}[]
+
 const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
   const { t } = useTranslation()
   const { calendarDate } = useSpecimensOverviewStore()
   const { mutations } = useTranslatedConstants()
+  const monday = getFirstMondayOfMonth(calendarDate)
   const dayJs = dayjs(calendarDate)
   const daysInMonth = dayJs.daysInMonth()
   const daysArray: string[] = []
@@ -35,7 +42,7 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
       map(groupedSpecimens, (value, key) => ({ day: key, specimens: value }))
   )(specimens)
 
-  const specimensInDay: { day: string; specimens: TSpecimen[][] }[] = []
+  const specimensInDay: TSpecimensDay = []
 
   daysArray.forEach((day) => {
     const found = groupedSpecimensByDay.find((group) => group.day === day)
@@ -47,11 +54,31 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
             `${obj.mutation}_${obj.publicationMark}_${obj.number}_${obj.state}`
         )
       )
-      specimensInDay.push({ day, specimens: groupedBySameAttributes })
+      specimensInDay.push({
+        day,
+        isPreviousMonth: false,
+        specimens: groupedBySameAttributes,
+      })
     } else {
-      specimensInDay.push({ day, specimens: [] })
+      specimensInDay.push({ day, isPreviousMonth: false, specimens: [] })
     }
   })
+
+  if (monday) {
+    const daysToPreviousMonth = monday.get('D') - 7
+    const startOfMonth = dayjs(calendarDate).date(1)
+    if (daysToPreviousMonth <= 0) {
+      const missingDaysOfPreviousMonth: TSpecimensDay = []
+      for (let i = daysToPreviousMonth; i <= 0; i += 1) {
+        missingDaysOfPreviousMonth.push({
+          day: startOfMonth.date(i).format('YYYY-MM-DD'),
+          isPreviousMonth: true,
+          specimens: [],
+        })
+      }
+      specimensInDay.unshift(...missingDaysOfPreviousMonth)
+    }
+  }
 
   return (
     <SimpleGrid
@@ -59,8 +86,8 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
       spacing={2}
       verticalSpacing={2}
       sx={(theme) => ({
-        paddingTop: theme.spacing.md,
-        paddingBottom: theme.spacing.md,
+        marginTop: theme.spacing.md,
+        marginBottom: theme.spacing.md,
         height: '100%',
         overflowY: 'auto',
       })}
@@ -69,7 +96,9 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
         <Box
           key={day.day}
           sx={(theme) => ({
-            backgroundColor: theme.colors.gray[1],
+            backgroundColor: day.isPreviousMonth
+              ? theme.colors.gray[4]
+              : theme.colors.gray[1],
             border: `${rem(2)} solid white`,
             borderRadius: theme.radius.sm,
             paddingTop: rem(4),
@@ -92,7 +121,11 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
                     my={2}
                     py={2}
                     px={6}
-                    bg={firstInRow.state === 'ok' ? 'green.7' : 'orange.7'}
+                    bg={
+                      row.find((s) => s.state === 'auto')
+                        ? 'orange.7'
+                        : 'green.7'
+                    }
                     sx={(theme) => ({
                       borderRadius: theme.radius.sm,
                       color: theme.colors.gray[0],
@@ -116,10 +149,10 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
                             >
                               {metaTitle.name}
                             </Text>
-                            {dayjs(day.day).format('dddd DD.MM.YYYY')}
+                            {/* {dayjs(day.day).format('dddd DD.MM.YYYY')} */}
                           </>
                         ),
-                        children: <Modal row={row} />,
+                        children: <CalendarModal row={row} day={day.day} />,
                       })
                     }}
                   >

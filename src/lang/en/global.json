@@ -6,7 +6,9 @@
   },
   "common": {
     "error_occurred_when_loading_data": "An error occurred while loading data",
-    "error_occurred_somewhere": "There is an error somewhere, please try again later"
+    "error_occurred_somewhere": "There is an error somewhere, please try again later",
+    "yes": "Yes",
+    "no": "No"
   },
   "home": {
     "header": "Homepage",
@@ -36,7 +38,15 @@
     "row_modal_title": "Overview of the day",
     "volumes": "Volumes",
     "specimens": "Specimens",
-    "digitization": "Digitization"
+    "digitization": "Digitization",
+    "volume_overview_modal_link": "Volume overview",
+    "volume_detail_link": "Detailed volume description",
+    "open": "Open",
+    "showed_month": "Showed month",
+    "help": "Help",
+    "help_desc_1": "Each line in the day is described as follows",
+    "help_desc_2": "issue number - mutation - mutation issue marks - number of copies",
+    "help_desc_3": "The line can be colored green (all specimens are fine) or orange (one of the specimens has a defect)"
   },
   "volume_overview": {
     "not_found": "This volume has not been found",
@@ -74,7 +84,16 @@
     "date": "Date",
     "missing_number": "Number missing",
     "number": "Number",
-    "attachment_number": "Attachment number"
+    "attachment_number": "Attachment number",
+    "dates": "Dates",
+    "numbers": "Numbers",
+    "damage_types_overview": "Overview of damage types",
+    "missing_numbers": "Missing numbers",
+    "state_ok": "Convenient",
+    "state_not_ok": "Damaged",
+    "physical_condition": "Physical condition",
+    "damaged_numbers": "Damaged numbers",
+    "notes": "Notes"
   },
   "table": {
     "mutations": "Mutations",

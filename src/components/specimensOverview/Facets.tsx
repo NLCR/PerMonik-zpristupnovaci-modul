@@ -126,6 +126,13 @@ const Facets: FC<TProps> = ({
         />
         <FacetGroup
           disabled={specimensRefetching}
+          facets={facets.subNames}
+          header={t('specimens_overview.sub_name')}
+          onChange={(value) => setParams({ ...params, subNames: value })}
+          values={params.subNames}
+        />
+        <FacetGroup
+          disabled={specimensRefetching}
           facets={facets.mutations.map((m) => ({
             name: m.name,
             count: m.count,

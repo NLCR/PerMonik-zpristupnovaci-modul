@@ -1,15 +1,20 @@
 import {
   Box,
+  Button,
   createStyles,
   Flex,
+  Image,
   LoadingOverlay,
   rem,
   Tabs,
+  Text,
 } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import React, { Suspense, useEffect, useState } from 'react'
-import { IconCalendarSearch, IconTableRow } from '@tabler/icons-react'
+import { IconCalendarSearch, IconHelp, IconTableRow } from '@tabler/icons-react'
+import dayjs from 'dayjs'
+import { modals } from '@mantine/modals'
 import useMetaTitleQuery from '../api/query/useMetaTitleQuery'
 import useSpecimensWithFacetsQuery from '../api/query/useSpecimensWithFacetsQuery'
 import Loader from '../components/reusableComponents/Loader'
@@ -18,6 +23,7 @@ import ShowInfoMessage from '../components/reusableComponents/ShowInfoMessage'
 import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
 import useSpecimensStartDateForCalendar from '../api/query/useSpecimensStartDateForCalendar'
 import { createDate } from '../utils/helperFunctions'
+import SpecimenDayDetailExampleImage from '../assets/images/specimen-day-detail-example.png'
 
 const Facets = React.lazy(
   () => import('../components/specimensOverview/Facets')
@@ -71,6 +77,7 @@ const SpecimensOverview = () => {
     calendarMinDate,
     setCalendarDate,
     setCalendarMinDate,
+    calendarDate,
     view,
     setView,
   } = useSpecimensOverviewStore()
@@ -127,6 +134,11 @@ const SpecimensOverview = () => {
     setCalendarDate,
   ])
 
+  let showedDate
+  if (calendarDate) {
+    showedDate = dayjs(calendarDate).format('MMMM YYYY')
+  }
+
   return (
     <Flex className={classes.flexWrapper}>
       <LoadingOverlay
@@ -172,30 +184,93 @@ const SpecimensOverview = () => {
         ) : null}
         {specimens?.specimens.length && metaTitle ? (
           <>
-            <Tabs
-              value={view}
-              onTabChange={setView}
+            <Flex
+              justify="space-between"
+              align="center"
               sx={{
-                marginTop: rem(5),
-                width: 'fit-content',
+                marginTop: rem(10),
               }}
             >
-              <Tabs.List>
-                <Tabs.Tab
-                  value="calendar"
-                  icon={<IconCalendarSearch size="0.8rem" />}
+              <Flex justify="flex-start" align="center">
+                <Tabs
+                  value={view}
+                  onTabChange={setView}
+                  sx={{
+                    width: 'fit-content',
+                  }}
                 >
-                  {t('specimens_overview.calendar')}
-                </Tabs.Tab>
-                <Tabs.Tab
-                  disabled
-                  value="table"
-                  icon={<IconTableRow size="0.8rem" />}
+                  <Tabs.List>
+                    <Tabs.Tab
+                      value="calendar"
+                      icon={<IconCalendarSearch size="0.8rem" />}
+                    >
+                      {t('specimens_overview.calendar')}
+                    </Tabs.Tab>
+                    <Tabs.Tab
+                      // disabled
+                      value="table"
+                      icon={<IconTableRow size="0.8rem" />}
+                    >
+                      {t('specimens_overview.table')}
+                    </Tabs.Tab>
+                  </Tabs.List>
+                </Tabs>
+                <Text
+                  sx={(theme) => ({
+                    marginLeft: rem(20),
+                    fontSize: theme.fontSizes.sm,
+                    color: theme.colors.blue[9],
+                    fontWeight: 'bolder',
+                  })}
                 >
-                  {t('specimens_overview.table')}
-                </Tabs.Tab>
-              </Tabs.List>
-            </Tabs>
+                  {showedDate && view === 'calendar'
+                    ? `${t('specimens_overview.showed_month')}: ${showedDate}`
+                    : null}
+                </Text>
+              </Flex>
+              {view === 'calendar' ? (
+                <Button
+                  leftIcon={<IconHelp />}
+                  onClick={() => {
+                    modals.open({
+                      centered: true,
+                      size: 'auto',
+                      title: (
+                        <Text
+                          sx={(theme) => ({
+                            color: theme.colors.blue[9],
+                            fontSize: theme.fontSizes.xl,
+                            fontWeight: 'bold',
+                          })}
+                        >
+                          {t('specimens_overview.help')}
+                        </Text>
+                      ),
+                      children: (
+                        <>
+                          <Text mb={5} fw="bolder">
+                            {t('specimens_overview.help_desc_1')}
+                          </Text>
+                          <Text mb={5}>
+                            {t('specimens_overview.help_desc_2')}
+                          </Text>
+                          <Image
+                            src={SpecimenDayDetailExampleImage}
+                            width={200}
+                            mb={20}
+                          />
+                          <Text size="sm">
+                            {t('specimens_overview.help_desc_3')}
+                          </Text>
+                        </>
+                      ),
+                    })
+                  }}
+                >
+                  {t('specimens_overview.help')}
+                </Button>
+              ) : null}
+            </Flex>
             <Suspense fallback={<Loader />}>
               {view === 'calendar' ? (
                 <Calendar

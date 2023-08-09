@@ -6,6 +6,7 @@ export type TParams = {
   dateStart: number
   dateEnd: number
   names: string[]
+  subNames: string[]
   mutations: string[]
   publications: string[]
   publicationMarks: string[]
@@ -17,6 +18,7 @@ export const initialParams: TParams = {
   dateStart: 0,
   dateEnd: 0,
   names: [],
+  subNames: [],
   mutations: [],
   publications: [],
   publicationMarks: [],

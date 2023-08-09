@@ -49,7 +49,21 @@ export const formatDateWithDashesToString = (date: string) => {
 /**
  Function accepts Date object
  * */
-export const formatDareObjectToStringOfNumbers = (date: Date) => {
+export const formatDateObjectToStringOfNumbers = (date: Date) => {
   const newDate = dayjs(date)
   return `${newDate.format('YYYYMMDD')}`
+}
+
+export const getFirstMondayOfMonth = (date?: Date) => {
+  if (!date) return undefined
+  const year = date.getFullYear()
+  const month = date.getMonth()
+
+  // Find the first Monday in the month
+  let firstMonday = dayjs().year(year).month(month).date(1)
+  while (firstMonday.day() !== 1) {
+    firstMonday = firstMonday.add(1, 'day')
+  }
+
+  return firstMonday
 }

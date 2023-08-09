@@ -1,6 +1,10 @@
 import { mutationsFromBE, ownersFromBE } from '../utils/constants'
 import { TMetaTitle } from './metaTitle'
-import { TSpecimen, TSpecimensPublicationDays } from './specimen'
+import {
+  TSpecimen,
+  TSpecimenFacet,
+  TSpecimensPublicationDays,
+} from './specimen'
 
 export interface TVolumeDetail {
   volume: TVolume
@@ -48,3 +52,21 @@ type TPeriodicityDays =
   | 'Friday'
   | 'Saturday'
   | 'Sunday'
+
+export interface TVolumeOverviewStats {
+  metaTitleName: string
+  owner: typeof ownersFromBE
+  signature: string
+  barCode: string
+  publicationDayMin: string | null
+  publicationDayMax: string | null
+  numberMin: string | null
+  numberMax: string | null
+  pagesCount: string | null
+  mutations: TSpecimenFacet[]
+  publicationMark: TSpecimenFacet[]
+  publication: TSpecimenFacet[]
+  states: TSpecimenFacet[]
+  publicationDayRanges: TSpecimenFacet[]
+  specimens: TSpecimen[]
+}

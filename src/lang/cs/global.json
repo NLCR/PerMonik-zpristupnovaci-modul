@@ -6,7 +6,9 @@
   },
   "common": {
     "error_occurred_when_loading_data": "Nastala chyba při načítání dat",
-    "error_occurred_somewhere": "Někde nastala chyba, zkuste to prosím znovu později"
+    "error_occurred_somewhere": "Někde nastala chyba, zkuste to prosím znovu později",
+    "yes": "Ano",
+    "no": "Ne"
   },
   "home": {
     "header": "Domovská stránka",
@@ -36,7 +38,15 @@
     "row_modal_title": "Přehled dne",
     "volumes": "Svazky",
     "specimens": "Exempláře",
-    "digitization": "Digitalizát"
+    "digitization": "Digitalizát",
+    "volume_overview_modal_link": "Přehled svazku",
+    "volume_detail_link": "Detailní popis svazku",
+    "open": "Otevřít",
+    "showed_month": "Zobrazený měsíc",
+    "help": "Nápověda",
+    "help_desc_1": "Každý řádek ve dni je popsaný následujícím způsobem",
+    "help_desc_2": "číslo vydání - mutace - značky mutačních vydání - počet exemplářů",
+    "help_desc_3": "Řádek může být zbarvený zeleně (všechny exempláře jsou v pořádku) nebo oranžově (některý z exemplářů má vadu)"
   },
   "volume_overview": {
     "not_found": "Tento svazek nebyl nalezen",
@@ -74,7 +84,17 @@
     "date": "Datum",
     "missing_number": "Číslo chybí",
     "number": "Číslo",
-    "attachment_number": "Číslo přílohy"
+    "attachment_number": "Číslo přílohy",
+    "dates": "Data",
+    "numbers": "Čísla",
+    "verified": "Ověřeno",
+    "damage_types_overview": "Přehled typů poškození",
+    "missing_numbers": "Chybějící čísla",
+    "state_ok": "Vyhovující",
+    "state_not_ok": "Poškozený",
+    "physical_condition": "Fyzický stav",
+    "damaged_numbers": "Poškozená čísla",
+    "notes": "Poznámky"
   },
   "table": {
     "mutations": "Mutace",

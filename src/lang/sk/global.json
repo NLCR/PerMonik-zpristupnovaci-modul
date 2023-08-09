@@ -6,7 +6,9 @@
   },
   "common": {
     "error_occurred_when_loading_data": "Pri načítavaní údajov došlo k chybe",
-    "error_occurred_somewhere": "Niekde sa vyskytla chyba, skúste to prosím neskôr"
+    "error_occurred_somewhere": "Niekde sa vyskytla chyba, skúste to prosím neskôr",
+    "yes": "Áno",
+    "no": "Nie"
   },
   "home": {
     "header": "Domovská stránka",
@@ -36,7 +38,15 @@
     "row_modal_title": "Prehľad dňa",
     "volumes": "Zväzky",
     "specimens": "Vzorky",
-    "digitization": "Digitalizácia"
+    "digitization": "Digitalizácia",
+    "volume_overview_modal_link": "Prehľad zväzku",
+    "volume_detail_link": "Detailný popis zväzku",
+    "open": "Otvoriť",
+    "showed_month": "Zobrazovaný mesiac",
+    "help": "Pomocník",
+    "help_desc_1": "Každý riadok v dni je popísaný nasledujúcim spôsobom",
+    "help_desc_2": "číslo vydania - mutácia - značky mutačných vydaní - počet exemplárov",
+    "help_desc_3": "Riadok môže byť sfarbený na zeleno (všetky exempláre sú v poriadku) alebo oranžovo (niektorý z exemplárov má vadu)"
   },
   "volume_overview": {
     "not_found": "Tento zväzok nebol nájdený",
@@ -74,7 +84,16 @@
     "date": "Dátum",
     "missing_number": "Číslo chýba",
     "number": "Číslo",
-    "attachment_number": "Číslo prílohy"
+    "attachment_number": "Číslo prílohy",
+    "dates": "Data",
+    "numbers": "Čísla",
+    "damage_types_overview": "Prehľad typov poškodení",
+    "missing_numbers": "Chýbajúce čísla",
+    "state_ok": "Vyhovujúce",
+    "state_not_ok": "Poškodený",
+    "physical_condition": "Fyzický stav",
+    "damaged_numbers": "Poškodené čísla",
+    "notes": "Poznámky"
   },
   "table": {
     "mutations": "Mutácie",

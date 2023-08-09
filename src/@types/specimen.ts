@@ -38,13 +38,14 @@ export interface TSpecimensPublicationDays {
   publicationDayMax: string | null
 }
 
-interface TSpecimenFacet {
-  name: string
+export interface TSpecimenFacet {
+  name: (typeof states)[number]
   count: number
 }
 
 export interface TSpecimensFacets {
   names: TSpecimenFacet[]
+  subNames: TSpecimenFacet[]
   mutations: TSpecimenFacet[]
   publications: TSpecimenFacet[]
   publicationMarks: TSpecimenFacet[]
