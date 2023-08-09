@@ -95,7 +95,7 @@ const CalendarModal: FC<TProps> = ({ row, day }) => {
                   onClick={() => {
                     modals.open({
                       centered: true,
-                      size: 'auto',
+                      size: 'xl',
                       title: (
                         <Text
                           sx={(theme) => ({
@@ -104,7 +104,8 @@ const CalendarModal: FC<TProps> = ({ row, day }) => {
                             fontWeight: 'bold',
                           })}
                         >
-                          {t('specimens_overview.volume_overview_modal_link')}
+                          {t('specimens_overview.volume_overview_modal_link')}{' '}
+                          {s.barCode}
                         </Text>
                       ),
                       children: (
