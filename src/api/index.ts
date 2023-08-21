@@ -4,6 +4,7 @@ import { QueryClient } from '@tanstack/react-query'
 // import i18next from '../i18next'
 // import Store from '../utils/localstorage'
 // import { AUTH_TOKEN, GRANT_TOKEN, REFRESH_TOKEN } from '../utils/constants'
+const { MODE } = import.meta.env
 
 // Setup queryClient
 export const queryClient = new QueryClient({
@@ -75,5 +76,5 @@ export const api = ({
   ...base
 }: Options = {}) =>
   baseApi(base).extend({
-    prefixUrl: '/api',
+    prefixUrl: MODE === 'development' ? '/api' : '/api/permonik',
   })

@@ -17,6 +17,11 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["vite.config.ts", "./.eslintrc.cjs", "src"],
+  "include": [
+    "vite.config.ts",
+    "./.eslintrc.cjs",
+    "src",
+    "node_modules/vitest/globals.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
