@@ -40,6 +40,6 @@ module.exports = {
         allowAsProps: true,
       },
     ],
-    "jsx-a11y/control-has-associated-label": 1
+    'jsx-a11y/control-has-associated-label': 1,
   },
 }

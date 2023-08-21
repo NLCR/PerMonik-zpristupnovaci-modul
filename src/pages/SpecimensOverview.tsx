@@ -107,7 +107,7 @@ const SpecimensOverview = () => {
   }, [resetAll])
 
   useEffect(() => {
-    let timer: NodeJS.Timer
+    let timer: NodeJS.Timeout
 
     if (specimensRefetching) {
       setShowOverlay(true)
