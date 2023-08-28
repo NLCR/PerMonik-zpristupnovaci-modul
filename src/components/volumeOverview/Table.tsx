@@ -2,13 +2,15 @@
 import {
   MantineReactTable,
   MRT_ColumnDef,
+  // MRT_RowSelectionState,
   useMantineReactTable,
 } from 'mantine-react-table'
-import { Checkbox } from '@mantine/core'
+// import { Checkbox } from '@mantine/core'
 import { FC, memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
+import { IconCheck } from '@tabler/icons-react'
 import { TSpecimen } from '../../@types/specimen'
-import { formatDateWithDashesToString } from '../../utils/helperFunctions'
 import { TVolumeDetail } from '../../@types/volume'
 import {
   useMantineTableLang,
@@ -23,6 +25,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
   const { publications, mutations } = useTranslatedConstants()
   const { mantineTableLocale } = useMantineTableLang()
   const { t } = useTranslation()
+  // const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({})
 
   const columns = useMemo<MRT_ColumnDef<TSpecimen>[]>(
     () => [
@@ -31,28 +34,38 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         header: t('volume_overview.date'),
         maxSize: 110,
         Cell: ({ row }) =>
-          formatDateWithDashesToString(row.original.publicationDate),
+          dayjs(row.original.publicationDate).format('dd DD.MM.YYYY'),
       },
       {
         accessorKey: 'numExists',
         header: t('volume_overview.is_in_volume'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.numExists} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.numExists ? <IconCheck size="1rem" /> : null,
+        // <Checkbox checked={row.original.numExists} readOnly />
       },
       {
         accessorKey: 'numMissing',
         header: t('volume_overview.missing_number'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.numMissing} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.numMissing ? <IconCheck size="1rem" /> : null,
+        // <Checkbox checked={row.original.numMissing} readOnly />
       },
       {
         accessorKey: 'number',
         header: t('volume_overview.number'),
         maxSize: 60,
+        Cell: ({ row }) =>
+          row.original.numExists && !row.original.isAttachment
+            ? row.original.number
+            : null,
       },
       {
         accessorKey: 'number',
@@ -102,84 +115,129 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         id: 'reviewed',
         header: t('facet_states.OK'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.states?.includes('OK')} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.states?.includes('OK') ? (
+            <IconCheck size="1rem" />
+          ) : null,
+        // <Checkbox checked={row.original.states?.includes('OK')} readOnly />
       },
       {
         accessorKey: 'states',
         id: 'damaged_pages',
         header: t('facet_states.PP'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.states?.includes('PP')} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.states?.includes('PP') ? (
+            <IconCheck size="1rem" />
+          ) : null,
+        // <Checkbox checked={row.original.states?.includes('PP')} readOnly />
       },
       {
         accessorKey: 'states',
         id: 'degradation',
         header: t('facet_states.Deg'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.states?.includes('Deg')} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.states?.includes('Deg') ? (
+            <IconCheck size="1rem" />
+          ) : null,
+        // <Checkbox checked={row.original.states?.includes('Deg')} readOnly />
       },
       {
         accessorKey: 'states',
         id: 'missing_pages',
         header: t('facet_states.ChS'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.states?.includes('ChS')} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.states?.includes('ChS') ? (
+            <IconCheck size="1rem" />
+          ) : null,
+        // <Checkbox checked={row.original.states?.includes('ChS')} readOnly />
       },
       {
         accessorKey: 'states',
         id: 'bad_pagination',
         header: t('facet_states.ChPag'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.states?.includes('ChPag')} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.states?.includes('ChPag') ? (
+            <IconCheck size="1rem" />
+          ) : null,
+        // <Checkbox checked={row.original.states?.includes('ChPag')} readOnly />
       },
       {
         accessorKey: 'states',
         id: 'bad_date',
         header: t('facet_states.ChDatum'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox
-            checked={row.original.states?.includes('ChDatum')}
-            readOnly
-          />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.states?.includes('ChDatum') ? (
+            <IconCheck size="1rem" />
+          ) : null,
+        // <Checkbox
+        //   checked={row.original.states?.includes('ChDatum')}
+        //   readOnly
+        // />
       },
       {
         accessorKey: 'states',
         id: 'bad_numbering',
         header: t('facet_states.ChCis'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.states?.includes('ChCis')} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.states?.includes('ChCis') ? (
+            <IconCheck size="1rem" />
+          ) : null,
+        // <Checkbox checked={row.original.states?.includes('ChCis')} readOnly />
       },
       {
         accessorKey: 'states',
         id: 'bad_bound',
         header: t('facet_states.ChSv'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.states?.includes('ChSv')} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.states?.includes('ChSv') ? (
+            <IconCheck size="1rem" />
+          ) : null,
+        // <Checkbox checked={row.original.states?.includes('ChSv')} readOnly />
       },
       {
         accessorKey: 'states',
         id: 'cenzured',
         header: t('facet_states.Cz'),
         maxSize: 110,
-        Cell: ({ row }) => (
-          <Checkbox checked={row.original.states?.includes('Cz')} readOnly />
-        ),
+        mantineTableBodyCellProps: {
+          align: 'center',
+        },
+        Cell: ({ row }) =>
+          row.original.states?.includes('Cz') ? (
+            <IconCheck size="1rem" />
+          ) : null,
+        // <Checkbox checked={row.original.states?.includes('Cz')} readOnly />
       },
       {
         accessorKey: 'note',
@@ -198,9 +256,23 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
     enableFilters: false,
     enableSorting: false,
     enablePagination: false,
+    // enableRowSelection: true,
+    // onRowSelectionChange: setRowSelection,
     initialState: {
       density: 'xs',
     },
+    // state: { rowSelection },
+    // mantineTableBodyRowProps: ({ row }) => ({
+    //   onClick: () =>
+    //     setRowSelection((prev) => ({
+    //       ...prev,
+    //       [row.id]: !prev[row.id],
+    //     })),
+    //   selected: rowSelection[row.id],
+    //   sx: {
+    //     cursor: 'pointer',
+    //   },
+    // }),
     mantineTableHeadRowProps: {
       sx: (theme) => ({
         boxShadow: `${theme.shadows.xs} !important`,

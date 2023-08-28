@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Box,
   Button,
   createStyles,
@@ -12,7 +13,13 @@ import {
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import React, { Suspense, useEffect, useState } from 'react'
-import { IconCalendarSearch, IconHelp, IconTableRow } from '@tabler/icons-react'
+import {
+  IconCalendarSearch,
+  IconChevronLeft,
+  IconChevronRight,
+  IconHelp,
+  IconTableRow,
+} from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { modals } from '@mantine/modals'
 import useMetaTitleQuery from '../api/query/useMetaTitleQuery'
@@ -215,18 +222,75 @@ const SpecimensOverview = () => {
                     </Tabs.Tab>
                   </Tabs.List>
                 </Tabs>
-                <Text
+                <Flex
                   sx={(theme) => ({
                     marginLeft: rem(20),
                     fontSize: theme.fontSizes.sm,
                     color: theme.colors.blue[9],
                     fontWeight: 'bolder',
+                    alignItems: 'center',
                   })}
                 >
-                  {showedDate && view === 'calendar'
-                    ? `${t('specimens_overview.showed_month')}: ${showedDate}`
-                    : null}
-                </Text>
+                  {showedDate && view === 'calendar' ? (
+                    <>
+                      <Text
+                        sx={{
+                          marginRight: rem(20),
+                        }}
+                      >
+                        {t('specimens_overview.showed_month')}:{' '}
+                      </Text>
+                      <Flex
+                        sx={{
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          width: rem(220),
+                        }}
+                      >
+                        <ActionIcon
+                          variant="outline"
+                          sx={{
+                            marginTop: rem(2),
+                          }}
+                          disabled={
+                            dayjs(calendarDate).diff(
+                              dayjs(calendarMinDate),
+                              'month'
+                            ) <= 0
+                          }
+                          onClick={() => {
+                            setCalendarDate(
+                              dayjs(calendarDate).subtract(1, 'month').toDate()
+                            )
+                          }}
+                        >
+                          <IconChevronLeft size="1rem" />
+                        </ActionIcon>{' '}
+                        <Text
+                          sx={{
+                            marginLeft: rem(10),
+                            marginRight: rem(10),
+                          }}
+                        >
+                          {showedDate}
+                        </Text>
+                        <ActionIcon
+                          variant="outline"
+                          sx={{
+                            marginTop: rem(2),
+                          }}
+                          onClick={() => {
+                            setCalendarDate(
+                              dayjs(calendarDate).add(1, 'month').toDate()
+                            )
+                          }}
+                        >
+                          <IconChevronRight size="1rem" />
+                        </ActionIcon>
+                      </Flex>
+                    </>
+                  ) : null}
+                </Flex>
               </Flex>
               {view === 'calendar' ? (
                 <Button
@@ -259,9 +323,9 @@ const SpecimensOverview = () => {
                             width={200}
                             mb={20}
                           />
-                          <Text size="sm">
-                            {t('specimens_overview.help_desc_3')}
-                          </Text>
+                          {/* <Text size="sm"> */}
+                          {/*  {t('specimens_overview.help_desc_3')} */}
+                          {/* </Text> */}
                         </>
                       ),
                     })

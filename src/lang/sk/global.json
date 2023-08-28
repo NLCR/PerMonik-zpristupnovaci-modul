@@ -10,6 +10,9 @@
     "yes": "Áno",
     "no": "Nie"
   },
+  "helmet": {
+    "title": "Evidencia periodík - výskumná aplikácia"
+  },
   "home": {
     "header": "Domovská stránka",
     "title": "Evidencia periodík",
@@ -93,7 +96,8 @@
     "state_not_ok": "Poškodený",
     "physical_condition": "Fyzický stav",
     "damaged_numbers": "Poškodené čísla",
-    "notes": "Poznámky"
+    "notes": "Poznámky",
+    "volume_information": "Údaje o zväzku"
   },
   "table": {
     "mutations": "Mutácie",

@@ -10,6 +10,9 @@
     "yes": "Yes",
     "no": "No"
   },
+  "helmet": {
+    "title": "Evidence of periodicals - research application"
+  },
   "home": {
     "header": "Homepage",
     "title": "Evidence of periodicals",
@@ -93,7 +96,8 @@
     "state_not_ok": "Damaged",
     "physical_condition": "Physical condition",
     "damaged_numbers": "Damaged numbers",
-    "notes": "Notes"
+    "notes": "Notes",
+    "volume_information": "Volume information"
   },
   "table": {
     "mutations": "Mutations",

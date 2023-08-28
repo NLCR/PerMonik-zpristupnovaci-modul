@@ -45,7 +45,7 @@ if (!i18next.isInitialized) {
     },
     defaultNS,
     resources,
-    debug: true,
+    debug: false,
     detection: {
       order: ['path', 'cookie', 'localStorage', 'sessionStorage', 'navigator'],
     },

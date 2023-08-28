@@ -10,6 +10,9 @@
     "yes": "Ano",
     "no": "Ne"
   },
+  "helmet": {
+    "title": "Evidence periodik – badatelská aplikace"
+  },
   "home": {
     "header": "Domovská stránka",
     "title": "Evidence periodik",
@@ -44,7 +47,7 @@
     "open": "Otevřít",
     "showed_month": "Zobrazený měsíc",
     "help": "Nápověda",
-    "help_desc_1": "Každý řádek ve dni je popsaný následujícím způsobem",
+    "help_desc_1": "Každý řádek ve dni je popsán následujícím způsobem",
     "help_desc_2": "číslo vydání - mutace - značky mutačních vydání - počet exemplářů",
     "help_desc_3": "Řádek může být zbarvený zeleně (všechny exempláře jsou v pořádku) nebo oranžově (některý z exemplářů má vadu)"
   },
@@ -94,7 +97,8 @@
     "state_not_ok": "Poškozený",
     "physical_condition": "Fyzický stav",
     "damaged_numbers": "Poškozená čísla",
-    "notes": "Poznámky"
+    "notes": "Poznámky",
+    "volume_information": "Údaje o svazku"
   },
   "table": {
     "mutations": "Mutace",

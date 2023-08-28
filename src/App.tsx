@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { HelmetProvider } from 'react-helmet-async'
+import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter } from 'react-router-dom'
 import { Container, createStyles, rem } from '@mantine/core'
 import { DatesProvider } from '@mantine/dates'
@@ -59,7 +59,7 @@ const App: FC = () => {
 }
 
 export const WrappedApp = () => {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   dayjs.locale(i18n.resolvedLanguage)
 
@@ -68,6 +68,9 @@ export const WrappedApp = () => {
       <ModalsProvider>
         <HelmetProvider>
           <DatesProvider settings={{ locale: i18n.resolvedLanguage }}>
+            <Helmet>
+              <title>{t('helmet.title')}</title>
+            </Helmet>
             <ScrollToTop />
             <App />
           </DatesProvider>

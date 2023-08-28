@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
-  Checkbox,
+  // Checkbox,
   createStyles,
   Flex,
   rem,
@@ -26,7 +26,6 @@ const useStyles = createStyles((theme) => ({
   borderBottomNone: {
     borderBottom: 'none !important',
   },
-  verticalText: { writingMode: 'vertical-lr' },
   header: {
     position: 'sticky',
     top: 0,
@@ -56,10 +55,11 @@ const VolumeOverview = () => {
   const { classes, cx } = useStyles()
   const { volumeId } = useParams()
   const { t } = useTranslation()
-  const { publications, mutations } = useTranslatedConstants()
+  // const { publications, mutations } = useTranslatedConstants()
+  const { mutations } = useTranslatedConstants()
   const [showTable, setShowTable] = useState(false)
   const [inputDataScrolled, setInputDataScrolled] = useState(false)
-  const [dailyReleasesScrolled, setDailyReleasesScrolled] = useState(false)
+  // const [dailyReleasesScrolled, setDailyReleasesScrolled] = useState(false)
   const {
     data: volume,
     isLoading: volumeLoading,
@@ -87,7 +87,8 @@ const VolumeOverview = () => {
       <Flex
         direction="column"
         sx={() => ({
-          width: '35%',
+          // width: '35%',
+          width: '23%',
           maxHeight: '80vh',
           justifyContent: 'space-between',
         })}
@@ -95,7 +96,8 @@ const VolumeOverview = () => {
         <Flex
           direction="column"
           sx={(theme) => ({
-            maxHeight: '49%',
+            // maxHeight: '49%',
+            height: '100%',
             padding: theme.spacing.md,
             backgroundColor: 'white',
             borderRadius: theme.spacing.xs,
@@ -109,7 +111,7 @@ const VolumeOverview = () => {
               color: theme.colors.blue[9],
             })}
           >
-            {t('volume_overview.input_data')}
+            {t('volume_overview.volume_information')}
           </Title>
           <ScrollArea
             onScrollPositionChange={({ y }) => setInputDataScrolled(y !== 0)}
@@ -194,71 +196,70 @@ const VolumeOverview = () => {
               </tbody>
             </Table>
           </ScrollArea>
-          {/* </Flex> */}
         </Flex>
-        <Flex
-          direction="column"
-          sx={(theme) => ({
-            maxHeight: '49%',
-            padding: theme.spacing.md,
-            backgroundColor: 'white',
-            borderRadius: theme.spacing.xs,
-            boxShadow: theme.shadows.xs,
-            // maxHeight: '400px',
-          })}
-        >
-          <Title
-            order={5}
-            sx={(theme) => ({
-              marginBottom: theme.spacing.xs,
-              color: theme.colors.blue[9],
-            })}
-          >
-            {t('volume_overview.daily_releases')}
-          </Title>
-          <ScrollArea
-            onScrollPositionChange={({ y }) =>
-              setDailyReleasesScrolled(y !== 0)
-            }
-          >
-            <Table verticalSpacing="xs" fontSize="xs">
-              <thead
-                className={cx(classes.header, {
-                  [classes.scrolled]: dailyReleasesScrolled,
-                })}
-              >
-                <tr>
-                  <th>{t('volume_overview.releasing')}</th>
-                  <th>{t('volume_overview.is_in_volume')}</th>
-                  <th>{t('volume_overview.publication')}</th>
-                  <th>{t('volume_overview.pages_count')}</th>
-                  <th>{t('volume_overview.name')}</th>
-                  <th>{t('volume_overview.sub_name')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {volume.volume.periodicity.map((p) => (
-                  <tr key={p.day}>
-                    <td>{t(`volume_overview.days.${p.day}`)}</td>
-                    <td>
-                      <Checkbox checked={p.active} readOnly />
-                    </td>
-                    <td>
-                      {
-                        publications.find(
-                          (pb) => pb.id === Number(p.publication)
-                        )?.name
-                      }
-                    </td>
-                    <td>{p.pagesCount}</td>
-                    <td>{p.name}</td>
-                    <td>{p.subName}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </ScrollArea>
-        </Flex>
+        {/* <Flex */}
+        {/*  direction="column" */}
+        {/*  sx={(theme) => ({ */}
+        {/*    maxHeight: '49%', */}
+        {/*    padding: theme.spacing.md, */}
+        {/*    backgroundColor: 'white', */}
+        {/*    borderRadius: theme.spacing.xs, */}
+        {/*    boxShadow: theme.shadows.xs, */}
+        {/*    // maxHeight: '400px', */}
+        {/*  })} */}
+        {/* > */}
+        {/*  <Title */}
+        {/*    order={5} */}
+        {/*    sx={(theme) => ({ */}
+        {/*      marginBottom: theme.spacing.xs, */}
+        {/*      color: theme.colors.blue[9], */}
+        {/*    })} */}
+        {/*  > */}
+        {/*    {t('volume_overview.daily_releases')} */}
+        {/*  </Title> */}
+        {/*  <ScrollArea */}
+        {/*    onScrollPositionChange={({ y }) => */}
+        {/*      setDailyReleasesScrolled(y !== 0) */}
+        {/*    } */}
+        {/*  > */}
+        {/*    <Table verticalSpacing="xs" fontSize="xs"> */}
+        {/*      <thead */}
+        {/*        className={cx(classes.header, { */}
+        {/*          [classes.scrolled]: dailyReleasesScrolled, */}
+        {/*        })} */}
+        {/*      > */}
+        {/*        <tr> */}
+        {/*          <th>{t('volume_overview.releasing')}</th> */}
+        {/*          <th>{t('volume_overview.is_in_volume')}</th> */}
+        {/*          <th>{t('volume_overview.publication')}</th> */}
+        {/*          <th>{t('volume_overview.pages_count')}</th> */}
+        {/*          <th>{t('volume_overview.name')}</th> */}
+        {/*          <th>{t('volume_overview.sub_name')}</th> */}
+        {/*        </tr> */}
+        {/*      </thead> */}
+        {/*      <tbody> */}
+        {/*        {volume.volume.periodicity.map((p) => ( */}
+        {/*          <tr key={p.day}> */}
+        {/*            <td>{t(`volume_overview.days.${p.day}`)}</td> */}
+        {/*            <td> */}
+        {/*              <Checkbox checked={p.active} readOnly /> */}
+        {/*            </td> */}
+        {/*            <td> */}
+        {/*              { */}
+        {/*                publications.find( */}
+        {/*                  (pb) => pb.id === Number(p.publication) */}
+        {/*                )?.name */}
+        {/*              } */}
+        {/*            </td> */}
+        {/*            <td>{p.pagesCount}</td> */}
+        {/*            <td>{p.name}</td> */}
+        {/*            <td>{p.subName}</td> */}
+        {/*          </tr> */}
+        {/*        ))} */}
+        {/*      </tbody> */}
+        {/*    </Table> */}
+        {/*  </ScrollArea> */}
+        {/* </Flex> */}
       </Flex>
 
       <Flex
@@ -270,7 +271,8 @@ const VolumeOverview = () => {
           backgroundColor: 'white',
           borderRadius: theme.spacing.xs,
           boxShadow: theme.shadows.xs,
-          width: '64%',
+          // width: '64%',
+          width: '76%',
         })}
       >
         <Title

@@ -121,11 +121,12 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
                     my={2}
                     py={2}
                     px={6}
-                    bg={
-                      row.find((s) => s.state === 'auto')
-                        ? 'orange.7'
-                        : 'green.7'
-                    }
+                    // bg={
+                    //   row.find((s) => s.state === 'auto')
+                    //     ? 'orange.7'
+                    //     : 'green.7'
+                    // }
+                    bg="gray.8"
                     sx={(theme) => ({
                       borderRadius: theme.radius.sm,
                       color: theme.colors.gray[0],
@@ -176,6 +177,7 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
                         height: rem(16),
                         alignItems: 'center',
                         justifyContent: 'center',
+                        flexShrink: 0,
                       })}
                     >
                       {row.length}
