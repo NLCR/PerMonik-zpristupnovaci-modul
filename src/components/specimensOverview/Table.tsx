@@ -11,10 +11,11 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { IconFileSymlink } from '@tabler/icons-react'
+import dayjs from 'dayjs'
 import { owners, states } from '../../utils/constants'
 import i18next from '../../i18next'
 import { TSpecimen } from '../../@types/specimen'
-import { formatDateWithDashesToString } from '../../utils/helperFunctions'
+// import { formatDateWithDashesToString } from '../../utils/helperFunctions'
 import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
 import {
   useMantineTableLang,
@@ -178,7 +179,7 @@ const Table: FC<TProps> = memo(function Table({
         accessorKey: 'publicationDate',
         header: t('table.publication_date'),
         Cell: ({ cell }) =>
-          formatDateWithDashesToString(cell.getValue<string>()),
+          dayjs(cell.getValue<string>()).format('dd DD.MM.YYYY'),
       },
       {
         accessorKey: 'name',
