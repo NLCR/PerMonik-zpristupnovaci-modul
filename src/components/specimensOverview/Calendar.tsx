@@ -1,6 +1,6 @@
 import { Box, Flex, rem, SimpleGrid, Text } from '@mantine/core'
 import { FC } from 'react'
-import { flow, groupBy, map } from 'lodash-es'
+import { flow, groupBy, map, sortBy } from 'lodash-es'
 import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import { modals } from '@mantine/modals'
@@ -48,10 +48,13 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
     const found = groupedSpecimensByDay.find((group) => group.day === day)
     if (found) {
       const groupedBySameAttributes = Object.values(
-        groupBy(
-          found.specimens,
-          (obj) =>
-            `${obj.mutation}_${obj.publicationMark}_${obj.number}_${obj.state}`
+        sortBy(
+          groupBy(
+            found.specimens,
+            (obj) =>
+              `${obj.mutation}_${obj.publicationMark}_${obj.number}_${obj.state}`
+          ),
+          (obj) => obj.map((o) => `${o.mutation}_${o.publicationMark}`)
         )
       )
       specimensInDay.push({
