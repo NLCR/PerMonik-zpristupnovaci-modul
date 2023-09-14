@@ -8,8 +8,6 @@ import dayjs from 'dayjs'
 import { ModalsProvider } from '@mantine/modals'
 import RoutesManager from './components/RoutesManager'
 import ScrollToTop from './components/ScrollToTop'
-import { useInitialLogin } from './utils/auth'
-import Loader from './components/reusableComponents/Loader'
 import Header from './components/Header'
 import 'dayjs/locale/cs'
 import 'dayjs/locale/sk'
@@ -27,17 +25,6 @@ const useStyles = createStyles((theme) => ({
 // App without react-router, useful for testing
 const App: FC = () => {
   const { classes } = useStyles()
-  const { isLoading } = useInitialLogin()
-
-  if (isLoading) {
-    return (
-      <div className={classes.wrapper}>
-        <Container>
-          <Loader />
-        </Container>
-      </div>
-    )
-  }
 
   return (
     <>
