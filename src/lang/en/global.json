@@ -24,7 +24,7 @@
   },
   "specimens_overview": {
     "meta_title_not_found": "This metatitle has not been found",
-    "specimens_not_found": "No specimens have been found",
+    "specimens_not_found": "No results can be displayed for this search. Please edit the search parameters",
     "date": "Date",
     "volume": "Volume",
     "name": "Title on the front page",
@@ -101,11 +101,11 @@
   },
   "table": {
     "mutations": "Mutations",
-    "publication_date": "Publication date",
+    "publication_date": "Pub. date",
     "name": "Name",
     "publication": "Coming out",
     "number": "Number",
-    "pages_count": "Pages count",
+    "pages_count": "Pg. count",
     "owners": "Owners",
     "basic_info": "Basic info"
   },

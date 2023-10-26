@@ -1,11 +1,10 @@
 import { Box, createStyles, SimpleGrid, Text, Title } from '@mantine/core'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import dayjs from 'dayjs'
 import useMetaTitlesWithStatsQuery from '../api/query/useMetaTitlesWithStatsQuery'
 import Loader from '../components/reusableComponents/Loader'
 import ShowError from '../components/reusableComponents/ShowError'
-import { formatDateToString } from '../utils/helperFunctions'
-// import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -28,7 +27,6 @@ const Home = () => {
   const { classes } = useStyles()
   const { t, i18n } = useTranslation()
   const { data, isLoading, isError } = useMetaTitlesWithStatsQuery()
-  // const { resetAll } = useSpecimensOverviewStore()
 
   return (
     <Box sx={{ textAlign: 'center' }}>
@@ -53,8 +51,11 @@ const Home = () => {
               {mt.specimens.publicationDayMin &&
               mt.specimens.publicationDayMax ? (
                 <Text fz="xs" color="dimmed">
-                  {formatDateToString(mt.specimens.publicationDayMin)} -{' '}
-                  {formatDateToString(mt.specimens.publicationDayMax)}
+                  {`${dayjs(mt.specimens.publicationDayMin).format(
+                    'DD. MMMM YYYY'
+                  )} - ${dayjs(mt.specimens.publicationDayMax).format(
+                    'DD. MMMM YYYY'
+                  )}`}
                 </Text>
               ) : null}
               <SimpleGrid cols={2} mt={20}>

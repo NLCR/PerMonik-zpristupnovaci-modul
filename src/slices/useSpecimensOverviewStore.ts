@@ -31,7 +31,7 @@ interface TVariablesState {
   pagination: MRT_PaginationState
   volumeInput: string
   view: 'calendar' | 'table'
-  calendarDate: Date | undefined
+  calendarDate: Date | null
   calendarMinDate: Date | undefined
 }
 
@@ -41,7 +41,7 @@ interface TState extends TVariablesState {
   setPagination: (value: PaginationState) => void
   resetAll: () => void
   setView: (value: 'calendar' | 'table') => void
-  setCalendarDate: (value: Date) => void
+  setCalendarDate: (value: Date | null) => void
   setCalendarMinDate: (value: Date) => void
 }
 
@@ -50,7 +50,7 @@ export const useSpecimensOverviewStore = create<TState>()((set) => ({
   pagination: { pageIndex: 0, pageSize: 25 },
   volumeInput: '',
   view: 'calendar',
-  calendarDate: undefined,
+  calendarDate: null,
   calendarMinDate: undefined,
   setParams: (values) => set(() => ({ params: values })),
   setVolumeInput: (value) => set(() => ({ volumeInput: value })),

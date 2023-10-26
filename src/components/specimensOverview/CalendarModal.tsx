@@ -120,6 +120,16 @@ const CalendarModal: FC<TProps> = ({ row, day }) => {
               </td>
               <td>
                 <Text
+                  onAuxClick={() => {
+                    window
+                      .open(
+                        `/${i18n.resolvedLanguage}/${t(
+                          'urls.volume_overview'
+                        )}/${s.barCode}`,
+                        '_blank'
+                      )
+                      ?.focus()
+                  }}
                   onClick={() => {
                     modals.closeAll()
                     setTimeout(() => {

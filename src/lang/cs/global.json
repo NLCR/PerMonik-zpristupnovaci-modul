@@ -24,7 +24,7 @@
   },
   "specimens_overview": {
     "meta_title_not_found": "Tento metatitul nebyl nalezen",
-    "specimens_not_found": "Nebyly nalezeny žádné exempláře",
+    "specimens_not_found": "Pro dané vyhledávání nelze zobrazit žádné výsledky. Prosím, upravte parametry vyhledávání",
     "date": "Datum",
     "volume": "Svazek",
     "name": "Název na titulní straně",
@@ -102,11 +102,11 @@
   },
   "table": {
     "mutations": "Mutace",
-    "publication_date": "Datum publikace",
+    "publication_date": "Dat. publikace",
     "name": "Název",
     "publication": "Vydání",
     "number": "Číslo",
-    "pages_count": "Počet stran",
+    "pages_count": "Poč. stran",
     "owners": "Vlastníci",
     "basic_info": "Základní údaje"
   },

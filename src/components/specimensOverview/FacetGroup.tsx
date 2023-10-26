@@ -1,10 +1,13 @@
-import { Box, Checkbox, createStyles, Text } from '@mantine/core'
+import { Box, Checkbox, createStyles, rem, Text } from '@mantine/core'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const useStyles = createStyles(() => ({
   facetCheckboxLabelWrapper: {
     width: '100%',
+  },
+  count: {
+    marginLeft: rem(10),
   },
 }))
 
@@ -65,7 +68,7 @@ const FacetGroup: FC<TInput> = ({
                     ? f.displayedName || f.name
                     : t('facet_states.empty')}
                 </span>
-                <span>{f.count}</span>
+                <span className={classes.count}>{f.count}</span>
               </Box>
             }
           />

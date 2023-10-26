@@ -1,5 +1,5 @@
 import { Box, Flex, rem, SimpleGrid, Text } from '@mantine/core'
-import { FC } from 'react'
+import React, { FC } from 'react'
 import { flow, groupBy, map, sortBy } from 'lodash-es'
 import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
@@ -11,6 +11,7 @@ import { TMetaTitle } from '../../@types/metaTitle'
 
 import { useTranslatedConstants } from '../../utils/helperHooks'
 import { getFirstMondayOfMonth } from '../../utils/helperFunctions'
+import ShowInfoMessage from '../reusableComponents/ShowInfoMessage'
 
 type TProps = {
   specimens: TSpecimen[]
@@ -70,7 +71,7 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
   if (monday) {
     const daysToPreviousMonth = monday.get('D') - 7
     const startOfMonth = dayjs(calendarDate).date(1)
-    if (daysToPreviousMonth <= 0) {
+    if (daysToPreviousMonth <= 0 && daysToPreviousMonth > -6) {
       const missingDaysOfPreviousMonth: TSpecimensDay = []
       for (let i = daysToPreviousMonth; i <= 0; i += 1) {
         missingDaysOfPreviousMonth.push({
@@ -83,7 +84,7 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
     }
   }
 
-  return (
+  return specimensInDay.some((sid) => sid.specimens.length) ? (
     <SimpleGrid
       cols={7}
       spacing={2}
@@ -151,7 +152,7 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
                                 fontWeight: 'bold',
                               })}
                             >
-                              {metaTitle.name}
+                              {metaTitle?.name}
                             </Text>
                             {/* {dayjs(day.day).format('dddd DD.MM.YYYY')} */}
                           </>
@@ -194,6 +195,8 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
         </Box>
       ))}
     </SimpleGrid>
+  ) : (
+    <ShowInfoMessage message={t('specimens_overview.specimens_not_found')} />
   )
 }
 

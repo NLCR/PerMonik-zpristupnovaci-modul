@@ -23,14 +23,14 @@ import {
 import dayjs from 'dayjs'
 import { modals } from '@mantine/modals'
 import useMetaTitleQuery from '../api/query/useMetaTitleQuery'
-import useSpecimensWithFacetsQuery from '../api/query/useSpecimensWithFacetsQuery'
+import useSpecimensWithDatesAndCountQuery from '../api/query/useSpecimensWithDatesAndCountQuery'
 import Loader from '../components/reusableComponents/Loader'
 import ShowError from '../components/reusableComponents/ShowError'
 import ShowInfoMessage from '../components/reusableComponents/ShowInfoMessage'
 import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
 import useSpecimensStartDateForCalendar from '../api/query/useSpecimensStartDateForCalendar'
-import { createDate } from '../utils/helperFunctions'
 import SpecimenDayDetailExampleImage from '../assets/images/specimen-day-detail-example.png'
+import useSpecimensFacetsQuery from '../api/query/useSpecimensFacetsQuery'
 
 const Facets = React.lazy(
   () => import('../components/specimensOverview/Facets')
@@ -58,6 +58,7 @@ const useStyles = createStyles((theme) => ({
     boxShadow: theme.shadows.xs,
     display: 'flex',
     flexDirection: 'column',
+    flexShrink: 0,
   },
   viewWrapper: {
     width: '100%',
@@ -107,7 +108,17 @@ const SpecimensOverview = () => {
     isLoading: specimensLoading,
     isError: specimensError,
     isRefetching: specimensRefetching,
-  } = useSpecimensWithFacetsQuery(metaTitleId as string, metaTitleEnabled)
+  } = useSpecimensWithDatesAndCountQuery(
+    metaTitleId as string,
+    metaTitleEnabled
+  )
+
+  const {
+    data: facets,
+    isLoading: facetsLoading,
+    isError: facetsError,
+    isRefetching: facetsRefething,
+  } = useSpecimensFacetsQuery(metaTitleId as string, metaTitleEnabled)
 
   useEffect(() => {
     resetAll()
@@ -116,7 +127,7 @@ const SpecimensOverview = () => {
   useEffect(() => {
     let timer: NodeJS.Timeout
 
-    if (specimensRefetching) {
+    if (specimensRefetching || facetsRefething) {
       setShowOverlay(true)
     } else {
       timer = setTimeout(() => {
@@ -127,12 +138,12 @@ const SpecimensOverview = () => {
     return () => {
       clearTimeout(timer)
     }
-  }, [specimensRefetching])
+  }, [facetsRefething, specimensRefetching])
 
   useEffect(() => {
     if (calendarDateFromQuery && !calendarMinDate) {
-      setCalendarMinDate(createDate(calendarDateFromQuery.toString()))
-      setCalendarDate(createDate(calendarDateFromQuery.toString()))
+      setCalendarMinDate(dayjs(calendarDateFromQuery.toString()).toDate())
+      setCalendarDate(dayjs(calendarDateFromQuery.toString()).toDate())
     }
   }, [
     calendarDateFromQuery,
@@ -152,13 +163,14 @@ const SpecimensOverview = () => {
         visible={showOverlay}
         loader={<Loader />}
         overlayBlur={1}
-        transitionDuration={view === 'table' ? 250 : 100}
+        transitionDuration={100}
       />
       <Box className={classes.facets}>
-        {specimens && metaTitle ? (
+        {specimens && facets && metaTitle ? (
           <Suspense fallback={<Loader />}>
             <Facets
-              facets={specimens.facets}
+              facets={facets}
+              specimens={specimens.specimens}
               metaTitleName={metaTitle.name}
               publicationDayMax={specimens.publicationDayMax}
               publicationDayMin={specimens.publicationDayMin}
@@ -169,11 +181,172 @@ const SpecimensOverview = () => {
         ) : null}
       </Box>
       <Flex className={classes.viewWrapper}>
+        <Flex
+          justify="space-between"
+          align="center"
+          sx={{
+            marginTop: rem(10),
+          }}
+        >
+          <Flex justify="flex-start" align="center">
+            <Tabs
+              value={view}
+              onTabChange={setView}
+              sx={{
+                width: 'fit-content',
+              }}
+            >
+              <Tabs.List>
+                <Tabs.Tab
+                  value="calendar"
+                  icon={<IconCalendarSearch size="0.8rem" />}
+                >
+                  {t('specimens_overview.calendar')}
+                </Tabs.Tab>
+                <Tabs.Tab
+                  // disabled
+                  value="table"
+                  icon={<IconTableRow size="0.8rem" />}
+                >
+                  {t('specimens_overview.table')}
+                </Tabs.Tab>
+              </Tabs.List>
+            </Tabs>
+            <Flex
+              sx={(theme) => ({
+                marginLeft: rem(20),
+                fontSize: theme.fontSizes.sm,
+                color: theme.colors.blue[9],
+                fontWeight: 'bolder',
+                alignItems: 'center',
+              })}
+            >
+              {showedDate && view === 'calendar' ? (
+                <>
+                  <Text
+                    sx={{
+                      marginRight: rem(20),
+                    }}
+                  >
+                    {t('specimens_overview.showed_month')}:{' '}
+                  </Text>
+                  <Flex
+                    sx={{
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      width: rem(220),
+                    }}
+                  >
+                    <ActionIcon
+                      variant="outline"
+                      sx={{
+                        marginTop: rem(2),
+                      }}
+                      disabled={
+                        dayjs(calendarDate).diff(
+                          dayjs(calendarMinDate),
+                          'month'
+                        ) <= 0
+                      }
+                      onClick={() => {
+                        setCalendarDate(
+                          dayjs(calendarDate).subtract(1, 'month').toDate()
+                        )
+                      }}
+                    >
+                      <IconChevronLeft size="1rem" />
+                    </ActionIcon>{' '}
+                    <Text
+                      sx={{
+                        marginLeft: rem(10),
+                        marginRight: rem(10),
+                      }}
+                    >
+                      {showedDate}
+                    </Text>
+                    <ActionIcon
+                      variant="outline"
+                      sx={{
+                        marginTop: rem(2),
+                      }}
+                      onClick={() => {
+                        setCalendarDate(
+                          dayjs(calendarDate).add(1, 'month').toDate()
+                        )
+                      }}
+                    >
+                      <IconChevronRight size="1rem" />
+                    </ActionIcon>
+                  </Flex>
+                </>
+              ) : null}
+            </Flex>
+          </Flex>
+          {/* eslint-disable-next-line no-nested-ternary */}
+          {view === 'calendar' ? (
+            <Button
+              leftIcon={<IconHelp />}
+              onClick={() => {
+                modals.open({
+                  centered: true,
+                  size: 'auto',
+                  title: (
+                    <Text
+                      sx={(theme) => ({
+                        color: theme.colors.blue[9],
+                        fontSize: theme.fontSizes.xl,
+                        fontWeight: 'bold',
+                      })}
+                    >
+                      {t('specimens_overview.help')}
+                    </Text>
+                  ),
+                  children: (
+                    <>
+                      <Text mb={5} fw="bolder">
+                        {t('specimens_overview.help_desc_1')}
+                      </Text>
+                      <Text mb={5}>{t('specimens_overview.help_desc_2')}</Text>
+                      <Image
+                        src={SpecimenDayDetailExampleImage}
+                        width={200}
+                        mb={20}
+                      />
+                      {/* <Text size="sm"> */}
+                      {/*  {t('specimens_overview.help_desc_3')} */}
+                      {/* </Text> */}
+                    </>
+                  ),
+                })
+              }}
+            >
+              {t('specimens_overview.help')}
+            </Button>
+          ) : null}
+        </Flex>
+        {specimens?.specimens.length && metaTitle ? (
+          <Suspense fallback={<Loader />}>
+            {view === 'calendar' ? (
+              <Calendar specimens={specimens.specimens} metaTitle={metaTitle} />
+            ) : (
+              <Table
+                count={specimens.count}
+                specimens={specimens.specimens}
+                specimensRefetching={false}
+                // specimensRefetching={specimensRefetching}
+              />
+            )}
+          </Suspense>
+        ) : null}
         {metaTitleLoading ||
-        ((specimensLoading || calendarDateLoading) && metaTitleEnabled) ? (
+        ((specimensLoading || calendarDateLoading || facetsLoading) &&
+          metaTitleEnabled) ? (
           <Loader />
         ) : null}
-        {metaTitleError || specimensError || calendarDateError ? (
+        {metaTitleError ||
+        specimensError ||
+        calendarDateError ||
+        facetsError ? (
           <ShowError />
         ) : null}
         {!metaTitle && !metaTitleLoading && !metaTitleError ? (
@@ -188,169 +361,6 @@ const SpecimensOverview = () => {
           <ShowInfoMessage
             message={t('specimens_overview.specimens_not_found')}
           />
-        ) : null}
-        {specimens?.specimens.length && metaTitle ? (
-          <>
-            <Flex
-              justify="space-between"
-              align="center"
-              sx={{
-                marginTop: rem(10),
-              }}
-            >
-              <Flex justify="flex-start" align="center">
-                <Tabs
-                  value={view}
-                  onTabChange={setView}
-                  sx={{
-                    width: 'fit-content',
-                  }}
-                >
-                  <Tabs.List>
-                    <Tabs.Tab
-                      value="calendar"
-                      icon={<IconCalendarSearch size="0.8rem" />}
-                    >
-                      {t('specimens_overview.calendar')}
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      // disabled
-                      value="table"
-                      icon={<IconTableRow size="0.8rem" />}
-                    >
-                      {t('specimens_overview.table')}
-                    </Tabs.Tab>
-                  </Tabs.List>
-                </Tabs>
-                <Flex
-                  sx={(theme) => ({
-                    marginLeft: rem(20),
-                    fontSize: theme.fontSizes.sm,
-                    color: theme.colors.blue[9],
-                    fontWeight: 'bolder',
-                    alignItems: 'center',
-                  })}
-                >
-                  {showedDate && view === 'calendar' ? (
-                    <>
-                      <Text
-                        sx={{
-                          marginRight: rem(20),
-                        }}
-                      >
-                        {t('specimens_overview.showed_month')}:{' '}
-                      </Text>
-                      <Flex
-                        sx={{
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          width: rem(220),
-                        }}
-                      >
-                        <ActionIcon
-                          variant="outline"
-                          sx={{
-                            marginTop: rem(2),
-                          }}
-                          disabled={
-                            dayjs(calendarDate).diff(
-                              dayjs(calendarMinDate),
-                              'month'
-                            ) <= 0
-                          }
-                          onClick={() => {
-                            setCalendarDate(
-                              dayjs(calendarDate).subtract(1, 'month').toDate()
-                            )
-                          }}
-                        >
-                          <IconChevronLeft size="1rem" />
-                        </ActionIcon>{' '}
-                        <Text
-                          sx={{
-                            marginLeft: rem(10),
-                            marginRight: rem(10),
-                          }}
-                        >
-                          {showedDate}
-                        </Text>
-                        <ActionIcon
-                          variant="outline"
-                          sx={{
-                            marginTop: rem(2),
-                          }}
-                          onClick={() => {
-                            setCalendarDate(
-                              dayjs(calendarDate).add(1, 'month').toDate()
-                            )
-                          }}
-                        >
-                          <IconChevronRight size="1rem" />
-                        </ActionIcon>
-                      </Flex>
-                    </>
-                  ) : null}
-                </Flex>
-              </Flex>
-              {view === 'calendar' ? (
-                <Button
-                  leftIcon={<IconHelp />}
-                  onClick={() => {
-                    modals.open({
-                      centered: true,
-                      size: 'auto',
-                      title: (
-                        <Text
-                          sx={(theme) => ({
-                            color: theme.colors.blue[9],
-                            fontSize: theme.fontSizes.xl,
-                            fontWeight: 'bold',
-                          })}
-                        >
-                          {t('specimens_overview.help')}
-                        </Text>
-                      ),
-                      children: (
-                        <>
-                          <Text mb={5} fw="bolder">
-                            {t('specimens_overview.help_desc_1')}
-                          </Text>
-                          <Text mb={5}>
-                            {t('specimens_overview.help_desc_2')}
-                          </Text>
-                          <Image
-                            src={SpecimenDayDetailExampleImage}
-                            width={200}
-                            mb={20}
-                          />
-                          {/* <Text size="sm"> */}
-                          {/*  {t('specimens_overview.help_desc_3')} */}
-                          {/* </Text> */}
-                        </>
-                      ),
-                    })
-                  }}
-                >
-                  {t('specimens_overview.help')}
-                </Button>
-              ) : null}
-            </Flex>
-            <Suspense fallback={<Loader />}>
-              {view === 'calendar' ? (
-                <Calendar
-                  specimens={specimens.specimens}
-                  metaTitle={metaTitle}
-                />
-              ) : (
-                <Table
-                  count={specimens.count}
-                  specimens={specimens.specimens}
-                  specimensRefetching={false}
-                  // specimensRefetching={specimensRefetching}
-                />
-              )}
-            </Suspense>
-          </>
         ) : null}
       </Flex>
     </Flex>

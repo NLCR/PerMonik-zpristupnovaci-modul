@@ -32,14 +32,14 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'publicationDate',
         header: t('volume_overview.date'),
-        maxSize: 110,
+        maxSize: 0,
         Cell: ({ row }) =>
           dayjs(row.original.publicationDate).format('dd DD.MM.YYYY'),
       },
       {
         accessorKey: 'numExists',
         header: t('volume_overview.is_in_volume'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -50,7 +50,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'numMissing',
         header: t('volume_overview.missing_number'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -61,7 +61,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'number',
         header: t('volume_overview.number'),
-        maxSize: 60,
+        maxSize: 0,
         Cell: ({ row }) =>
           row.original.numExists && !row.original.isAttachment
             ? row.original.number
@@ -71,21 +71,21 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         accessorKey: 'number',
         id: 'attachment_number',
         header: t('volume_overview.attachment_number'),
-        maxSize: 110,
+        maxSize: 0,
         Cell: ({ row }) =>
           row.original.isAttachment ? row.original.number : undefined,
       },
       {
         accessorKey: 'mutation',
         header: t('volume_overview.mutation'),
-        maxSize: 110,
+        maxSize: 0,
         Cell: ({ row }) =>
           mutations.find((m) => m.id === Number(row.original.mutation))?.name,
       },
       {
         accessorKey: 'publication',
         header: t('volume_overview.publication'),
-        maxSize: 110,
+        maxSize: 0,
         Cell: ({ row }) =>
           publications.find((p) => p.id === Number(row.original.publication))
             ?.name,
@@ -93,28 +93,28 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'name',
         header: t('volume_overview.name'),
-        maxSize: 110,
+        maxSize: 0,
       },
       {
         accessorKey: 'subName',
         header: t('volume_overview.sub_name'),
-        maxSize: 110,
+        maxSize: 0,
       },
       {
         accessorKey: 'pagesCount',
         header: t('volume_overview.pages_count'),
-        maxSize: 110,
+        maxSize: 0,
       },
       {
         accessorKey: 'publicationMark',
         header: t('volume_overview.publication_mark'),
-        maxSize: 110,
+        maxSize: 0,
       },
       {
         accessorKey: 'states',
         id: 'reviewed',
         header: t('facet_states.OK'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -128,7 +128,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         accessorKey: 'states',
         id: 'damaged_pages',
         header: t('facet_states.PP'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -142,7 +142,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         accessorKey: 'states',
         id: 'degradation',
         header: t('facet_states.Deg'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -156,7 +156,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         accessorKey: 'states',
         id: 'missing_pages',
         header: t('facet_states.ChS'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -170,7 +170,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         accessorKey: 'states',
         id: 'bad_pagination',
         header: t('facet_states.ChPag'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -184,7 +184,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         accessorKey: 'states',
         id: 'bad_date',
         header: t('facet_states.ChDatum'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -201,7 +201,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         accessorKey: 'states',
         id: 'bad_numbering',
         header: t('facet_states.ChCis'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -215,7 +215,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         accessorKey: 'states',
         id: 'bad_bound',
         header: t('facet_states.ChSv'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -229,7 +229,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         accessorKey: 'states',
         id: 'cenzured',
         header: t('facet_states.Cz'),
-        maxSize: 110,
+        maxSize: 0,
         mantineTableBodyCellProps: {
           align: 'center',
         },
@@ -242,7 +242,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       {
         accessorKey: 'note',
         header: t('volume_overview.note'),
-        maxSize: 110,
+        maxSize: 0,
       },
     ],
     [mutations, publications, t]
@@ -297,14 +297,29 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
       withBorder: false,
       withColumnBorders: true,
     },
-    mantineTableBodyCellProps: {
+    mantineTableBodyProps: {
       sx: (theme) => ({
-        fontSize: `${theme.fontSizes.xs} !important`,
+        '& tr td:first-child': {
+          position: 'sticky',
+          left: 0,
+          backgroundColor: theme.colors.blue[0],
+        },
+      }),
+    },
+    mantineTableBodyCellProps: {
+      sx: () => ({
+        fontSize: `11px !important`,
       }),
     },
     mantineTableHeadCellProps: {
       sx: (theme) => ({
-        fontSize: `${theme.fontSizes.xs} !important`,
+        fontSize: `11px !important`,
+        '&:first-child': {
+          position: 'sticky',
+          left: 0,
+          backgroundColor: theme.colors.blue[0],
+          borderColor: theme.colors.blue[9],
+        },
       }),
     },
   })

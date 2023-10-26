@@ -1,27 +1,25 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { useDebouncedValue } from '@mantine/hooks'
 import dayjs from 'dayjs'
 import { api } from '../index'
-import {
-  TSpecimen,
-  TSpecimensFacets,
-  TSpecimensPublicationDays,
-} from '../../@types/specimen'
+import { TSpecimen, TSpecimensPublicationDays } from '../../@types/specimen'
 import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
 
 export interface TSpecimensWithFacets extends TSpecimensPublicationDays {
   specimens: TSpecimen[]
-  facets: TSpecimensFacets
   count: number
 }
 
-const useSpecimensWithFacetsQuery = (idTitle: string, enabled: boolean) => {
+const useSpecimensWithDatesAndCountQuery = (
+  idTitle: string,
+  enabled: boolean
+) => {
   const { params, pagination, volumeInput, view, calendarDate } =
     useSpecimensOverviewStore()
   const [debouncedVolumeInput] = useDebouncedValue(volumeInput, 400)
 
-  return useQuery(
-    [
+  return useQuery({
+    queryKey: [
       'specimens',
       view,
       idTitle,
@@ -31,18 +29,24 @@ const useSpecimensWithFacetsQuery = (idTitle: string, enabled: boolean) => {
       calendarDate,
       debouncedVolumeInput,
     ],
-    () => {
+    queryFn: () => {
       const dayJsDate = dayjs(calendarDate)
       const startOfMonth = dayJsDate.startOf('month')
       const endOfMonth = dayJsDate.endOf('month')
 
       const formData = new FormData()
       if (view === 'table') {
-        formData.set('offset', pagination.pageIndex.toString())
+        formData.set(
+          'offset',
+          (pagination.pageIndex > 0
+            ? pagination.pageIndex * pagination.pageSize + 1
+            : pagination.pageIndex * pagination.pageSize
+          ).toString()
+        )
         formData.set('rows', pagination.pageSize.toString())
       } else {
         formData.set('offset', '0')
-        formData.set('rows', '10000000')
+        formData.set('rows', '1000')
       }
       formData.set(
         'facets',
@@ -61,14 +65,12 @@ const useSpecimensWithFacetsQuery = (idTitle: string, enabled: boolean) => {
         })
         .json<TSpecimensWithFacets>()
     },
-    {
-      keepPreviousData: true,
-      enabled:
-        enabled &&
-        (view === 'table' ||
-          (view === 'calendar' && calendarDate !== undefined)),
-    }
-  )
+    placeholderData: keepPreviousData,
+    // enabled:
+    //   enabled &&
+    //   (view === 'table' || (view === 'calendar' && calendarDate !== undefined)),
+    enabled,
+  })
 }
 
-export default useSpecimensWithFacetsQuery
+export default useSpecimensWithDatesAndCountQuery

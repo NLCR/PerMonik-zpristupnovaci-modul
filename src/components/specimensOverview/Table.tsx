@@ -15,7 +15,6 @@ import dayjs from 'dayjs'
 import { owners, states } from '../../utils/constants'
 import i18next from '../../i18next'
 import { TSpecimen } from '../../@types/specimen'
-// import { formatDateWithDashesToString } from '../../utils/helperFunctions'
 import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
 import {
   useMantineTableLang,
@@ -171,24 +170,26 @@ const Table: FC<TProps> = memo(function Table({
       {
         accessorKey: 'mutation',
         header: t('table.mutations'),
-        maxSize: 110,
+        maxSize: 0,
         Cell: ({ cell }) =>
           mutations.find((m) => m.id === Number(cell.getValue<string>()))?.name,
       },
       {
         accessorKey: 'publicationDate',
         header: t('table.publication_date'),
+        maxSize: 0,
         Cell: ({ cell }) =>
           dayjs(cell.getValue<string>()).format('dd DD.MM.YYYY'),
       },
       {
         accessorKey: 'name',
         header: t('table.name'),
+        maxSize: 0,
       },
       {
         accessorKey: 'publication',
         header: t('table.publication'),
-        maxSize: 110,
+        maxSize: 0,
         Cell: ({ cell }) =>
           publications.find((p) => p.id === Number(cell.getValue<string>()))
             ?.name,
@@ -196,35 +197,39 @@ const Table: FC<TProps> = memo(function Table({
       {
         accessorKey: 'number',
         header: t('table.number'),
-        maxSize: 110,
+        maxSize: 0,
       },
       {
         accessorKey: 'pagesCount',
         header: t('table.pages_count'),
-        maxSize: 110,
+        maxSize: 0,
       },
       {
         id: `owner${owners[0].name}`,
         accessorKey: 'owner',
         header: owners[0].name,
+        maxSize: 0,
         Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={0} />,
       },
       {
         id: `owner${owners[1].name}`,
         accessorKey: 'owner',
         header: owners[1].name,
+        maxSize: 0,
         Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={1} />,
       },
       {
         id: `owner${owners[2].name}`,
         accessorKey: 'owner',
         header: owners[2].name,
+        maxSize: 0,
         Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={2} />,
       },
       {
         id: `owner${owners[3].name}`,
         accessorKey: 'owner',
         header: owners[3].name,
+        maxSize: 0,
         Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={3} />,
       },
     ],
@@ -277,13 +282,13 @@ const Table: FC<TProps> = memo(function Table({
       withColumnBorders: true,
     },
     mantineTableBodyCellProps: {
-      sx: (theme) => ({
-        fontSize: `${theme.fontSizes.xs} !important`,
+      sx: () => ({
+        fontSize: `11px !important`,
       }),
     },
     mantineTableHeadCellProps: {
-      sx: (theme) => ({
-        fontSize: `${theme.fontSizes.xs} !important`,
+      sx: () => ({
+        fontSize: `11px !important`,
       }),
     },
   })

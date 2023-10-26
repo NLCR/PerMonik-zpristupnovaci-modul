@@ -39,7 +39,7 @@ export interface TSpecimensPublicationDays {
 }
 
 export interface TSpecimenFacet {
-  name: (typeof states)[number]
+  name: string
   count: number
 }
 

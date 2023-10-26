@@ -3,8 +3,10 @@ import { api } from '../index'
 import { TVolumeOverviewStats } from '../../@types/volume'
 
 const useVolumeOverviewStatsQuery = (id: string) =>
-  useQuery(['volume-stats', id], () =>
-    api().get(`v1/volume/stats/${id}`).json<TVolumeOverviewStats | null>()
-  )
+  useQuery({
+    queryKey: ['volume-stats', id],
+    queryFn: () =>
+      api().get(`v1/volume/stats/${id}`).json<TVolumeOverviewStats | null>(),
+  })
 
 export default useVolumeOverviewStatsQuery

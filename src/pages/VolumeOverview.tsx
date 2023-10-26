@@ -10,12 +10,12 @@ import {
   Title,
 } from '@mantine/core'
 import React, { Suspense, useEffect, useState } from 'react'
+import dayjs from 'dayjs'
 import useVolumeDetailQuery from '../api/query/useVolumeDetailQuery'
 import Loader from '../components/reusableComponents/Loader'
 import ShowError from '../components/reusableComponents/ShowError'
 import ShowInfoMessage from '../components/reusableComponents/ShowInfoMessage'
 import { owners } from '../utils/constants'
-import { formatDateWithDashesToString } from '../utils/helperFunctions'
 import { useTranslatedConstants } from '../utils/helperHooks'
 
 const SpecimensTable = React.lazy(
@@ -165,12 +165,12 @@ const VolumeOverview = () => {
                 <tr>
                   <td>{t('volume_overview.date_from')}</td>
                   <td>
-                    {formatDateWithDashesToString(volume.volume.dateFrom)}
+                    {dayjs(volume.volume.dateFrom).format('DD. MMMM YYYY')}
                   </td>
                 </tr>
                 <tr>
                   <td>{t('volume_overview.date_to')}</td>
-                  <td>{formatDateWithDashesToString(volume.volume.dateTo)}</td>
+                  <td>{dayjs(volume.volume.dateTo).format('DD. MMMM YYYY')}</td>
                 </tr>
                 <tr>
                   <td>{t('volume_overview.first_number')}</td>
