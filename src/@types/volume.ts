@@ -4,6 +4,7 @@ import {
   TSpecimen,
   TSpecimenFacet,
   TSpecimensPublicationDays,
+  TSpecimenStatesFacet,
 } from './specimen'
 
 export interface TVolumeDetail {
@@ -66,7 +67,7 @@ export interface TVolumeOverviewStats {
   mutations: TSpecimenFacet[]
   publicationMark: TSpecimenFacet[]
   publication: TSpecimenFacet[]
-  states: TSpecimenFacet[]
+  states: TSpecimenStatesFacet[]
   publicationDayRanges: TSpecimenFacet[]
   specimens: TSpecimen[]
 }

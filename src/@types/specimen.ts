@@ -43,6 +43,11 @@ export interface TSpecimenFacet {
   count: number
 }
 
+export interface TSpecimenStatesFacet {
+  name: (typeof states)[number]
+  count: number
+}
+
 export interface TSpecimensFacets {
   names: TSpecimenFacet[]
   subNames: TSpecimenFacet[]
@@ -50,5 +55,5 @@ export interface TSpecimensFacets {
   publications: TSpecimenFacet[]
   publicationMarks: TSpecimenFacet[]
   owners: TSpecimenFacet[]
-  states: TSpecimenFacet[]
+  states: TSpecimenStatesFacet[]
 }

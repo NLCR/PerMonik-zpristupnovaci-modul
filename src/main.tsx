@@ -14,16 +14,13 @@ const { MODE, VITE_SENTRY_DNS } = import.meta.env
 // Setup Sentry for errors reporting in production
 SentryInit({
   dsn: VITE_SENTRY_DNS,
-  integrations: [
-    new BrowserTracing({
-      tracePropagationTargets: [
-        'localhost',
-        // 'permonik.cz',
-        // 'api.permonik.com',
-        /^\//,
-      ],
-    }),
+  tracePropagationTargets: [
+    'localhost',
+    // 'permonik.cz',
+    // 'api.permonik.com',
+    /^\//,
   ],
+  integrations: [new BrowserTracing()],
   environment: MODE,
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
