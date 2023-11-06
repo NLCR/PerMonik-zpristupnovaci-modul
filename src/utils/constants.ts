@@ -31,11 +31,12 @@ export const publicationsFromBE = [
 
 export const mutationsFromBE = ['0', '1', '2', '3'] as const
 
-export const ownersFromBE = ['0', '1', '2', '3'] as const
+export const ownersFromBE = ['0', '1', '2', '3', '4'] as const
 
 export const owners = [
   { id: 0, name: 'NKP', sigla: 'ABA001' },
   { id: 1, name: 'MZK', sigla: 'BOA001' },
   { id: 2, name: 'VKOL', sigla: 'OLA001' },
   { id: 3, name: 'KUK', sigla: 'ULG001' },
+  { id: 4, name: 'PaKK', sigla: 'PAG001' },
 ] as const

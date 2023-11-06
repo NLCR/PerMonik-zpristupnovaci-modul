@@ -114,7 +114,7 @@ const getSpecimenState = (sp: TSpecimen) => {
 
 const OwnersBarCodeCell: FC<{
   row: MRT_Row<TSpecimen>
-  ownerRow: 0 | 1 | 2 | 3
+  ownerRow: 0 | 1 | 2 | 3 | 4
 }> = ({ row, ownerRow }) => {
   const { classes } = useStyles()
   const { t, i18n } = useTranslation()
@@ -231,6 +231,13 @@ const Table: FC<TProps> = memo(function Table({
         header: owners[3].name,
         maxSize: 0,
         Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={3} />,
+      },
+      {
+        id: `owner${owners[4].name}`,
+        accessorKey: 'owner',
+        header: owners[4].name,
+        maxSize: 0,
+        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={4} />,
       },
     ],
     [mutations, publications, t]
