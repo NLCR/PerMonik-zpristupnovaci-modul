@@ -2,13 +2,18 @@
   "urls": {
     "login": "login",
     "specimens_overview": "specimens",
-    "volume_overview": "volume"
+    "volume_overview": "volume",
+    "administration": "administration",
+    "users": "users",
+    "owners": "owners"
   },
   "common": {
     "error_occurred_when_loading_data": "Nastala chyba při načítání dat",
     "error_occurred_somewhere": "Někde nastala chyba, zkuste to prosím znovu později",
     "yes": "Ano",
-    "no": "Ne"
+    "no": "Ne",
+    "saved_successfully": "Úpspěšně uloženo",
+    "error_when_saving": "Při ukládání nastala chyba"
   },
   "helmet": {
     "title": "Evidence periodik – badatelská aplikace"
@@ -152,9 +157,25 @@
   },
   "header": {
     "home": "Domů",
-    "login": "Přihlášení"
+    "login": "Přihlášení",
+    "administration": "Administrace",
+    "logout": "Odhlásit se"
   },
   "not_found": {
     "page_dont_exists": "Tato stránka neexistuje"
+  },
+  "administration": {
+    "users": "Uživatelé",
+    "owners": "Vlastníci",
+    "new_user_button": "Přidat uživatele",
+    "user_login_name": "Přihlašovací jméno",
+    "user_name": "Jméno uživatele",
+    "email": "Email",
+    "note": "Poznámka",
+    "role": "Role",
+    "user": "Uživatel",
+    "admin": "Administrátor",
+    "save": "Uložit",
+    "user_active": "Uživatel je aktivní"
   }
 }

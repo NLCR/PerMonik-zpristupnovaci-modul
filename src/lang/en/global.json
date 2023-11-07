@@ -2,13 +2,18 @@
   "urls": {
     "login": "login",
     "specimens_overview": "specimens",
-    "volume_overview": "volume"
+    "volume_overview": "volume",
+    "administration": "administration",
+    "users": "users",
+    "owners": "owners"
   },
   "common": {
     "error_occurred_when_loading_data": "An error occurred while loading data",
     "error_occurred_somewhere": "There is an error somewhere, please try again later",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "saved_successfully": "Saved successfully",
+    "error_when_saving": "Error occurred when saving data"
   },
   "helmet": {
     "title": "Evidence of periodicals - research application"
@@ -151,9 +156,21 @@
   },
   "header": {
     "home": "Home",
-    "login": "Login"
+    "login": "Login",
+    "administration": "Administration",
+    "logout": "Log out"
   },
   "not_found": {
     "page_dont_exists": "This page does not exist"
+  },
+  "administration": {
+    "users": "Users",
+    "owners": "Owners",
+    "new_user_button": "Add new user",
+    "new_user": "Nový uživatel",
+    "user": "User",
+    "admin": "Administrator",
+    "save": "Save",
+    "user_active": "User is active"
   }
 }

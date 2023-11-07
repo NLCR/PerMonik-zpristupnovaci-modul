@@ -6,6 +6,10 @@ import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
 import Loader from './reusableComponents/Loader'
 import SpecimensOverview from '../pages/SpecimensOverview'
+import Administration from '../pages/administration/Administration'
+import useMeQuery from '../api/query/administration/useMeQuery'
+import Users from '../pages/administration/Users'
+import Owners from '../pages/administration/Owners'
 
 const VolumeOverview = React.lazy(() => import('../pages/VolumeOverview'))
 
@@ -19,6 +23,7 @@ const SuspenseLoader = () => {
 
 const RoutesManager = () => {
   const { t } = useTranslation('global', { keyPrefix: 'urls' })
+  const { data: me } = useMeQuery()
 
   return (
     <Suspense fallback={<SuspenseLoader />}>
@@ -33,6 +38,16 @@ const RoutesManager = () => {
           path={`/:lang/${t('volume_overview')}/:volumeId`}
           element={<VolumeOverview />}
         />
+        {me?.role === 'admin' ? (
+          <Route
+            path={`/:lang/${t('administration')}`}
+            element={<Administration />}
+          >
+            <Route index element={<Users />} />
+            <Route path={t('users')} element={<Users />} />
+            <Route path={t('owners')} element={<Owners />} />
+          </Route>
+        ) : null}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

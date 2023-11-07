@@ -8,6 +8,9 @@ import {
   Menu,
   Image,
   UnstyledButton,
+  Button,
+  Text,
+  Divider,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useTranslation } from 'react-i18next'
@@ -19,6 +22,8 @@ import Czech from '../assets/images/czech-republic.png'
 import Slovakia from '../assets/images/slovakia.png'
 import English from '../assets/images/united-states.png'
 import { changeLanguage, TSupportedLanguages } from '../i18next'
+import useMeQuery from '../api/query/administration/useMeQuery'
+import useIsLoggedIn from '../utils/auth'
 
 const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
   header: {
@@ -44,7 +49,7 @@ const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
   link: {
     display: 'block',
     lineHeight: 1,
-    padding: `${rem(8)} ${rem(12)}`,
+    padding: `${rem(10)} ${rem(18)}`,
     borderRadius: theme.radius.sm,
     textDecoration: 'none',
     color:
@@ -65,8 +70,8 @@ const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
         variant: 'light',
         color: theme.primaryColor,
       }).background,
-      color: theme.fn.variant({ variant: 'light', color: theme.primaryColor })
-        .color,
+      // color: theme.fn.variant({ variant: 'light', color: theme.primaryColor })
+      //   .color,
     },
   },
   languageControl: {
@@ -104,6 +109,25 @@ const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
     transition: 'transform 150ms ease',
     transform: opened ? 'rotate(180deg)' : 'rotate(0deg)',
   },
+  logoutButton: {
+    backgroundColor: theme.colors.gray[9],
+    color: theme.colors.gray[0],
+    fontSize: theme.fontSizes.md,
+    fontWeight: 500,
+    ':hover': {
+      backgroundColor: theme.colors.gray[8],
+    },
+  },
+  divider: {
+    marginLeft: rem(10),
+    marginRight: rem(10),
+    borderColor: theme.colors.gray[8],
+  },
+  name: {
+    marginLeft: rem(5),
+    color: theme.colors.gray[0],
+    fontWeight: 600,
+  },
 }))
 
 const data: { shorthand: TSupportedLanguages; label: string; image: string }[] =
@@ -118,6 +142,10 @@ const Header = () => {
   const [opened, { toggle }] = useDisclosure(false)
   const { t, i18n } = useTranslation()
   const { classes } = useStyles({ opened: langOpened })
+  const { data: me } = useMeQuery()
+  const { isLoggedIn } = useIsLoggedIn()
+
+  const handleLogout = () => {}
 
   const items = data.map((item) => (
     <Menu.Item
@@ -139,9 +167,38 @@ const Header = () => {
           <NavLink to={`/${i18n.resolvedLanguage}/`} className={classes.link}>
             {t('header.home')}
           </NavLink>
-          {/* <NavLink to={`/${t('urls.login')}`} className={classes.link}> */}
-          {/*  {t('header.login')} */}
-          {/* </NavLink> */}
+          {me?.role === 'admin' ? (
+            <NavLink
+              to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`}
+              className={classes.link}
+            >
+              {t('header.administration')}
+            </NavLink>
+          ) : null}
+          {!isLoggedIn ? (
+            <NavLink
+              to={`${i18n.resolvedLanguage}/${t('urls.login')}`}
+              className={classes.link}
+            >
+              {t('header.login')}
+            </NavLink>
+          ) : (
+            <>
+              <Divider
+                orientation="vertical"
+                size="sm"
+                className={classes.divider}
+              />
+              <Button
+                size="sm"
+                className={classes.logoutButton}
+                onClick={() => handleLogout()}
+              >
+                {t('header.logout')}
+              </Button>
+              <Text className={classes.name}>{me?.name}</Text>
+            </>
+          )}
           <Menu
             onOpen={() => setLangOpened(true)}
             onClose={() => setLangOpened(false)}

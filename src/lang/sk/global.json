@@ -2,13 +2,18 @@
   "urls": {
     "login": "login",
     "specimens_overview": "specimens",
-    "volume_overview": "volume"
+    "volume_overview": "volume",
+    "administration": "administration",
+    "users": "users",
+    "owners": "owners"
   },
   "common": {
     "error_occurred_when_loading_data": "Pri načítavaní údajov došlo k chybe",
     "error_occurred_somewhere": "Niekde sa vyskytla chyba, skúste to prosím neskôr",
     "yes": "Áno",
-    "no": "Nie"
+    "no": "Nie",
+    "saved_successfully": "Úspešne uložené",
+    "error_when_saving": "Pri ukladaní nastala chyba"
   },
   "helmet": {
     "title": "Evidencia periodík - výskumná aplikácia"
@@ -151,9 +156,20 @@
   },
   "header": {
     "home": "Domov",
-    "login": "Prihlásenie"
+    "login": "Prihlásenie",
+    "administration": "Administrácia",
+    "logout": "Odhlásiť sa"
   },
   "not_found": {
     "page_dont_exists": "Táto stránka neexistuje"
+  },
+  "administration": {
+    "users": "Užívatelia",
+    "owners": "Vlastníci",
+    "new_user_button": "Pridať používateľa",
+    "user": "Užívateľ",
+    "admin": "Administrátor",
+    "save": "Uložiť",
+    "user_active": "Užívateľ je aktívny"
   }
 }
