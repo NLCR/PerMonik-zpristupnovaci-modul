@@ -208,6 +208,9 @@ const Users = () => {
                   }
                 />
                 <MultiSelect
+                  sx={{
+                    minWidth: rem(218),
+                  }}
                   label={t('administration.owners')}
                   value={
                     selectedUser.owner ? selectedUser.owner.split(',') : []

@@ -3,7 +3,7 @@ import { api } from '../../index'
 import { TUser } from '../../../@types/user'
 
 const useMeQuery = () => {
-  const useMock = true
+  const useMock = false
 
   return useQuery({
     queryKey: ['me'],
