@@ -3,7 +3,7 @@ import { IconExternalLink, IconFileSymlink } from '@tabler/icons-react'
 import { useTranslation } from 'react-i18next'
 import React, { FC } from 'react'
 import dayjs from 'dayjs'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { modals } from '@mantine/modals'
 import { TSpecimen } from '../../@types/specimen'
 import { owners } from '../../utils/constants'
@@ -119,32 +119,41 @@ const CalendarModal: FC<TProps> = ({ row, day }) => {
                 </Text>
               </td>
               <td>
-                <Text
-                  onAuxClick={() => {
-                    window
-                      .open(
-                        `/${i18n.resolvedLanguage}/${t(
-                          'urls.volume_overview'
-                        )}/${s.barCode}`,
-                        '_blank'
-                      )
-                      ?.focus()
-                  }}
-                  onClick={() => {
-                    modals.closeAll()
-                    setTimeout(() => {
-                      navigate(
-                        `/${i18n.resolvedLanguage}/${t(
-                          'urls.volume_overview'
-                        )}/${s.barCode}`
-                      )
-                    }, 100)
-                  }}
+                {/* <Text */}
+                {/*  onAuxClick={() => { */}
+                {/*    window */}
+                {/*      .open( */}
+                {/*        `/${i18n.resolvedLanguage}/${t( */}
+                {/*          'urls.volume_overview' */}
+                {/*        )}/${s.barCode}`, */}
+                {/*        '_blank' */}
+                {/*      ) */}
+                {/*      ?.focus() */}
+                {/*  }} */}
+                {/*  onClick={() => { */}
+                {/*    modals.closeAll() */}
+                {/*    setTimeout(() => { */}
+                {/*      navigate( */}
+                {/*        `/${i18n.resolvedLanguage}/${t( */}
+                {/*          'urls.volume_overview' */}
+                {/*        )}/${s.barCode}` */}
+                {/*      ) */}
+                {/*    }, 100) */}
+                {/*  }} */}
+                {/*  className={classes.link} */}
+                {/* > */}
+                {/*  {s.barCode}{' '} */}
+                {/*  <IconFileSymlink size={18} className={classes.linkImage} /> */}
+                {/* </Text> */}
+                <Link
                   className={classes.link}
+                  to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
+                    s.barCode
+                  }`}
                 >
                   {s.barCode}{' '}
                   <IconFileSymlink size={18} className={classes.linkImage} />
-                </Text>
+                </Link>
               </td>
             </tr>
           ))}
