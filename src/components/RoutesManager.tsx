@@ -1,7 +1,8 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { Container } from '@mantine/core'
+import { modals } from '@mantine/modals'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
 import Loader from './reusableComponents/Loader'
@@ -22,8 +23,13 @@ const SuspenseLoader = () => {
 }
 
 const RoutesManager = () => {
+  const location = useLocation()
   const { t } = useTranslation('global', { keyPrefix: 'urls' })
   const { data: me } = useMeQuery()
+
+  useEffect(() => {
+    modals.closeAll()
+  }, [location])
 
   return (
     <Suspense fallback={<SuspenseLoader />}>
