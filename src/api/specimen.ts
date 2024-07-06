@@ -11,12 +11,21 @@ import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
 
 export interface TSpecimenFacets extends TSpecimensFacets {}
 
-export const useSpecimenFacetsQuery = (idTitle: string, enabled: boolean) => {
+export const useSpecimenFacetsQuery = (
+  metaTitleId: string,
+  enabled: boolean
+) => {
   const { params, barCodeInput } = useSpecimensOverviewStore()
   const [debouncedBarCodeInput] = useDebouncedValue(barCodeInput, 400)
 
   return useQuery({
-    queryKey: ['specimen', 'facets', idTitle, params, debouncedBarCodeInput],
+    queryKey: [
+      'specimen',
+      'facets',
+      metaTitleId,
+      params,
+      debouncedBarCodeInput,
+    ],
     queryFn: () => {
       const formData = new FormData()
       formData.set(
@@ -28,7 +37,7 @@ export const useSpecimenFacetsQuery = (idTitle: string, enabled: boolean) => {
       )
 
       return api()
-        .post(`specimen/${idTitle}/list/facets`, {
+        .post(`specimen/${metaTitleId}/list/facets`, {
           body: formData,
         })
         .json<TSpecimenFacets>()
@@ -43,7 +52,7 @@ export interface TSpecimenList extends TSpecimensPublicationDays {
   count: number
 }
 
-export const useSpecimenListQuery = (idTitle: string, enabled: boolean) => {
+export const useSpecimenListQuery = (metaTitleId: string, enabled: boolean) => {
   const { params, pagination, barCodeInput, view, calendarDate } =
     useSpecimensOverviewStore()
   const [debouncedBarCodeInput] = useDebouncedValue(barCodeInput, 400)
@@ -53,7 +62,7 @@ export const useSpecimenListQuery = (idTitle: string, enabled: boolean) => {
       'specimen',
       'list',
       view,
-      idTitle,
+      metaTitleId,
       pagination.pageIndex,
       pagination.pageSize,
       params,
@@ -91,7 +100,7 @@ export const useSpecimenListQuery = (idTitle: string, enabled: boolean) => {
       formData.set('view', view)
 
       return api()
-        .post(`specimen/${idTitle}/list`, {
+        .post(`specimen/${metaTitleId}/list`, {
           body: formData,
         })
         .json<TSpecimenList>()
