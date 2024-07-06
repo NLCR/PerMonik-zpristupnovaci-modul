@@ -77,7 +77,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.isAttachment ? row.original.number : undefined,
       },
       {
-        accessorKey: 'mutation',
+        accessorKey: 'mutationId',
         header: t('volume_overview.mutation'),
         maxSize: 0,
         Cell: ({ row }) =>
@@ -86,7 +86,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           ],
       },
       {
-        accessorKey: 'publication',
+        accessorKey: 'publicationId',
         header: t('volume_overview.publication'),
         maxSize: 0,
         Cell: ({ row }) =>
@@ -115,7 +115,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         maxSize: 0,
       },
       {
-        accessorKey: 'states',
+        accessorKey: 'damageTypes',
         id: 'reviewed',
         header: t('facet_states.OK'),
         maxSize: 0,
@@ -129,7 +129,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         // <Checkbox checked={row.original.states?.includes('OK')} readOnly />
       },
       {
-        accessorKey: 'states',
+        accessorKey: 'damageTypes',
         id: 'damaged_pages',
         header: t('facet_states.PP'),
         maxSize: 0,
@@ -143,7 +143,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         // <Checkbox checked={row.original.states?.includes('PP')} readOnly />
       },
       {
-        accessorKey: 'states',
+        accessorKey: 'damageTypes',
         id: 'degradation',
         header: t('facet_states.Deg'),
         maxSize: 0,
@@ -157,7 +157,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         // <Checkbox checked={row.original.states?.includes('Deg')} readOnly />
       },
       {
-        accessorKey: 'states',
+        accessorKey: 'damageTypes',
         id: 'missing_pages',
         header: t('facet_states.ChS'),
         maxSize: 0,
@@ -171,7 +171,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         // <Checkbox checked={row.original.states?.includes('ChS')} readOnly />
       },
       {
-        accessorKey: 'states',
+        accessorKey: 'damageTypes',
         id: 'bad_pagination',
         header: t('facet_states.ChPag'),
         maxSize: 0,
@@ -185,7 +185,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         // <Checkbox checked={row.original.states?.includes('ChPag')} readOnly />
       },
       {
-        accessorKey: 'states',
+        accessorKey: 'damageTypes',
         id: 'bad_date',
         header: t('facet_states.ChDatum'),
         maxSize: 0,
@@ -202,7 +202,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         // />
       },
       {
-        accessorKey: 'states',
+        accessorKey: 'damageTypes',
         id: 'bad_numbering',
         header: t('facet_states.ChCis'),
         maxSize: 0,
@@ -216,7 +216,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         // <Checkbox checked={row.original.states?.includes('ChCis')} readOnly />
       },
       {
-        accessorKey: 'states',
+        accessorKey: 'damageTypes',
         id: 'bad_bound',
         header: t('facet_states.ChSv'),
         maxSize: 0,
@@ -230,7 +230,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         // <Checkbox checked={row.original.states?.includes('ChSv')} readOnly />
       },
       {
-        accessorKey: 'states',
+        accessorKey: 'damageTypes',
         id: 'cenzured',
         header: t('facet_states.Cz'),
         maxSize: 0,

@@ -66,11 +66,7 @@ const getSpecimenState = (sp: TSpecimen) => {
         </Tooltip>
       )
     }
-    if (
-      sp.damageTypes.some((st) =>
-        damageTypes.filter((s) => s !== 'OK').includes(st)
-      )
-    ) {
+    if (sp.damageTypes.some((st) => damageTypes.includes(st) && st !== 'OK')) {
       return (
         <Tooltip label={i18next.t('tooltip_states.damaged_document')}>
           <Box
@@ -134,7 +130,7 @@ const OwnersBarCodeCell: FC<{
       <Link
         className={classes.link}
         to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
-          row.original.barCode
+          row.original.volumeId
         }`}
       >
         <IconFileSymlink size={20} />
@@ -186,7 +182,7 @@ const Table: FC<TProps> = memo(function Table({
 
     return [
       {
-        accessorKey: 'mutation',
+        accessorKey: 'mutationId',
         header: t('table.mutations'),
         maxSize: 0,
         Cell: ({ cell }) =>
@@ -207,7 +203,7 @@ const Table: FC<TProps> = memo(function Table({
         maxSize: 0,
       },
       {
-        accessorKey: 'publication',
+        accessorKey: 'publicationId',
         header: t('table.publication'),
         maxSize: 0,
         Cell: ({ cell }) =>
