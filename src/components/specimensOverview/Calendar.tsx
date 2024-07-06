@@ -8,10 +8,10 @@ import { TSpecimen } from '../../@types/specimen'
 import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
 import CalendarModal from './CalendarModal'
 import { TMetaTitle } from '../../@types/metaTitle'
-
-import { useTranslatedConstants } from '../../utils/helperHooks'
 import { getFirstMondayOfMonth } from '../../utils/helperFunctions'
 import ShowInfoMessage from '../reusableComponents/ShowInfoMessage'
+import { useMutationListQuery } from '../../api/mutation'
+import { useLanguageCode } from '../../utils/helperHooks'
 
 type TProps = {
   specimens: TSpecimen[]
@@ -27,7 +27,8 @@ type TSpecimensDay = {
 const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
   const { t } = useTranslation()
   const { calendarDate } = useSpecimensOverviewStore()
-  const { mutations } = useTranslatedConstants()
+  const { data: mutations } = useMutationListQuery()
+  const { languageCode } = useLanguageCode()
   const monday = getFirstMondayOfMonth(calendarDate)
   const dayJs = dayjs(calendarDate)
   const daysInMonth = dayJs.daysInMonth()
@@ -52,10 +53,9 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
         sortBy(
           groupBy(
             found.specimens,
-            (obj) =>
-              `${obj.mutation}_${obj.publicationMark}_${obj.number}_${obj.state}`
+            (obj) => `${obj.mutationId}_${obj.publicationMark}_${obj.number}`
           ),
-          (obj) => obj.map((o) => `${o.mutation}_${o.publicationMark}`)
+          (obj) => obj.map((o) => `${o.mutationId}_${o.publicationMark}`)
         )
       )
       specimensInDay.push({
@@ -164,9 +164,8 @@ const Calendar: FC<TProps> = ({ specimens, metaTitle }) => {
                     <Text>
                       {firstInRow.number}{' '}
                       {
-                        mutations.find(
-                          (m) => m.id === Number(firstInRow.mutation)
-                        )?.name
+                        mutations?.find((m) => m.id === firstInRow.mutationId)
+                          ?.name[languageCode]
                       }{' '}
                       {firstInRow.publicationMark.length
                         ? firstInRow.publicationMark

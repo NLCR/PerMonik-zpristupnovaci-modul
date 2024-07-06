@@ -12,17 +12,18 @@ import dayjs from 'dayjs'
 import { IconCheck } from '@tabler/icons-react'
 import { TSpecimen } from '../../@types/specimen'
 import { TVolumeDetail } from '../../@types/volume'
-import {
-  useMantineTableLang,
-  useTranslatedConstants,
-} from '../../utils/helperHooks'
+import { useLanguageCode, useMantineTableLang } from '../../utils/helperHooks'
+import { useMutationListQuery } from '../../api/mutation'
+import { usePublicationListQuery } from '../../api/publication'
 
 type TProps = {
   volume: TVolumeDetail
 }
 
 const Table: FC<TProps> = memo(function Table({ volume }) {
-  const { publications, mutations } = useTranslatedConstants()
+  const { data: mutations } = useMutationListQuery()
+  const { data: publications } = usePublicationListQuery()
+  const { languageCode } = useLanguageCode()
   const { mantineTableLocale } = useMantineTableLang()
   const { t } = useTranslation()
   // const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({})
@@ -80,15 +81,18 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         header: t('volume_overview.mutation'),
         maxSize: 0,
         Cell: ({ row }) =>
-          mutations.find((m) => m.id === Number(row.original.mutation))?.name,
+          mutations?.find((m) => m.id === row.original.mutationId)?.name[
+            languageCode
+          ],
       },
       {
         accessorKey: 'publication',
         header: t('volume_overview.publication'),
         maxSize: 0,
         Cell: ({ row }) =>
-          publications.find((p) => p.id === Number(row.original.publication))
-            ?.name,
+          publications?.find((p) => p.id === row.original.publicationId)?.name[
+            languageCode
+          ],
       },
       {
         accessorKey: 'name',
@@ -119,7 +123,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           align: 'center',
         },
         Cell: ({ row }) =>
-          row.original.states?.includes('OK') ? (
+          row.original.damageTypes?.includes('OK') ? (
             <IconCheck size="1rem" />
           ) : null,
         // <Checkbox checked={row.original.states?.includes('OK')} readOnly />
@@ -133,7 +137,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           align: 'center',
         },
         Cell: ({ row }) =>
-          row.original.states?.includes('PP') ? (
+          row.original.damageTypes?.includes('PP') ? (
             <IconCheck size="1rem" />
           ) : null,
         // <Checkbox checked={row.original.states?.includes('PP')} readOnly />
@@ -147,7 +151,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           align: 'center',
         },
         Cell: ({ row }) =>
-          row.original.states?.includes('Deg') ? (
+          row.original.damageTypes?.includes('Deg') ? (
             <IconCheck size="1rem" />
           ) : null,
         // <Checkbox checked={row.original.states?.includes('Deg')} readOnly />
@@ -161,7 +165,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           align: 'center',
         },
         Cell: ({ row }) =>
-          row.original.states?.includes('ChS') ? (
+          row.original.damageTypes?.includes('ChS') ? (
             <IconCheck size="1rem" />
           ) : null,
         // <Checkbox checked={row.original.states?.includes('ChS')} readOnly />
@@ -175,7 +179,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           align: 'center',
         },
         Cell: ({ row }) =>
-          row.original.states?.includes('ChPag') ? (
+          row.original.damageTypes?.includes('ChPag') ? (
             <IconCheck size="1rem" />
           ) : null,
         // <Checkbox checked={row.original.states?.includes('ChPag')} readOnly />
@@ -189,7 +193,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           align: 'center',
         },
         Cell: ({ row }) =>
-          row.original.states?.includes('ChDatum') ? (
+          row.original.damageTypes?.includes('ChDatum') ? (
             <IconCheck size="1rem" />
           ) : null,
         // <Checkbox
@@ -206,7 +210,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           align: 'center',
         },
         Cell: ({ row }) =>
-          row.original.states?.includes('ChCis') ? (
+          row.original.damageTypes?.includes('ChCis') ? (
             <IconCheck size="1rem" />
           ) : null,
         // <Checkbox checked={row.original.states?.includes('ChCis')} readOnly />
@@ -220,7 +224,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           align: 'center',
         },
         Cell: ({ row }) =>
-          row.original.states?.includes('ChSv') ? (
+          row.original.damageTypes?.includes('ChSv') ? (
             <IconCheck size="1rem" />
           ) : null,
         // <Checkbox checked={row.original.states?.includes('ChSv')} readOnly />
@@ -234,7 +238,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           align: 'center',
         },
         Cell: ({ row }) =>
-          row.original.states?.includes('Cz') ? (
+          row.original.damageTypes?.includes('Cz') ? (
             <IconCheck size="1rem" />
           ) : null,
         // <Checkbox checked={row.original.states?.includes('Cz')} readOnly />
@@ -245,7 +249,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         maxSize: 0,
       },
     ],
-    [mutations, publications, t]
+    [languageCode, mutations, publications, t]
   )
 
   const table = useMantineReactTable({

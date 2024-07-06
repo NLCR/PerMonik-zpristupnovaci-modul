@@ -18,12 +18,11 @@ import { useTranslation } from 'react-i18next'
 import React, { useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import { toast } from 'react-toastify'
-import useUsersQuery from '../../api/query/administration/useUsersQuery'
+import { useUserListQuery, useUpdateUserMutation } from '../../api/user'
 import Loader from '../../components/reusableComponents/Loader'
 import ShowError from '../../components/reusableComponents/ShowError'
 import { TUser } from '../../@types/user'
-import { owners } from '../../utils/constants'
-import useSaveUserMutation from '../../api/query/administration/useSaveUserMutation'
+import { useOwnerListQuery } from '../../api/owner'
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -77,9 +76,9 @@ const Users = () => {
     active: false,
     email: '',
     id: '',
-    name: '',
-    note: '',
-    owner: '',
+    firstName: '',
+    lastName: '',
+    owners: [],
     role: 'user',
     userName: '',
   })
@@ -89,8 +88,14 @@ const Users = () => {
     data: users,
     isLoading: usersLoading,
     isError: usersError,
-  } = useUsersQuery()
-  const { mutateAsync: doSave, isPending: savingUser } = useSaveUserMutation()
+  } = useUserListQuery()
+  const {
+    data: owners,
+    isLoading: ownersLoading,
+    isError: ownersError,
+  } = useOwnerListQuery()
+
+  const { mutateAsync: doSave, isPending: savingUser } = useUpdateUserMutation()
 
   useEffect(() => {
     if (users?.length) {
@@ -137,9 +142,16 @@ const Users = () => {
       <Title order={3} className={classes.title}>
         {t('administration.users')}
       </Title>
-      {usersLoading ? <Loader /> : null}
-      {!usersLoading && usersError ? <ShowError /> : null}
-      {!usersLoading && !usersError && users ? (
+      {usersLoading || ownersLoading ? <Loader /> : null}
+      {(!usersLoading && usersError) || (!ownersLoading && ownersError) ? (
+        <ShowError />
+      ) : null}
+      {!usersLoading &&
+      !usersError &&
+      users &&
+      !ownersLoading &&
+      !ownersError &&
+      owners ? (
         <Flex className={classes.innerContainer}>
           <ScrollArea className={classes.scrollArea}>
             {users.map((u) => (
@@ -150,7 +162,7 @@ const Users = () => {
                 })}
                 onClick={() => (!savingUser ? setSelectedUser(u) : null)}
               >
-                {u.name}
+                {u.firstName} {u.lastName}
               </Text>
             ))}
           </ScrollArea>
@@ -158,28 +170,28 @@ const Users = () => {
           {selectedUser && users ? (
             <Flex className={classes.userContainer}>
               <Title order={4}>
-                {users.find((u) => u.id === selectedUser.id)?.name}
+                {selectedUser.firstName} {selectedUser.lastName}
               </Title>
               <Flex gap={10}>
                 <TextInput
-                  label={t('administration.user_login_name')}
-                  value={selectedUser.userName}
+                  label={t('administration.first_name')}
+                  value={selectedUser.firstName}
                   // disabled={savingUser}
                   onChange={(event) =>
                     setSelectedUser((prevState) => ({
                       ...prevState,
-                      userName: event.target.value,
+                      firstName: event.target.value,
                     }))
                   }
                 />
                 <TextInput
-                  label={t('administration.user_name')}
-                  value={selectedUser.name}
+                  label={t('administration.last_name')}
+                  value={selectedUser.lastName}
                   // disabled={savingUser}
                   onChange={(event) =>
                     setSelectedUser((prevState) => ({
                       ...prevState,
-                      name: event.target.value,
+                      lastName: event.target.value,
                     }))
                   }
                 />
@@ -196,34 +208,21 @@ const Users = () => {
                 />
               </Flex>
               <Flex gap={10}>
-                <TextInput
-                  label={t('administration.note')}
-                  value={selectedUser.note ? selectedUser.note : ''}
-                  // disabled={savingUser}
-                  onChange={(event) =>
-                    setSelectedUser((prevState) => ({
-                      ...prevState,
-                      note: event.target.value,
-                    }))
-                  }
-                />
                 <MultiSelect
                   sx={{
                     minWidth: rem(218),
                   }}
                   label={t('administration.owners')}
-                  value={
-                    selectedUser.owner ? selectedUser.owner.split(',') : []
-                  }
+                  value={selectedUser.owners ? selectedUser.owners : []}
                   // disabled={savingUser}
                   data={owners.map((o) => ({
                     value: o.id.toString(),
                     label: o.name,
                   }))}
-                  onChange={(value) =>
+                  onChange={(values) =>
                     setSelectedUser((prevState) => ({
                       ...prevState,
-                      owner: value.join(','),
+                      owners: values,
                     }))
                   }
                 />

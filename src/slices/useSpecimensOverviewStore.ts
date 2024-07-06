@@ -7,11 +7,11 @@ export type TParams = {
   dateEnd: number
   names: string[]
   subNames: string[]
-  mutations: string[]
-  publications: string[]
+  mutationIds: string[]
+  publicationIds: string[]
   publicationMarks: string[]
-  owners: string[]
-  states: string[]
+  ownerIds: string[]
+  damageTypes: string[]
 }
 
 export const initialParams: TParams = {
@@ -19,17 +19,17 @@ export const initialParams: TParams = {
   dateEnd: 0,
   names: [],
   subNames: [],
-  mutations: [],
-  publications: [],
+  mutationIds: [],
+  publicationIds: [],
   publicationMarks: [],
-  owners: [],
-  states: [],
+  ownerIds: [],
+  damageTypes: [],
 }
 
 interface TVariablesState {
   params: typeof initialParams
   pagination: MRT_PaginationState
-  volumeInput: string
+  barCodeInput: string
   view: 'calendar' | 'table'
   calendarDate: Date | null
   calendarMinDate: Date | undefined
@@ -37,7 +37,7 @@ interface TVariablesState {
 
 interface TState extends TVariablesState {
   setParams: (values: typeof initialParams) => void
-  setVolumeInput: (value: string) => void
+  setBarCodeInput: (value: string) => void
   setPagination: (value: PaginationState) => void
   resetAll: () => void
   setView: (value: 'calendar' | 'table') => void
@@ -48,16 +48,16 @@ interface TState extends TVariablesState {
 export const useSpecimensOverviewStore = create<TState>()((set) => ({
   params: initialParams,
   pagination: { pageIndex: 0, pageSize: 25 },
-  volumeInput: '',
+  barCodeInput: '',
   view: 'calendar',
   calendarDate: null,
   calendarMinDate: undefined,
   setParams: (values) => set(() => ({ params: values })),
-  setVolumeInput: (value) => set(() => ({ volumeInput: value })),
+  setBarCodeInput: (value) => set(() => ({ barCodeInput: value })),
   setPagination: (value) => set(() => ({ pagination: value })),
   resetAll: () =>
     set((state) => ({
-      volumeInput: '',
+      barCodeInput: '',
       params: initialParams,
       pagination: { ...state.pagination, pageIndex: 0 },
       calendarDate: undefined,

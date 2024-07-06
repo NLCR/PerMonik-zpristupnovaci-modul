@@ -114,16 +114,6 @@
     "owners": "Vlastníci",
     "basic_info": "Základné údaje"
   },
-  "publications": {
-    "0": "Bez označenia",
-    "1": "Ranné",
-    "2": "Poludnie",
-    "3": "Popoludnie",
-    "4": "Večerné",
-    "5": "Iné",
-    "6": "Iná príloha",
-    "7": "Pravidelná príloha"
-  },
   "tooltip_states": {
     "uncontrolled": "Nekontrolované",
     "missing_page": "Chýbajúce strany",
@@ -164,12 +154,18 @@
     "page_dont_exists": "Táto stránka neexistuje"
   },
   "administration": {
-    "users": "Užívatelia",
+    "users": "Používatelia",
     "owners": "Vlastníci",
     "new_user_button": "Pridať používateľa",
-    "user": "Užívateľ",
+    "user_login_name": "Prihlasovacie meno",
+    "first_name": "Meno",
+    "last_name": "Priezvisko",
+    "email": "Email",
+    "note": "Poznámka",
+    "role": "Rola",
+    "user": "Používateľ",
     "admin": "Administrátor",
     "save": "Uložiť",
-    "user_active": "Užívateľ je aktívny"
+    "user_active": "Používateľ je aktívny"
   }
 }

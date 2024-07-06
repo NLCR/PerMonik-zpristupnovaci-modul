@@ -22,15 +22,17 @@ import {
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { modals } from '@mantine/modals'
-import useMetaTitleQuery from '../api/query/useMetaTitleQuery'
-import useSpecimensWithDatesAndCountQuery from '../api/query/useSpecimensWithDatesAndCountQuery'
+import { useMetaTitleQuery } from '../api/metaTitle'
+import {
+  useSpecimenListQuery,
+  useSpecimensStartDateForCalendar,
+  useSpecimenFacetsQuery,
+} from '../api/specimen'
 import Loader from '../components/reusableComponents/Loader'
 import ShowError from '../components/reusableComponents/ShowError'
 import ShowInfoMessage from '../components/reusableComponents/ShowInfoMessage'
 import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
-import useSpecimensStartDateForCalendar from '../api/query/useSpecimensStartDateForCalendar'
 import SpecimenDayDetailExampleImage from '../assets/images/specimen-day-detail-example.png'
-import useSpecimensFacetsQuery from '../api/query/useSpecimensFacetsQuery'
 
 const Facets = React.lazy(
   () => import('../components/specimensOverview/Facets')
@@ -108,17 +110,14 @@ const SpecimensOverview = () => {
     isLoading: specimensLoading,
     isError: specimensError,
     isRefetching: specimensRefetching,
-  } = useSpecimensWithDatesAndCountQuery(
-    metaTitleId as string,
-    metaTitleEnabled
-  )
+  } = useSpecimenListQuery(metaTitleId as string, metaTitleEnabled)
 
   const {
     data: facets,
     isLoading: facetsLoading,
     isError: facetsError,
     isRefetching: facetsRefething,
-  } = useSpecimensFacetsQuery(metaTitleId as string, metaTitleEnabled)
+  } = useSpecimenFacetsQuery(metaTitleId as string, metaTitleEnabled)
 
   useEffect(() => {
     resetAll()

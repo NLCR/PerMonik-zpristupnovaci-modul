@@ -8,9 +8,9 @@ import {
   Menu,
   Image,
   UnstyledButton,
-  // Button,
-  // Text,
-  // Divider,
+  Button,
+  Text,
+  Divider,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +22,7 @@ import Czech from '../assets/images/czech-republic.png'
 import Slovakia from '../assets/images/slovakia.png'
 import English from '../assets/images/united-states.png'
 import { changeLanguage, TSupportedLanguages } from '../i18next'
-// import useMeQuery from '../api/query/administration/useMeQuery'
+import { useMeQuery } from '../api/user'
 
 const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
   header: {
@@ -141,9 +141,9 @@ const Header = () => {
   const [opened, { toggle }] = useDisclosure(false)
   const { t, i18n } = useTranslation()
   const { classes } = useStyles({ opened: langOpened })
-  // const { data: me } = useMeQuery()
+  const { data: me } = useMeQuery()
 
-  // const handleLogout = () => {}
+  const handleLogout = () => {}
 
   const items = data.map((item) => (
     <Menu.Item
@@ -165,39 +165,41 @@ const Header = () => {
           <NavLink to={`/${i18n.resolvedLanguage}/`} className={classes.link}>
             {t('header.home')}
           </NavLink>
-          {/* {me?.role === 'admin' ? ( */}
-          {/*  <NavLink */}
-          {/*    to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`} */}
-          {/*    className={classes.link} */}
-          {/*  > */}
-          {/*    {t('header.administration')} */}
-          {/*  </NavLink> */}
-          {/* ) : null} */}
-          {/* {!me ? ( */}
-          {/*  <NavLink */}
-          {/*    to={`${i18n.resolvedLanguage}/${t('urls.login')}`} */}
-          {/*    className={classes.link} */}
-          {/*  > */}
-          {/*    {t('header.login')} */}
-          {/*  </NavLink> */}
-          {/* ) : null} */}
-          {/* {me ? ( */}
-          {/*  <> */}
-          {/*    <Divider */}
-          {/*      orientation="vertical" */}
-          {/*      size="sm" */}
-          {/*      className={classes.divider} */}
-          {/*    /> */}
-          {/*    <Button */}
-          {/*      size="sm" */}
-          {/*      className={classes.logoutButton} */}
-          {/*      onClick={() => handleLogout()} */}
-          {/*    > */}
-          {/*      {t('header.logout')} */}
-          {/*    </Button> */}
-          {/*    <Text className={classes.name}>{me.name}</Text> */}
-          {/*  </> */}
-          {/* ) : null} */}
+          {me?.role === 'admin' ? (
+            <NavLink
+              to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`}
+              className={classes.link}
+            >
+              {t('header.administration')}
+            </NavLink>
+          ) : null}
+          {!me ? (
+            <NavLink
+              to={`${i18n.resolvedLanguage}/${t('urls.login')}`}
+              className={classes.link}
+            >
+              {t('header.login')}
+            </NavLink>
+          ) : null}
+          {me ? (
+            <>
+              <Divider
+                orientation="vertical"
+                size="sm"
+                className={classes.divider}
+              />
+              <Button
+                size="sm"
+                className={classes.logoutButton}
+                onClick={() => handleLogout()}
+              >
+                {t('header.logout')}
+              </Button>
+              <Text className={classes.name}>
+                {me.firstName} {me.lastName}
+              </Text>
+            </>
+          ) : null}
           <Menu
             onOpen={() => setLangOpened(true)}
             onClose={() => setLangOpened(false)}

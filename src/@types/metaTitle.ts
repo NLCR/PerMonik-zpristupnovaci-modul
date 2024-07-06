@@ -1,6 +1,6 @@
 import { TSpecimensPublicationDays } from './specimen'
 
-export interface TMetaTitlesWithStats {
+export interface TMetaTitleOverview {
   id: string
   name: string
   specimens: {
@@ -14,7 +14,6 @@ export interface TMetaTitlesWithStats {
 export interface TMetaTitle {
   id: string
   name: string
-  periodicity: string
   note: string | null
-  showToNotLoggedUsers: boolean
+  isPublic: boolean
 }

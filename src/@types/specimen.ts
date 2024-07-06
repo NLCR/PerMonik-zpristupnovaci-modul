@@ -1,34 +1,25 @@
-import {
-  mutationsFromBE,
-  ownersFromBE,
-  publicationsFromBE,
-  states,
-} from '../utils/constants'
+import { damageTypes } from '../utils/constants'
 
 export interface TSpecimen {
   id: string
-  idIssue: string
-  idMetaTitle: string
+  metaTitleId: string
+  volumeId: string
   barCode: string
   numExists: boolean
   numMissing: boolean
-  signature: string
-  owner: typeof ownersFromBE
-  states: typeof states | null
-  state: 'ok' | 'auto'
-  stateDescription: string
-  pages: { damaged: string[]; missing: string[] }
+  ownerId: string
+  damageTypes: typeof damageTypes
+  damagedPages: number[]
+  missingPages: number[]
   note: string
   name: string
   subName: string
-  publication: typeof publicationsFromBE
-  mutation: typeof mutationsFromBE
+  publicationId: string
+  mutationId: string
   publicationMark: string
   publicationDate: string
-  publicationDay: string
-  periodicity: string
+  publicationDateString: string
   number: string
-  metaTitleName: string
   pagesCount: number
   isAttachment: boolean
 }
@@ -43,17 +34,17 @@ export interface TSpecimenFacet {
   count: number
 }
 
-export interface TSpecimenStatesFacet {
-  name: (typeof states)[number]
+export interface TSpecimenDamageTypesFacet {
+  name: (typeof damageTypes)[number]
   count: number
 }
 
 export interface TSpecimensFacets {
   names: TSpecimenFacet[]
   subNames: TSpecimenFacet[]
-  mutations: TSpecimenFacet[]
-  publications: TSpecimenFacet[]
+  mutationIds: TSpecimenFacet[]
+  publicationIds: TSpecimenFacet[]
   publicationMarks: TSpecimenFacet[]
-  owners: TSpecimenFacet[]
-  states: TSpecimenStatesFacet[]
+  ownerIds: TSpecimenFacet[]
+  damageTypes: TSpecimenDamageTypesFacet[]
 }

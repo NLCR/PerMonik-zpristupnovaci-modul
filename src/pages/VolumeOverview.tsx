@@ -11,12 +11,13 @@ import {
 } from '@mantine/core'
 import React, { Suspense, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import useVolumeDetailQuery from '../api/query/useVolumeDetailQuery'
+import { useVolumeDetailQuery } from '../api/volume'
 import Loader from '../components/reusableComponents/Loader'
 import ShowError from '../components/reusableComponents/ShowError'
 import ShowInfoMessage from '../components/reusableComponents/ShowInfoMessage'
-import { owners } from '../utils/constants'
-import { useTranslatedConstants } from '../utils/helperHooks'
+import { useLanguageCode } from '../utils/helperHooks'
+import { useMutationListQuery } from '../api/mutation'
+import { useOwnerListQuery } from '../api/owner'
 
 const SpecimensTable = React.lazy(
   () => import('../components/volumeOverview/Table')
@@ -55,8 +56,9 @@ const VolumeOverview = () => {
   const { classes, cx } = useStyles()
   const { volumeId } = useParams()
   const { t } = useTranslation()
-  // const { publications, mutations } = useTranslatedConstants()
-  const { mutations } = useTranslatedConstants()
+  const { data: mutations } = useMutationListQuery()
+  const { data: owners } = useOwnerListQuery()
+  const { languageCode } = useLanguageCode()
   const [showTable, setShowTable] = useState(false)
   const [inputDataScrolled, setInputDataScrolled] = useState(false)
   // const [dailyReleasesScrolled, setDailyReleasesScrolled] = useState(false)
@@ -140,9 +142,8 @@ const VolumeOverview = () => {
                   <td>{t('volume_overview.mutation')}</td>
                   <td>
                     {
-                      mutations.find(
-                        (m) => m.id === Number(volume.volume.mutation)
-                      )?.name
+                      mutations?.find((m) => m.id === volume.volume.mutationId)
+                        ?.name[languageCode]
                     }
                   </td>
                 </tr>
@@ -183,10 +184,7 @@ const VolumeOverview = () => {
                 <tr>
                   <td>{t('volume_overview.owner')}</td>
                   <td>
-                    {
-                      owners.find((o) => o.id === Number(volume.volume.owner))
-                        ?.name
-                    }
+                    {owners?.find((o) => o.id === volume.volume.ownerId)?.name}
                   </td>
                 </tr>
                 <tr>

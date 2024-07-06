@@ -12,14 +12,14 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { IconFileSymlink } from '@tabler/icons-react'
 import dayjs from 'dayjs'
-import { owners, states } from '../../utils/constants'
+import { damageTypes } from '../../utils/constants'
 import i18next from '../../i18next'
 import { TSpecimen } from '../../@types/specimen'
 import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
-import {
-  useMantineTableLang,
-  useTranslatedConstants,
-} from '../../utils/helperHooks'
+import { useLanguageCode, useMantineTableLang } from '../../utils/helperHooks'
+import { useMutationListQuery } from '../../api/mutation'
+import { usePublicationListQuery } from '../../api/publication'
+import { useOwnerListQuery } from '../../api/owner'
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -35,8 +35,8 @@ const useStyles = createStyles((theme) => ({
 }))
 
 const getSpecimenState = (sp: TSpecimen) => {
-  if (sp.states) {
-    if (!sp.states.length) {
+  if (sp.damageTypes) {
+    if (!sp.damageTypes.length) {
       return (
         <Tooltip label={i18next.t('tooltip_states.uncontrolled')}>
           <Box
@@ -51,7 +51,7 @@ const getSpecimenState = (sp: TSpecimen) => {
         </Tooltip>
       )
     }
-    if (sp.states.includes('ChS')) {
+    if (sp.damageTypes.includes('ChS')) {
       return (
         <Tooltip label={i18next.t('tooltip_states.missing_page')}>
           <Box
@@ -66,7 +66,11 @@ const getSpecimenState = (sp: TSpecimen) => {
         </Tooltip>
       )
     }
-    if (sp.states.some((st) => states.filter((s) => s !== 'OK').includes(st))) {
+    if (
+      sp.damageTypes.some((st) =>
+        damageTypes.filter((s) => s !== 'OK').includes(st)
+      )
+    ) {
       return (
         <Tooltip label={i18next.t('tooltip_states.damaged_document')}>
           <Box
@@ -114,12 +118,11 @@ const getSpecimenState = (sp: TSpecimen) => {
 
 const OwnersBarCodeCell: FC<{
   row: MRT_Row<TSpecimen>
-  ownerRow: 0 | 1 | 2 | 3 | 4
-}> = ({ row, ownerRow }) => {
+}> = ({ row }) => {
   const { classes } = useStyles()
   const { t, i18n } = useTranslation()
 
-  return Number(row.original.owner) === owners[ownerRow].id ? (
+  return (
     <Flex
       sx={(theme) => ({
         gap: theme.spacing.xs,
@@ -138,7 +141,7 @@ const OwnersBarCodeCell: FC<{
       </Link>
       {getSpecimenState(row.original)}
     </Flex>
-  ) : undefined
+  )
 }
 
 type TProps = {
@@ -152,7 +155,6 @@ const Table: FC<TProps> = memo(function Table({
   count,
   specimensRefetching,
 }) {
-  const { publications, mutations } = useTranslatedConstants()
   const [localPagination, setLocalPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 25,
@@ -160,19 +162,37 @@ const Table: FC<TProps> = memo(function Table({
   const { t } = useTranslation()
   const { setPagination } = useSpecimensOverviewStore()
   const { mantineTableLocale } = useMantineTableLang()
+  const { data: mutations } = useMutationListQuery()
+  const { data: publications } = usePublicationListQuery()
+  const { data: owners } = useOwnerListQuery()
+  const { languageCode } = useLanguageCode()
 
   useEffect(() => {
     setPagination(localPagination)
   }, [localPagination, setPagination])
 
-  const columns = useMemo<MRT_ColumnDef<TSpecimen>[]>(
-    () => [
+  const columns = useMemo<MRT_ColumnDef<TSpecimen>[]>(() => {
+    const ownersArray = owners
+      ? owners.map((o) => ({
+          id: `owner${o.name}`,
+          accessorKey: 'owner',
+          header: o.name,
+          maxSize: 0,
+          Cell: ({ row }: { row: MRT_Row<TSpecimen> }) => (
+            <OwnersBarCodeCell row={row} />
+          ),
+        }))
+      : []
+
+    return [
       {
         accessorKey: 'mutation',
         header: t('table.mutations'),
         maxSize: 0,
         Cell: ({ cell }) =>
-          mutations.find((m) => m.id === Number(cell.getValue<string>()))?.name,
+          mutations?.find((m) => m.id === cell.getValue<string>())?.name[
+            languageCode
+          ],
       },
       {
         accessorKey: 'publicationDate',
@@ -191,8 +211,9 @@ const Table: FC<TProps> = memo(function Table({
         header: t('table.publication'),
         maxSize: 0,
         Cell: ({ cell }) =>
-          publications.find((p) => p.id === Number(cell.getValue<string>()))
-            ?.name,
+          publications?.find((p) => p.id === cell.getValue<string>())?.name[
+            languageCode
+          ],
       },
       {
         accessorKey: 'number',
@@ -204,44 +225,9 @@ const Table: FC<TProps> = memo(function Table({
         header: t('table.pages_count'),
         maxSize: 0,
       },
-      {
-        id: `owner${owners[0].name}`,
-        accessorKey: 'owner',
-        header: owners[0].name,
-        maxSize: 0,
-        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={0} />,
-      },
-      {
-        id: `owner${owners[1].name}`,
-        accessorKey: 'owner',
-        header: owners[1].name,
-        maxSize: 0,
-        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={1} />,
-      },
-      {
-        id: `owner${owners[2].name}`,
-        accessorKey: 'owner',
-        header: owners[2].name,
-        maxSize: 0,
-        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={2} />,
-      },
-      {
-        id: `owner${owners[3].name}`,
-        accessorKey: 'owner',
-        header: owners[3].name,
-        maxSize: 0,
-        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={3} />,
-      },
-      {
-        id: `owner${owners[4].name}`,
-        accessorKey: 'owner',
-        header: owners[4].name,
-        maxSize: 0,
-        Cell: ({ row }) => <OwnersBarCodeCell row={row} ownerRow={4} />,
-      },
-    ],
-    [mutations, publications, t]
-  )
+      ...ownersArray,
+    ]
+  }, [languageCode, mutations, owners, publications, t])
 
   const table = useMantineReactTable({
     columns,

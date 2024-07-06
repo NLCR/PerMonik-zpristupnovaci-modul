@@ -115,16 +115,6 @@
     "owners": "Vlastníci",
     "basic_info": "Základní údaje"
   },
-  "publications": {
-    "0": "Bez označení",
-    "1": "Ranní",
-    "2": "Polední",
-    "3": "Odpolední",
-    "4": "Večerní",
-    "5": "Jiné",
-    "6": "Jiná příloha",
-    "7": "Pravidelná příloha"
-  },
   "tooltip_states": {
     "uncontrolled": "Nekontrolováno",
     "missing_page": "Chybějící strany",
@@ -169,7 +159,8 @@
     "owners": "Vlastníci",
     "new_user_button": "Přidat uživatele",
     "user_login_name": "Přihlašovací jméno",
-    "user_name": "Jméno uživatele",
+    "first_name": "Jméno",
+    "last_name": "Příjmení",
     "email": "Email",
     "note": "Poznámka",
     "role": "Role",

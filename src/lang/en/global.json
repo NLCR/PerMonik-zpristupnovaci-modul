@@ -114,16 +114,6 @@
     "owners": "Owners",
     "basic_info": "Basic info"
   },
-  "publications": {
-    "0": "Without marking",
-    "1": "Morning",
-    "2": "Midday",
-    "3": "Afternoon",
-    "4": "Evening",
-    "5": "Other",
-    "6": "Another attachment",
-    "7": "Periodic attachment"
-  },
   "tooltip_states": {
     "uncontrolled": "Unchecked",
     "missing_page": "Missing pages",
@@ -166,8 +156,13 @@
   "administration": {
     "users": "Users",
     "owners": "Owners",
-    "new_user_button": "Add new user",
-    "new_user": "Nový uživatel",
+    "new_user_button": "Add User",
+    "user_login_name": "Login Name",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "Email",
+    "note": "Note",
+    "role": "Role",
     "user": "User",
     "admin": "Administrator",
     "save": "Save",

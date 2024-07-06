@@ -6,9 +6,11 @@ import dayjs from 'dayjs'
 import { Link, useNavigate } from 'react-router-dom'
 import { modals } from '@mantine/modals'
 import { TSpecimen } from '../../@types/specimen'
-import { owners } from '../../utils/constants'
-import { useTranslatedConstants } from '../../utils/helperHooks'
+import { useLanguageCode } from '../../utils/helperHooks'
 import VolumeOverviewStatsModal from '../reusableComponents/VolumeOverviewStatsModal'
+import { usePublicationListQuery } from '../../api/publication'
+import { useMutationListQuery } from '../../api/mutation'
+import { useOwnerListQuery } from '../../api/owner'
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -42,7 +44,10 @@ const CalendarModal: FC<TProps> = ({ row, day }) => {
   const navigate = useNavigate()
   const { classes } = useStyles()
   const { t, i18n } = useTranslation()
-  const { publications, mutations } = useTranslatedConstants()
+  const { data: mutations } = useMutationListQuery()
+  const { data: publications } = usePublicationListQuery()
+  const { data: owners } = useOwnerListQuery()
+  const { languageCode } = useLanguageCode()
 
   return (
     <Flex direction="column">
@@ -70,10 +75,18 @@ const CalendarModal: FC<TProps> = ({ row, day }) => {
           {row.map((s) => (
             <tr key={s.id}>
               <td>
-                {mutations.find((m) => m.id === Number(s.mutation))?.name}
+                {
+                  mutations?.find((m) => m.id === s.mutationId)?.name[
+                    languageCode
+                  ]
+                }
               </td>
               <td>
-                {publications.find((p) => p.id === Number(s.publication))?.name}
+                {
+                  publications?.find((p) => p.id === s.publicationId)?.name[
+                    languageCode
+                  ]
+                }
               </td>
               <td>{s.name}</td>
               <td className={classes.shortedWidth}>{s.subName}</td>
@@ -84,7 +97,7 @@ const CalendarModal: FC<TProps> = ({ row, day }) => {
                   rel="noreferrer"
                   className={classes.link}
                 >
-                  {owners.find((o) => o.id === Number(s.owner))?.name}{' '}
+                  {owners?.find((o) => o.id === s.ownerId)?.name}{' '}
                   <IconExternalLink size={18} className={classes.linkImage} />
                 </a>
               </td>
@@ -109,7 +122,7 @@ const CalendarModal: FC<TProps> = ({ row, day }) => {
                         </Text>
                       ),
                       children: (
-                        <VolumeOverviewStatsModal volumeBarCode={s.barCode} />
+                        <VolumeOverviewStatsModal volumeBarCode={s.volumeId} />
                       ),
                     })
                   }}
@@ -148,7 +161,7 @@ const CalendarModal: FC<TProps> = ({ row, day }) => {
                 <Link
                   className={classes.link}
                   to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
-                    s.barCode
+                    s.volumeId
                   }`}
                 >
                   {s.barCode}{' '}

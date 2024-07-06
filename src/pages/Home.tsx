@@ -2,7 +2,7 @@ import { Box, createStyles, SimpleGrid, Text, Title } from '@mantine/core'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
-import useMetaTitlesWithStatsQuery from '../api/query/useMetaTitlesWithStatsQuery'
+import { useMetaTitleOverviewListQuery } from '../api/metaTitle'
 import Loader from '../components/reusableComponents/Loader'
 import ShowError from '../components/reusableComponents/ShowError'
 
@@ -26,7 +26,7 @@ const useStyles = createStyles((theme) => ({
 const Home = () => {
   const { classes } = useStyles()
   const { t, i18n } = useTranslation()
-  const { data, isLoading, isError } = useMetaTitlesWithStatsQuery()
+  const { data, isLoading, isError } = useMetaTitleOverviewListQuery()
 
   return (
     <Box sx={{ textAlign: 'center' }}>

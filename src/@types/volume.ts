@@ -1,10 +1,9 @@
-import { mutationsFromBE, ownersFromBE } from '../utils/constants'
 import { TMetaTitle } from './metaTitle'
 import {
   TSpecimen,
   TSpecimenFacet,
   TSpecimensPublicationDays,
-  TSpecimenStatesFacet,
+  TSpecimenDamageTypesFacet,
 } from './specimen'
 
 export interface TVolumeDetail {
@@ -22,23 +21,21 @@ export interface TVolume {
   dateFrom: string
   dateTo: string
   metaTitleId: string
-  mutation: typeof mutationsFromBE
+  mutationId: string
   periodicity: TParsedPeriodicity[]
-  pagesCount: number | null
-  firstNumber: string
+  firstNumber: number
   lastNumber: string
   note: string
   showAttachmentsAtTheEnd: boolean
   signature: string
-  owner: typeof ownersFromBE
-  year: string | null
+  ownerId: string
+  year: number
   publicationMark: string
 }
 
 export interface TParsedPeriodicity {
-  isAttachment: boolean
-  publication: string
   active: boolean
+  publication: string
   day: TPeriodicityDays
   pagesCount: number
   name: string
@@ -56,7 +53,7 @@ type TPeriodicityDays =
 
 export interface TVolumeOverviewStats {
   metaTitleName: string
-  owner: typeof ownersFromBE
+  ownerId: string
   signature: string
   barCode: string
   publicationDayMin: string | null
@@ -64,10 +61,10 @@ export interface TVolumeOverviewStats {
   numberMin: string | null
   numberMax: string | null
   pagesCount: string | null
-  mutations: TSpecimenFacet[]
+  mutationIds: TSpecimenFacet[]
   publicationMark: TSpecimenFacet[]
-  publication: TSpecimenFacet[]
-  states: TSpecimenStatesFacet[]
+  publicationIds: TSpecimenFacet[]
+  damageTypes: TSpecimenDamageTypesFacet[]
   publicationDayRanges: TSpecimenFacet[]
   specimens: TSpecimen[]
 }

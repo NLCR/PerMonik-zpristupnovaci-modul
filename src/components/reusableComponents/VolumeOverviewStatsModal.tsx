@@ -2,11 +2,13 @@ import { Box, Flex, Text } from '@mantine/core'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import useVolumeOverviewStatsQuery from '../../api/query/useVolumeOverviewStatsQuery'
+import { useVolumeOverviewStatsQuery } from '../../api/volume'
 import Loader from './Loader'
 import ShowError from './ShowError'
-import { owners } from '../../utils/constants'
-import { useTranslatedConstants } from '../../utils/helperHooks'
+import { useOwnerListQuery } from '../../api/owner'
+import { useMutationListQuery } from '../../api/mutation'
+import { usePublicationListQuery } from '../../api/publication'
+import { useLanguageCode } from '../../utils/helperHooks'
 
 type TProps = {
   volumeBarCode: string
@@ -14,16 +16,49 @@ type TProps = {
 
 const VolumeOverviewStatsModal: FC<TProps> = ({ volumeBarCode }) => {
   const { t } = useTranslation()
-  const { mutations, publications } = useTranslatedConstants()
+
+  const { languageCode } = useLanguageCode()
+
+  const {
+    data: owners,
+    isLoading: ownersLoading,
+    isError: ownersError,
+  } = useOwnerListQuery()
+  const {
+    data: mutations,
+    isLoading: mutationsLoading,
+    isError: mutationsError,
+  } = useMutationListQuery()
+  const {
+    data: publications,
+    isLoading: publicationsLoading,
+    isError: publicationsError,
+  } = usePublicationListQuery()
 
   const {
     data: volumeStats,
-    isLoading,
-    isError,
+    isLoading: volumeStatsLoading,
+    isError: volumeStatsError,
   } = useVolumeOverviewStatsQuery(volumeBarCode)
 
-  if (isLoading) return <Loader />
-  if (isError || !volumeStats) return <ShowError />
+  if (
+    volumeStatsLoading ||
+    ownersLoading ||
+    mutationsLoading ||
+    publicationsLoading
+  )
+    return <Loader />
+  if (
+    volumeStatsError ||
+    !volumeStats ||
+    ownersError ||
+    !owners ||
+    mutationsError ||
+    !mutations ||
+    publicationsError ||
+    !publications
+  )
+    return <ShowError />
 
   return (
     <Box>
@@ -33,9 +68,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeBarCode }) => {
       </Box>
       <Box mb={10}>
         <Text fw="bolder">{t('volume_overview.owner')}:</Text>
-        <Text>
-          {owners.find((o) => o.id === Number(volumeStats.owner))?.name}
-        </Text>
+        <Text>{owners.find((o) => o.id === volumeStats.ownerId)?.name}</Text>
       </Box>
       <Box mb={10}>
         <Text fw="bolder">{t('volume_overview.signature')}:</Text>
@@ -47,10 +80,10 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeBarCode }) => {
       </Box>
       <Box mb={10}>
         <Text fw="bolder">{t('volume_overview.mutation')}:</Text>
-        {volumeStats.mutations.map((m) => (
+        {volumeStats.mutationIds.map((m) => (
           <Flex key={m.name} w="45%" justify="space-between">
             <Text>
-              {mutations.find((mk) => mk.id === Number(m.name))?.name}
+              {mutations.find((mk) => mk.id === m.name)?.name[languageCode]}
             </Text>
             <Text>{m.count}x</Text>
           </Flex>
@@ -95,10 +128,10 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeBarCode }) => {
       </Box>
       <Box mb={10}>
         <Text fw="bolder">{t('volume_overview.publication')}:</Text>
-        {volumeStats.publication.map((p) => (
+        {volumeStats.publicationIds.map((p) => (
           <Flex key={p.name} w="45%" justify="space-between">
             <Text>
-              {publications.find((pk) => pk.id === Number(p.name))?.name}
+              {publications.find((pk) => pk.id === p.name)?.name[languageCode]}
             </Text>
             <Text>{p.count}x</Text>
           </Flex>
@@ -110,7 +143,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeBarCode }) => {
           {t('common.yes')}:{' '}
           {
             volumeStats.specimens.filter(
-              (sp) => sp.numExists && sp.states?.find((s) => s === 'OK')
+              (sp) => sp.numExists && sp.damageTypes?.find((s) => s === 'OK')
             ).length
           }
         </Text>
@@ -118,14 +151,14 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeBarCode }) => {
           {t('common.no')}:{' '}
           {
             volumeStats.specimens.filter(
-              (sp) => sp.numExists && !sp.states?.find((s) => s === 'OK')
+              (sp) => sp.numExists && !sp.damageTypes?.find((s) => s === 'OK')
             ).length
           }
         </Text>
       </Box>
       <Box mb={10}>
         <Text fw="bolder">{t('volume_overview.damage_types_overview')}:</Text>
-        {volumeStats.states
+        {volumeStats.damageTypes
           .filter((s) => s.name !== 'OK')
           .map((s) => (
             <Flex key={s.name} w="45%" justify="space-between">
@@ -147,7 +180,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeBarCode }) => {
       <Box mb={10}>
         <Text fw="bolder">{t('volume_overview.physical_condition')}:</Text>
         <Text>
-          {volumeStats.states.findIndex((s) => s.name !== 'OK')
+          {volumeStats.damageTypes.findIndex((s) => s.name !== 'OK')
             ? t('volume_overview.state_not_ok')
             : t('volume_overview.state_ok')}
         </Text>
@@ -157,7 +190,9 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeBarCode }) => {
         {volumeStats.specimens
           .filter(
             (s) =>
-              s.states?.includes('PP') && Number(s.number) >= 0 && !s.numMissing
+              s.damageTypes?.includes('PP') &&
+              Number(s.number) >= 0 &&
+              !s.numMissing
           )
           .map((s) => (
             <Flex key={s.name} w="45%" justify="space-between">
