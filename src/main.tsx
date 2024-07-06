@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { I18nextProvider } from 'react-i18next'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { init as SentryInit, BrowserTracing } from '@sentry/react'
+import { init as SentryInit, browserTracingIntegration } from '@sentry/react'
 import { MantineProvider, rem } from '@mantine/core'
 import { ToastContainer } from 'react-toastify'
 import i18next from './i18next'
@@ -22,7 +22,7 @@ SentryInit({
     // 'api.permonik.com',
     /^\//,
   ],
-  integrations: [new BrowserTracing()],
+  integrations: [browserTracingIntegration()],
   environment: MODE,
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
