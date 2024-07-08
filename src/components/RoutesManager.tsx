@@ -12,6 +12,7 @@ import Administration from '../pages/administration/Administration'
 import Users from '../pages/administration/Users'
 import Owners from '../pages/administration/Owners'
 import MetaTitles from '../pages/administration/MetaTitles'
+import Publications from '../pages/administration/Publications'
 
 const VolumeOverview = React.lazy(() => import('../pages/VolumeOverview'))
 
@@ -53,7 +54,8 @@ const RoutesManager = () => {
             <Route index element={<Navigate to={t('users')} />} />
             <Route path={t('users')} element={<Users />} />
             <Route path={t('owners')} element={<Owners />} />
-            <Route path={t('metaTitles')} element={<MetaTitles />} />
+            <Route path={t('meta_titles')} element={<MetaTitles />} />
+            <Route path={t('publications')} element={<Publications />} />
           </Route>
         ) : null}
         <Route path="*" element={<NotFound />} />

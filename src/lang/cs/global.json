@@ -6,7 +6,8 @@
     "administration": "administration",
     "users": "users",
     "owners": "owners",
-    "metaTitles": "meta-titles"
+    "meta_titles": "meta-titles",
+    "publications": "publications"
   },
   "common": {
     "error_occurred_when_loading_data": "Nastala chyba při načítání dat",
@@ -158,7 +159,8 @@
   "administration": {
     "users": "Uživatelé",
     "owners": "Vlastníci",
-    "metaTitles": "Metatituly",
+    "meta_titles": "Metatituly",
+    "publications": "Publikace",
     "new_user_button": "Přidat uživatele",
     "user_login_name": "Přihlašovací jméno",
     "first_name": "Jméno",
@@ -176,13 +178,20 @@
     "sigla": "Sigla",
     "create_owner": "Vytvořit nového vlastníka",
     "create_meta_title": "Vytvořit nový metatitul",
-    "is_public": "Veřejný"
+    "create_publication": "Vytvořit novou publikaci",
+    "meta_title_is_public": "Metatitul je veřejný",
+    "cs_name": "Český název",
+    "sk_name": "Slovenský název",
+    "en_name": "Anglický název"
   },
   "schema": {
     "name_min_length": "Vyplňte prosím pole `jméno`",
     "sigla_min_length": "Vyplňte prosím pole `sigla`",
     "first_name_min_length": "Vyplňte prosím pole `jméno`",
     "last_name_min_length": "Vyplňte prosím pole `příjmení`",
-    "email": "Vyplňte prosím správně pole `email`"
+    "email": "Vyplňte prosím správně pole `email`",
+    "cs_name_min_length": "Vyplňte prosím pole `Český název`",
+    "sk_name_min_length": "Vyplňte prosím pole `Slovenský název`",
+    "en_name_min_length": "Vyplňte prosím pole `Anglický název`"
   }
 }

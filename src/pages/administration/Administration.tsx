@@ -69,10 +69,18 @@ const Administration = () => {
         <NavLink
           className={classes.link}
           to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t(
-            'urls.metaTitles'
+            'urls.meta_titles'
           )}`}
         >
-          {t('administration.metaTitles')}
+          {t('administration.meta_titles')}
+        </NavLink>
+        <NavLink
+          className={classes.link}
+          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t(
+            'urls.publications'
+          )}`}
+        >
+          {t('administration.publications')}
         </NavLink>
       </Flex>
       <Divider className={classes.divider} />

@@ -10,7 +10,6 @@ import {
   Button,
   TextInput,
   LoadingOverlay,
-  Switch,
 } from '@mantine/core'
 import { useTranslation } from 'react-i18next'
 import React, { useEffect, useState } from 'react'
@@ -19,14 +18,15 @@ import { toast } from 'react-toastify'
 import Loader from '../../components/reusableComponents/Loader'
 import ShowError from '../../components/reusableComponents/ShowError'
 import {
-  EditableMetaTitleSchema,
-  TEditableMetaTitle,
-} from '../../schema/metaTitle'
+  EditablePublicationSchema,
+  TEditablePublication,
+} from '../../schema/publication'
 import {
-  useCreateMetaTitleMutation,
-  useMetaTitleListQuery,
-  useUpdateMetaTitleMutation,
-} from '../../api/metaTitle'
+  useCreatePublicationMutation,
+  usePublicationListQuery,
+  useUpdatePublicationMutation,
+} from '../../api/publication'
+import { useLanguageCode } from '../../utils/helperHooks'
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -73,42 +73,46 @@ const useStyles = createStyles((theme) => ({
   },
 }))
 
-const initialState: TEditableMetaTitle = {
-  name: '',
-  note: '',
-  isPublic: false,
+const initialState: TEditablePublication = {
+  name: {
+    cs: '',
+    sk: '',
+    en: '',
+  },
 }
 
-const MetaTitles = () => {
+const Publications = () => {
   const { classes } = useStyles()
   const { t } = useTranslation()
-  const [metaTitle, setMetaTitle] = useState<TEditableMetaTitle>(initialState)
+  const [publication, setPublication] =
+    useState<TEditablePublication>(initialState)
   const [overlayVisible, setOverlayVisible] = useState(false)
+  const { languageCode } = useLanguageCode()
 
   const {
-    data: metaTitles,
-    isLoading: metaTitlesLoading,
-    isError: metaTitlesError,
-  } = useMetaTitleListQuery()
+    data: publications,
+    isLoading: publicationsLoading,
+    isError: publicationsError,
+  } = usePublicationListQuery()
 
-  const { mutateAsync: doUpdate, isPending: updatingMetaTitle } =
-    useUpdateMetaTitleMutation()
-  const { mutateAsync: doCreate, isPending: creatingMetaTitle } =
-    useCreateMetaTitleMutation()
+  const { mutateAsync: doUpdate, isPending: updatingPublication } =
+    useUpdatePublicationMutation()
+  const { mutateAsync: doCreate, isPending: creatingPublication } =
+    useCreatePublicationMutation()
 
-  const pendingMutation = updatingMetaTitle || creatingMetaTitle
+  const pendingMutation = updatingPublication || creatingPublication
 
   const handleSubmit = async () => {
-    const validation = EditableMetaTitleSchema.safeParse(metaTitle)
+    const validation = EditablePublicationSchema.safeParse(publication)
     if (!validation.success) {
       validation.error.errors.map((e) => toast.error(e.message))
       return
     }
     try {
-      if (metaTitle.id) {
-        await doUpdate(metaTitle)
+      if (publication.id) {
+        await doUpdate(publication)
       } else {
-        await doCreate(metaTitle)
+        await doCreate(publication)
       }
       toast.success(t('common.saved_successfully'))
     } catch (e) {
@@ -141,84 +145,88 @@ const MetaTitles = () => {
         transitionDuration={100}
       />
       <Title order={3} className={classes.title}>
-        {t('administration.meta_titles')}
+        {t('administration.publications')}
       </Title>
-      {metaTitlesLoading ? <Loader /> : null}
-      {!metaTitlesLoading && metaTitlesError ? <ShowError /> : null}
-      {!metaTitlesLoading && !metaTitlesError ? (
+      {publicationsLoading ? <Loader /> : null}
+      {!publicationsLoading && publicationsError ? <ShowError /> : null}
+      {!publicationsLoading && !publicationsError ? (
         <Flex className={classes.innerContainer}>
           <ScrollArea className={classes.scrollArea}>
             <Text
               className={clsx(classes.scrollAreaUser, {
-                active: !metaTitle.id,
+                active: !publication.id,
               })}
               onClick={() =>
-                !pendingMutation ? setMetaTitle(initialState) : null
+                !pendingMutation ? setPublication(initialState) : null
               }
             >
-              {t('administration.create_meta_title')}
+              {t('administration.create_publication')}
             </Text>
-            {metaTitles?.map((m) => (
+            {publications?.map((p) => (
               <Text
-                key={m.id}
+                key={p.id}
                 className={clsx(classes.scrollAreaUser, {
-                  active: m.id === metaTitle?.id,
+                  active: p.id === publication?.id,
                 })}
-                onClick={() => (!pendingMutation ? setMetaTitle(m) : null)}
+                onClick={() => (!pendingMutation ? setPublication(p) : null)}
               >
-                {m.name}
+                {p.name[languageCode]}
               </Text>
             ))}
           </ScrollArea>
           <Divider orientation="vertical" className={classes.divider} />
-          {metaTitle ? (
+          {publication ? (
             <Flex className={classes.userContainer}>
               <Title order={4}>
-                {metaTitle.id
-                  ? metaTitles?.find((o) => o.id === metaTitle.id)?.name
-                  : t('administration.create_meta_title')}
+                {publication.id
+                  ? publications?.find((o) => o.id === publication.id)?.name[
+                      languageCode
+                    ]
+                  : t('administration.create_publication')}
               </Title>
               <Flex gap={10}>
                 <TextInput
-                  label={t('administration.name')}
-                  value={metaTitle.name}
+                  label={t('administration.cs_name')}
+                  value={publication.name.cs}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setMetaTitle((prevState) => ({
+                    setPublication((prevState) => ({
                       ...prevState,
-                      name: event.target.value,
+                      name: { ...prevState.name, cs: event.target.value },
                     }))
                   }
                 />
                 <TextInput
-                  label={t('administration.note')}
-                  value={metaTitle.note}
+                  label={t('administration.sk_name')}
+                  value={publication.name.sk}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setMetaTitle((prevState) => ({
+                    setPublication((prevState) => ({
                       ...prevState,
-                      note: event.target.value,
+                      name: { ...prevState.name, sk: event.target.value },
+                    }))
+                  }
+                />
+                <TextInput
+                  label={t('administration.en_name')}
+                  value={publication.name.en}
+                  // disabled={savingUser}
+                  onChange={(event) =>
+                    setPublication((prevState) => ({
+                      ...prevState,
+                      name: { ...prevState.name, en: event.target.value },
                     }))
                   }
                 />
               </Flex>
-              <Switch
-                label={t('administration.meta_title_is_public')}
-                checked={metaTitle.isPublic}
-                // disabled={savingUser}
-                onChange={(event) =>
-                  setMetaTitle((prevState) => ({
-                    ...prevState,
-                    isPublic: event.target.checked,
-                  }))
-                }
-              />
               <Button
                 className={classes.saveButton}
                 onClick={() => handleSubmit()}
-                disabled={!metaTitle.name.length}
+                disabled={
+                  !Object.values(publication.name).every((e) => e.length)
+                }
               >
-                {metaTitle.id
+                {publication.id
                   ? t('administration.update')
                   : t('administration.create')}
               </Button>
@@ -230,4 +238,4 @@ const MetaTitles = () => {
   )
 }
 
-export default MetaTitles
+export default Publications
