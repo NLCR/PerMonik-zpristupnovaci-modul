@@ -21,7 +21,7 @@ import { toast } from 'react-toastify'
 import { useUserListQuery, useUpdateUserMutation } from '../../api/user'
 import Loader from '../../components/reusableComponents/Loader'
 import ShowError from '../../components/reusableComponents/ShowError'
-import { TUser } from '../../@types/user'
+import { TUser, EditableUserSchema } from '../../schema/user'
 import { useOwnerListQuery } from '../../api/owner'
 
 const useStyles = createStyles((theme) => ({
@@ -72,7 +72,7 @@ const useStyles = createStyles((theme) => ({
 const Users = () => {
   const { classes } = useStyles()
   const { t } = useTranslation()
-  const [selectedUser, setSelectedUser] = useState<TUser>({
+  const [user, setUser] = useState<TUser>({
     active: false,
     email: '',
     id: '',
@@ -95,24 +95,28 @@ const Users = () => {
     isError: ownersError,
   } = useOwnerListQuery()
 
-  const { mutateAsync: doSave, isPending: savingUser } = useUpdateUserMutation()
+  const { mutateAsync: doUpdate, isPending: savingUser } =
+    useUpdateUserMutation()
 
   useEffect(() => {
     if (users?.length) {
-      setSelectedUser(users[0])
+      setUser(users[0])
     }
   }, [users])
 
-  const handleSave = () => {
-    doSave(selectedUser)
-      .then((data) => {
-        if (data) {
-          toast.success(t('common.saved_successfully'))
-        }
-      })
-      .catch(() => {
-        toast.error(t('common.error_when_saving'))
-      })
+  const handleUpdate = async () => {
+    const validation = EditableUserSchema.safeParse(user)
+    if (!validation.success) {
+      validation.error.errors.map((e) => toast.error(e.message))
+      return
+    }
+
+    try {
+      await doUpdate(user)
+      toast.success(t('common.saved_successfully'))
+    } catch (e) {
+      toast.error(t('common.error_occurred_somewhere'))
+    }
   }
 
   useEffect(() => {
@@ -158,51 +162,52 @@ const Users = () => {
               <Text
                 key={u.id}
                 className={clsx(classes.scrollAreaUser, {
-                  active: u.id === selectedUser?.id,
+                  active: u.id === user?.id,
                 })}
-                onClick={() => (!savingUser ? setSelectedUser(u) : null)}
+                onClick={() => (!savingUser ? setUser(u) : null)}
               >
                 {u.firstName} {u.lastName}
               </Text>
             ))}
           </ScrollArea>
           <Divider orientation="vertical" className={classes.divider} />
-          {selectedUser && users ? (
+          {user && users ? (
             <Flex className={classes.userContainer}>
               <Title order={4}>
-                {selectedUser.firstName} {selectedUser.lastName}
+                {users.find((u) => u.id === user.id)?.firstName}
+                {users.find((u) => u.id === user.id)?.lastName}
               </Title>
               <Flex gap={10}>
                 <TextInput
                   label={t('administration.first_name')}
-                  value={selectedUser.firstName}
+                  value={user.firstName}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setSelectedUser((prevState) => ({
+                    setUser((prevState) => ({
                       ...prevState,
-                      firstName: event.target.value,
+                      firstName: event.target.value.trim(),
                     }))
                   }
                 />
                 <TextInput
                   label={t('administration.last_name')}
-                  value={selectedUser.lastName}
+                  value={user.lastName}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setSelectedUser((prevState) => ({
+                    setUser((prevState) => ({
                       ...prevState,
-                      lastName: event.target.value,
+                      lastName: event.target.value.trim(),
                     }))
                   }
                 />
                 <TextInput
                   label={t('administration.email')}
-                  value={selectedUser.email}
+                  value={user.email}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setSelectedUser((prevState) => ({
+                    setUser((prevState) => ({
                       ...prevState,
-                      email: event.target.value,
+                      email: event.target.value.trim(),
                     }))
                   }
                 />
@@ -213,14 +218,14 @@ const Users = () => {
                     minWidth: rem(218),
                   }}
                   label={t('administration.owners')}
-                  value={selectedUser.owners ? selectedUser.owners : []}
+                  value={user.owners ? user.owners : []}
                   // disabled={savingUser}
                   data={owners.map((o) => ({
                     value: o.id.toString(),
                     label: o.name,
                   }))}
                   onChange={(values) =>
-                    setSelectedUser((prevState) => ({
+                    setUser((prevState) => ({
                       ...prevState,
                       owners: values,
                     }))
@@ -228,7 +233,7 @@ const Users = () => {
                 />
                 <Select
                   label={t('administration.role')}
-                  value={selectedUser.role}
+                  value={user.role}
                   // disabled={savingUser}
                   data={[
                     { value: 'user', label: t('administration.user') },
@@ -236,7 +241,7 @@ const Users = () => {
                   ]}
                   onChange={(value) => {
                     if (value) {
-                      setSelectedUser((prevState) => ({
+                      setUser((prevState) => ({
                         ...prevState,
                         role: value as 'user' | 'admin',
                       }))
@@ -246,10 +251,10 @@ const Users = () => {
               </Flex>
               <Switch
                 label={t('administration.user_active')}
-                checked={selectedUser.active}
+                checked={user.active}
                 // disabled={savingUser}
                 onChange={(event) =>
-                  setSelectedUser((prevState) => ({
+                  setUser((prevState) => ({
                     ...prevState,
                     active: event.target.checked,
                   }))
@@ -257,10 +262,10 @@ const Users = () => {
               />
               <Button
                 className={classes.saveButton}
-                onClick={() => handleSave()}
+                onClick={() => handleUpdate()}
                 // disabled={savingUser}
               >
-                {t('administration.save')}
+                {t('administration.update')}
               </Button>
             </Flex>
           ) : null}

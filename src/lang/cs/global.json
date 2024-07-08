@@ -167,6 +167,18 @@
     "user": "Uživatel",
     "admin": "Administrátor",
     "save": "Uložit",
-    "user_active": "Uživatel je aktivní"
+    "user_active": "Uživatel je aktivní",
+    "create": "Vytvořit",
+    "update": "Upravit",
+    "name": "Jméno",
+    "sigla": "Sigla",
+    "create_owner": "Vytvořit nového vlastníka"
+  },
+  "schema": {
+    "name_min_length": "Vyplňte prosím pole `jméno`",
+    "sigla_min_length": "Vyplňte prosím pole `sigla`",
+    "first_name_min_length": "Vyplňte prosím pole `jméno`",
+    "last_name_min_length": "Vyplňte prosím pole `příjmení`",
+    "email": "Vyplňte prosím správně pole `email`"
   }
 }

@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom'
 import { Container } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import NotFound from '../pages/NotFound'
@@ -49,7 +49,7 @@ const RoutesManager = () => {
             path={`/:lang/${t('administration')}`}
             element={<Administration />}
           >
-            <Route index element={<Users />} />
+            <Route index element={<Navigate to={t('users')} />} />
             <Route path={t('users')} element={<Users />} />
             <Route path={t('owners')} element={<Owners />} />
           </Route>

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { api, queryClient } from './index'
-import { TUser } from '../@types/user'
+import { TUser } from '../schema/user'
 
 export const useMeQuery = () => {
   const useMock = true
@@ -29,11 +29,9 @@ export const useMeQuery = () => {
 export const useUpdateUserMutation = () =>
   useMutation({
     mutationFn: (user: TUser) =>
-      api().put(`user/${user.id}/update`, { json: user }).json<boolean>(),
-    onSuccess: (data) => {
-      if (data) {
-        queryClient.invalidateQueries({ queryKey: ['user'] })
-      }
+      api().put(`user/${user.id}`, { json: user }).json<void>(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] })
     },
   })
 
