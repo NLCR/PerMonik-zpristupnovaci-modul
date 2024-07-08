@@ -3,7 +3,6 @@ import { clone } from 'lodash-es'
 import { api, queryClient } from './index'
 import { TEditablePublication, TPublication } from '../schema/publication'
 
-// eslint-disable-next-line import/prefer-default-export
 export const usePublicationListQuery = () => {
   return useQuery({
     queryKey: ['publication', 'list', 'all'],

@@ -82,6 +82,14 @@ const Administration = () => {
         >
           {t('administration.publications')}
         </NavLink>
+        <NavLink
+          className={classes.link}
+          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t(
+            'urls.mutations'
+          )}`}
+        >
+          {t('administration.mutations')}
+        </NavLink>
       </Flex>
       <Divider className={classes.divider} />
       <Outlet />

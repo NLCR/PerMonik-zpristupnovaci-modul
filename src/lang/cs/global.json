@@ -7,7 +7,8 @@
     "users": "users",
     "owners": "owners",
     "meta_titles": "meta-titles",
-    "publications": "publications"
+    "publications": "publications",
+    "mutations": "mutations"
   },
   "common": {
     "error_occurred_when_loading_data": "Nastala chyba při načítání dat",
@@ -161,6 +162,7 @@
     "owners": "Vlastníci",
     "meta_titles": "Metatituly",
     "publications": "Publikace",
+    "mutations": "Mutace",
     "new_user_button": "Přidat uživatele",
     "user_login_name": "Přihlašovací jméno",
     "first_name": "Jméno",
@@ -179,6 +181,7 @@
     "create_owner": "Vytvořit nového vlastníka",
     "create_meta_title": "Vytvořit nový metatitul",
     "create_publication": "Vytvořit novou publikaci",
+    "create_mutation": "Vytvořit novou mutaci",
     "meta_title_is_public": "Metatitul je veřejný",
     "cs_name": "Český název",
     "sk_name": "Slovenský název",
