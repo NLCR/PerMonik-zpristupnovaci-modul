@@ -185,7 +185,7 @@ const Users = () => {
                   onChange={(event) =>
                     setUser((prevState) => ({
                       ...prevState,
-                      firstName: event.target.value.trim(),
+                      firstName: event.target.value,
                     }))
                   }
                 />
@@ -196,7 +196,7 @@ const Users = () => {
                   onChange={(event) =>
                     setUser((prevState) => ({
                       ...prevState,
-                      lastName: event.target.value.trim(),
+                      lastName: event.target.value,
                     }))
                   }
                 />
@@ -207,7 +207,7 @@ const Users = () => {
                   onChange={(event) =>
                     setUser((prevState) => ({
                       ...prevState,
-                      email: event.target.value.trim(),
+                      email: event.target.value,
                     }))
                   }
                 />

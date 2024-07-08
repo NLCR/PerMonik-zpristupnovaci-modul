@@ -10,10 +10,3 @@ export interface TMetaTitleOverview {
     matchedSpecimens: number
   } & TSpecimensPublicationDays
 }
-
-export interface TMetaTitle {
-  id: string
-  name: string
-  note: string | null
-  isPublic: boolean
-}

@@ -1,4 +1,4 @@
-import { TMetaTitle } from './metaTitle'
+import { TMetaTitle } from '../schema/metaTitle'
 import {
   TSpecimen,
   TSpecimenFacet,

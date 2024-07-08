@@ -10,6 +10,7 @@ import {
   Button,
   TextInput,
   LoadingOverlay,
+  Switch,
 } from '@mantine/core'
 import { useTranslation } from 'react-i18next'
 import React, { useEffect, useState } from 'react'
@@ -18,11 +19,14 @@ import { toast } from 'react-toastify'
 import Loader from '../../components/reusableComponents/Loader'
 import ShowError from '../../components/reusableComponents/ShowError'
 import {
-  useCreateOwnerMutation,
-  useOwnerListQuery,
-  useUpdateOwnerMutation,
-} from '../../api/owner'
-import { EditableOwnerSchema, TEditableOwner } from '../../schema/owner'
+  EditableMetaTitleSchema,
+  TEditableMetaTitle,
+} from '../../schema/metaTitle'
+import {
+  useCreateMetaTitleMutation,
+  useMetaTitleListQuery,
+  useUpdateMetaTitleMutation,
+} from '../../api/metaTitle'
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -69,41 +73,42 @@ const useStyles = createStyles((theme) => ({
   },
 }))
 
-const initialState: TEditableOwner = {
+const initialState: TEditableMetaTitle = {
   name: '',
-  sigla: '',
+  note: '',
+  isPublic: false,
 }
 
-const Owners = () => {
+const MetaTitles = () => {
   const { classes } = useStyles()
   const { t } = useTranslation()
-  const [owner, setOwner] = useState<TEditableOwner>(initialState)
+  const [metaTitle, setMetaTitle] = useState<TEditableMetaTitle>(initialState)
   const [overlayVisible, setOverlayVisible] = useState(false)
 
   const {
-    data: owners,
-    isLoading: ownersLoading,
-    isError: ownersError,
-  } = useOwnerListQuery()
+    data: metaTitles,
+    isLoading: metaTitlesLoading,
+    isError: metaTitlesError,
+  } = useMetaTitleListQuery()
 
-  const { mutateAsync: doUpdate, isPending: updatingOwner } =
-    useUpdateOwnerMutation()
-  const { mutateAsync: doCreate, isPending: creatingOwner } =
-    useCreateOwnerMutation()
+  const { mutateAsync: doUpdate, isPending: updatingMetaTitle } =
+    useUpdateMetaTitleMutation()
+  const { mutateAsync: doCreate, isPending: creatingMetaTitle } =
+    useCreateMetaTitleMutation()
 
-  const pendingMutation = updatingOwner || creatingOwner
+  const pendingMutation = updatingMetaTitle || creatingMetaTitle
 
   const handleSubmit = async () => {
-    const validation = EditableOwnerSchema.safeParse(owner)
+    const validation = EditableMetaTitleSchema.safeParse(metaTitle)
     if (!validation.success) {
       validation.error.errors.map((e) => toast.error(e.message))
       return
     }
     try {
-      if (owner.id) {
-        await doUpdate(owner)
+      if (metaTitle.id) {
+        await doUpdate(metaTitle)
       } else {
-        await doCreate(owner)
+        await doCreate(metaTitle)
       }
       toast.success(t('common.saved_successfully'))
     } catch (e) {
@@ -136,71 +141,84 @@ const Owners = () => {
         transitionDuration={100}
       />
       <Title order={3} className={classes.title}>
-        {t('administration.owners')}
+        {t('administration.metaTitles')}
       </Title>
-      {ownersLoading ? <Loader /> : null}
-      {!ownersLoading && ownersError ? <ShowError /> : null}
-      {!ownersLoading && !ownersError ? (
+      {metaTitlesLoading ? <Loader /> : null}
+      {!metaTitlesLoading && metaTitlesError ? <ShowError /> : null}
+      {!metaTitlesLoading && !metaTitlesError ? (
         <Flex className={classes.innerContainer}>
           <ScrollArea className={classes.scrollArea}>
             <Text
               className={clsx(classes.scrollAreaUser, {
-                active: !owner.id,
+                active: !metaTitle.id,
               })}
-              onClick={() => (!pendingMutation ? setOwner(initialState) : null)}
+              onClick={() =>
+                !pendingMutation ? setMetaTitle(initialState) : null
+              }
             >
-              {t('administration.create_owner')}
+              {t('administration.create_meta_title')}
             </Text>
-            {owners?.map((u) => (
+            {metaTitles?.map((m) => (
               <Text
-                key={u.id}
+                key={m.id}
                 className={clsx(classes.scrollAreaUser, {
-                  active: u.id === owner?.id,
+                  active: m.id === metaTitle?.id,
                 })}
-                onClick={() => (!pendingMutation ? setOwner(u) : null)}
+                onClick={() => (!pendingMutation ? setMetaTitle(m) : null)}
               >
-                {u.name}
+                {m.name}
               </Text>
             ))}
           </ScrollArea>
           <Divider orientation="vertical" className={classes.divider} />
-          {owner ? (
+          {metaTitle ? (
             <Flex className={classes.userContainer}>
               <Title order={4}>
-                {owner.id
-                  ? owners?.find((o) => o.id === owner.id)?.name
-                  : t('administration.create_owner')}
+                {metaTitle.id
+                  ? metaTitles?.find((o) => o.id === metaTitle.id)?.name
+                  : t('administration.create_meta_title')}
               </Title>
               <Flex gap={10}>
                 <TextInput
                   label={t('administration.name')}
-                  value={owner.name}
+                  value={metaTitle.name}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setOwner((prevState) => ({
+                    setMetaTitle((prevState) => ({
                       ...prevState,
                       name: event.target.value,
                     }))
                   }
                 />
                 <TextInput
-                  label={t('administration.sigla')}
-                  value={owner.sigla}
+                  label={t('administration.note')}
+                  value={metaTitle.note}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setOwner((prevState) => ({
+                    setMetaTitle((prevState) => ({
                       ...prevState,
-                      sigla: event.target.value,
+                      note: event.target.value,
                     }))
                   }
                 />
               </Flex>
+              <Switch
+                label={t('administration.is_public')}
+                checked={metaTitle.isPublic}
+                // disabled={savingUser}
+                onChange={(event) =>
+                  setMetaTitle((prevState) => ({
+                    ...prevState,
+                    isPublic: event.target.checked,
+                  }))
+                }
+              />
               <Button
                 className={classes.saveButton}
                 onClick={() => handleSubmit()}
-                disabled={!owner.name.length || !owner.sigla.length}
+                disabled={!metaTitle.name.length}
               >
-                {owner.id
+                {metaTitle.id
                   ? t('administration.update')
                   : t('administration.create')}
               </Button>
@@ -212,4 +230,4 @@ const Owners = () => {
   )
 }
 
-export default Owners
+export default MetaTitles

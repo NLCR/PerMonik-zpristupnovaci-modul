@@ -5,7 +5,8 @@
     "volume_overview": "volume",
     "administration": "administration",
     "users": "users",
-    "owners": "owners"
+    "owners": "owners",
+    "metaTitles": "meta-titles"
   },
   "common": {
     "error_occurred_when_loading_data": "Nastala chyba při načítání dat",
@@ -157,6 +158,7 @@
   "administration": {
     "users": "Uživatelé",
     "owners": "Vlastníci",
+    "metaTitles": "Metatituly",
     "new_user_button": "Přidat uživatele",
     "user_login_name": "Přihlašovací jméno",
     "first_name": "Jméno",
@@ -172,7 +174,9 @@
     "update": "Upravit",
     "name": "Jméno",
     "sigla": "Sigla",
-    "create_owner": "Vytvořit nového vlastníka"
+    "create_owner": "Vytvořit nového vlastníka",
+    "create_meta_title": "Vytvořit nový metatitul",
+    "is_public": "Veřejný"
   },
   "schema": {
     "name_min_length": "Vyplňte prosím pole `jméno`",

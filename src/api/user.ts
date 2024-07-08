@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { clone } from 'lodash-es'
 import { api, queryClient } from './index'
 import { TUser } from '../schema/user'
 
@@ -28,8 +29,15 @@ export const useMeQuery = () => {
 
 export const useUpdateUserMutation = () =>
   useMutation({
-    mutationFn: (user: TUser) =>
-      api().put(`user/${user.id}`, { json: user }).json<void>(),
+    mutationFn: (user: TUser) => {
+      const userClone = clone(user)
+      userClone.email = user.email.trim()
+      userClone.userName = user.userName.trim()
+      userClone.firstName = user.firstName.trim()
+      userClone.lastName = user.lastName.trim()
+
+      return api().put(`user/${userClone.id}`, { json: userClone }).json<void>()
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user'] })
     },
@@ -37,6 +45,6 @@ export const useUpdateUserMutation = () =>
 
 export const useUserListQuery = () =>
   useQuery({
-    queryKey: ['user', 'list'],
+    queryKey: ['user', 'list', 'all'],
     queryFn: () => api().get(`user/list/all`).json<TUser[]>(),
   })
