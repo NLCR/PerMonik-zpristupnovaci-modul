@@ -30,7 +30,7 @@ import {
   useSpecimensStartDateForCalendar,
 } from '../../../api/specimen'
 import ShowError from '../../../components/ShowError'
-import VolumeOverviewStatsModal from '../../../components/VolumeOverviewStatsModal'
+import VolumeOverviewStatsModal from './VolumeOverviewStatsModal'
 import { usePublicationListQuery } from '../../../api/publication'
 import { useOwnerListQuery } from '../../../api/owner'
 
@@ -190,7 +190,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         marginTop: '16px',
         marginBottom: '16px',
         height: '100%',
-        overflowY: 'auto',
+        // overflowY: 'auto',
       }}
     >
       <Modal

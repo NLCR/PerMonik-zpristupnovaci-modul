@@ -82,7 +82,7 @@ const FacetGroup: FC<TInput> = ({
                   width: '100%',
                   justifyContent: 'space-between',
                   alignItems: 'start',
-                  fontSize: '12px',
+                  // fontSize: '12px',
                 }}
               >
                 <Typography variant="body2">

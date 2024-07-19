@@ -138,11 +138,6 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
               })
             }}
           />
-          <Divider
-            sx={{
-              marginTop: '10px',
-            }}
-          />
         </Box>
       ) : (
         <Slider
@@ -173,8 +168,8 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
       <Typography
         variant="body2"
         sx={{
-          marginTop: '30px',
-          marginBottom: '30px',
+          // marginTop: '30px',
+          marginBottom: '10px',
           fontWeight: '700',
         }}
       >

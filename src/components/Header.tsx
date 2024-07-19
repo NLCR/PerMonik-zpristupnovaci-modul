@@ -46,6 +46,8 @@ const NavLinkStyled = styled(NavLink)(({ theme }) => ({
   display: 'block',
   lineHeight: 1,
   padding: theme.spacing(1.25, 2.25),
+  marginLeft: theme.spacing(0.5),
+  marginRight: theme.spacing(0.5),
   borderRadius: theme.shape.borderRadius,
   textDecoration: 'none',
   color: theme.palette.text.primary,

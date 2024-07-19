@@ -1,6 +1,4 @@
 import { create } from 'zustand'
-import { MRT_PaginationState } from 'mantine-react-table'
-import { PaginationState } from '@tanstack/table-core/src/features/Pagination'
 
 export type TParams = {
   dateStart: number
@@ -28,7 +26,7 @@ export const initialParams: TParams = {
 
 interface TVariablesState {
   params: typeof initialParams
-  pagination: MRT_PaginationState
+  pagination: { pageIndex: number; pageSize: number }
   barCodeInput: string
   view: 'calendar' | 'table'
   calendarDate: Date | null
@@ -38,7 +36,7 @@ interface TVariablesState {
 interface TState extends TVariablesState {
   setParams: (values: typeof initialParams) => void
   setBarCodeInput: (value: string) => void
-  setPagination: (value: PaginationState) => void
+  setPagination: (value: { pageIndex: number; pageSize: number }) => void
   resetAll: () => void
   setView: (value: 'calendar' | 'table') => void
   setCalendarDate: (value: Date | null) => void

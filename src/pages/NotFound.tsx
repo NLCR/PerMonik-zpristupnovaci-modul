@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Box } from '@mantine/core'
+import { Box } from '@mui/material'
 import ShowInfoMessage from '../components/ShowInfoMessage'
 
 const NotFound = () => {

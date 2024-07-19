@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Flex } from '@mantine/core'
+import { Box } from '@mui/material'
 import React, { useEffect } from 'react'
 import { useMangedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
@@ -95,8 +95,9 @@ const VolumeManagement = () => {
     me.owners.some((o) => o === volume?.volume.ownerId) || !volumeId?.length
 
   return (
-    <Flex
+    <Box
       sx={{
+        display: 'flex',
         alignItems: 'stretch',
         justifyContent: 'space-between',
       }}
@@ -114,7 +115,7 @@ const VolumeManagement = () => {
         mutations={mutations}
         publications={publications}
       />
-    </Flex>
+    </Box>
   )
 }
 

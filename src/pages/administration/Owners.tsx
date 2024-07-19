@@ -1,72 +1,53 @@
-import {
-  Text,
-  createStyles,
-  Flex,
-  rem,
-  ScrollArea,
-  Title,
-  Box,
-  Divider,
-  Button,
-  TextInput,
-  LoadingOverlay,
-} from '@mantine/core'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import React, { useEffect, useState } from 'react'
+import { Box, Divider, Typography, useTheme, TextField } from '@mui/material'
 import { clsx } from 'clsx'
 import { toast } from 'react-toastify'
+import styled from '@emotion/styled'
+import { LoadingButton } from '@mui/lab'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
+import { EditableOwnerSchema, TEditableOwner } from '../../schema/owner'
 import {
   useCreateOwnerMutation,
   useOwnerListQuery,
   useUpdateOwnerMutation,
 } from '../../api/owner'
-import { EditableOwnerSchema, TEditableOwner } from '../../schema/owner'
 
-const useStyles = createStyles((theme) => ({
-  container: {
-    position: 'relative',
-  },
-  title: {
-    color: theme.colors.blue[9],
-  },
-  scrollArea: {
-    width: '30%',
-    minWidth: rem(200),
-    maxWidth: rem(300),
-    paddingLeft: rem(10),
-    height: '55vh',
-  },
-  scrollAreaUser: {
-    marginTop: rem(7),
-    marginBottom: rem(7),
-    borderRadius: theme.radius.sm,
-    padding: `${rem(5)} ${rem(10)}`,
-    cursor: 'pointer',
-    '&.active': {
-      backgroundColor: theme.colors.blue[0],
-    },
-  },
-  innerContainer: {
-    marginTop: rem(10),
-    justifyItems: 'stretch',
-    gap: rem(20),
-    // height: '100%',
-    // flexDirection: 'row',
-    // justifyContent: 'flex-start',
-  },
-  userContainer: {
-    height: '55vh',
-    flexDirection: 'column',
-    gap: rem(20),
-  },
-  divider: {
-    borderColor: theme.colors.gray[3],
-  },
-  saveButton: {
-    width: 'fit-content',
-  },
+const Container = styled(Box)(({ theme }) => ({
+  position: 'relative',
+}))
+
+const ScrollArea = styled(Box)(({ theme }) => ({
+  width: '30%',
+  minWidth: theme.typography.pxToRem(200),
+  maxWidth: theme.typography.pxToRem(300),
+  paddingLeft: theme.spacing(1.25),
+  paddingRight: theme.spacing(0.5),
+  height: '55vh',
+  overflowY: 'auto',
+}))
+
+const InnerContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  marginTop: theme.spacing(1.25),
+  justifyItems: 'stretch',
+  gap: theme.spacing(2.5),
+}))
+
+const FieldsContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  height: '55vh',
+  flexDirection: 'column',
+  gap: theme.spacing(2.5),
+}))
+
+const StyledDivider = styled(Divider)(({ theme }) => ({
+  borderColor: theme.palette.grey[300],
+}))
+
+const SaveButton = styled(LoadingButton)(() => ({
+  width: 'fit-content',
 }))
 
 const initialState: TEditableOwner = {
@@ -75,10 +56,9 @@ const initialState: TEditableOwner = {
 }
 
 const Owners = () => {
-  const { classes } = useStyles()
   const { t } = useTranslation()
+  const theme = useTheme()
   const [owner, setOwner] = useState<TEditableOwner>(initialState)
-  const [overlayVisible, setOverlayVisible] = useState(false)
 
   const {
     data: owners,
@@ -111,68 +91,73 @@ const Owners = () => {
     }
   }
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout
-
-    if (pendingMutation) {
-      setOverlayVisible(true)
-    } else {
-      timer = setTimeout(() => {
-        setOverlayVisible(false)
-      }, 150)
-    }
-
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [pendingMutation])
-
   return (
-    <Box className={classes.container}>
-      <LoadingOverlay
-        visible={overlayVisible}
-        loader={<Loader />}
-        overlayBlur={1}
-        transitionDuration={100}
-      />
-      <Title order={3} className={classes.title}>
+    <Container>
+      <Typography
+        variant="h5"
+        sx={{ color: theme.palette.primary.main, fontWeight: '600' }}
+      >
         {t('administration.owners')}
-      </Title>
+      </Typography>
       {ownersLoading ? <Loader /> : null}
       {!ownersLoading && ownersError ? <ShowError /> : null}
       {!ownersLoading && !ownersError ? (
-        <Flex className={classes.innerContainer}>
-          <ScrollArea className={classes.scrollArea}>
-            <Text
-              className={clsx(classes.scrollAreaUser, {
-                active: !owner.id,
-              })}
+        <InnerContainer>
+          <ScrollArea>
+            <Typography
+              component="div"
+              className={clsx({ active: !owner.id })}
               onClick={() => (!pendingMutation ? setOwner(initialState) : null)}
+              sx={{
+                marginTop: theme.spacing(0.875),
+                marginBottom: theme.spacing(0.875),
+                borderRadius: theme.shape.borderRadius,
+                padding: `${theme.spacing(0.625)} ${theme.spacing(1.25)}`,
+                cursor: 'pointer',
+                '&.active': {
+                  backgroundColor: theme.palette.primary.light,
+                },
+              }}
             >
-              {t('administration.create_owner')}
-            </Text>
-            {owners?.map((u) => (
-              <Text
-                key={u.id}
-                className={clsx(classes.scrollAreaUser, {
-                  active: u.id === owner?.id,
-                })}
-                onClick={() => (!pendingMutation ? setOwner(u) : null)}
+              {t('administration.create_meta_title')}
+            </Typography>
+            {owners?.map((m) => (
+              <Typography
+                key={m.id}
+                component="div"
+                className={clsx({ active: m.id === owner?.id })}
+                onClick={() => (!pendingMutation ? setOwner(m) : null)}
+                sx={{
+                  marginTop: theme.spacing(0.875),
+                  marginBottom: theme.spacing(0.875),
+                  borderRadius: theme.shape.borderRadius,
+                  padding: `${theme.spacing(0.625)} ${theme.spacing(1.25)}`,
+                  cursor: 'pointer',
+                  '&.active': {
+                    backgroundColor: theme.palette.primary.light,
+                  },
+                }}
               >
-                {u.name}
-              </Text>
+                {m.name}
+              </Typography>
             ))}
           </ScrollArea>
-          <Divider orientation="vertical" className={classes.divider} />
+          <StyledDivider orientation="vertical" />
           {owner ? (
-            <Flex className={classes.userContainer}>
-              <Title order={4}>
+            <FieldsContainer>
+              <Typography variant="h5">
                 {owner.id
                   ? owners?.find((o) => o.id === owner.id)?.name
                   : t('administration.create_owner')}
-              </Title>
-              <Flex gap={10}>
-                <TextInput
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                }}
+              >
+                <TextField
+                  size="small"
                   label={t('administration.name')}
                   value={owner.name}
                   // disabled={savingUser}
@@ -183,7 +168,8 @@ const Owners = () => {
                     }))
                   }
                 />
-                <TextInput
+                <TextField
+                  size="small"
                   label={t('administration.sigla')}
                   value={owner.sigla}
                   // disabled={savingUser}
@@ -194,21 +180,22 @@ const Owners = () => {
                     }))
                   }
                 />
-              </Flex>
-              <Button
-                className={classes.saveButton}
+              </Box>
+              <SaveButton
+                variant="contained"
                 onClick={() => handleSubmit()}
                 disabled={!owner.name.length || !owner.sigla.length}
+                loading={pendingMutation}
               >
                 {owner.id
                   ? t('administration.update')
                   : t('administration.create')}
-              </Button>
-            </Flex>
+              </SaveButton>
+            </FieldsContainer>
           ) : null}
-        </Flex>
+        </InnerContainer>
       ) : null}
-    </Box>
+    </Container>
   )
 }
 

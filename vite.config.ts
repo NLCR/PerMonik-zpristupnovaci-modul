@@ -44,15 +44,15 @@ export default defineConfig(({ mode }) => {
       }),
       // splitVendorChunkPlugin(),
     ],
-    // optimizeDeps: {
-    //   include: [
-    //     '@mui/icons-material',
-    //     '@mui/material',
-    //     '@mui/x-date-pickers',
-    //     '@emotion/react',
-    //     '@emotion/styled',
-    //   ],
-    // },
+    optimizeDeps: {
+      include: [
+        '@mui/icons-material',
+        '@mui/material',
+        '@mui/x-date-pickers',
+        '@emotion/react',
+        '@emotion/styled',
+      ],
+    },
     build: {
       // required for sentry: tells vite to create source maps
       sourcemap: true,

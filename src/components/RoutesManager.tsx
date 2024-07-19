@@ -1,8 +1,7 @@
-import React, { Suspense, useEffect } from 'react'
+import React, { Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Route, Routes, useLocation, Navigate } from 'react-router-dom'
-import { Container } from '@mantine/core'
-import { modals } from '@mantine/modals'
+import { Route, Routes, Navigate } from 'react-router-dom'
+import { Container } from '@mui/material'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
 import Loader from './Loader'
@@ -31,13 +30,8 @@ const SuspenseLoader = () => {
 }
 
 const RoutesManager = () => {
-  const location = useLocation()
   const { t } = useTranslation('global', { keyPrefix: 'urls' })
   const { data: me, isLoading: meLoading } = useMeQuery()
-
-  useEffect(() => {
-    modals.closeAll()
-  }, [location])
 
   if (meLoading) {
     return <Loader />

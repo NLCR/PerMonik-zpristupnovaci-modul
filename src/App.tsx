@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter } from 'react-router-dom'
-import { Container, createStyles, rem } from '@mantine/core'
+import { Container } from '@mui/material'
 import { DatesProvider } from '@mantine/dates'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -14,32 +14,27 @@ import 'dayjs/locale/sk'
 import 'dayjs/locale/en'
 // import Footer from './components/Footer'
 
-const useStyles = createStyles((theme) => ({
-  wrapper: {
-    minHeight: `calc(100vh - ${rem(60)})`,
-    paddingTop: rem(20),
-    backgroundColor: theme.colors.gray[0],
-  },
-}))
-
 // App without react-router, useful for testing
 const App: FC = () => {
-  const { classes } = useStyles()
-
   return (
     <>
       <Header />
-      <div className={classes.wrapper}>
-        <Container
-          size="xxl"
-          sx={(theme) => ({
-            paddingTop: theme.spacing.xl,
-            paddingBottom: rem(50),
-          })}
-        >
-          <RoutesManager />
-        </Container>
-      </div>
+      <Container
+        maxWidth="xl"
+        sx={{
+          display: 'flex',
+          // flexDirection: 'column',
+          paddingTop: '15px',
+          paddingBottom: '10px',
+          maxHeight: `calc(100vh - 64px)`,
+          height: '100%',
+          width: '100%',
+          // maxHeight: `700px`,
+          // overflow: 'hidden',
+        }}
+      >
+        <RoutesManager />
+      </Container>
       {/* <Footer /> */}
     </>
   )

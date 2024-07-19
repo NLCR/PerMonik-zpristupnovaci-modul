@@ -1,9 +1,18 @@
-import { Box, IconButton, Typography, Button, Tabs, Tab } from '@mui/material'
+import {
+  Box,
+  IconButton,
+  Typography,
+  Button,
+  Tabs,
+  Tab,
+  Modal,
+  Backdrop,
+  Fade,
+} from '@mui/material'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import React, { Suspense, useEffect } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import { modals } from '@mantine/modals'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
@@ -19,10 +28,23 @@ import Facets from './components/Facets'
 import Calendar from './components/Calendar'
 import MuiTable from './components/MuiTable'
 
-// const Table = React.lazy(() => import('./components/Table'))
+const modalStyle = {
+  position: 'absolute' as const,
+  maxHeight: '250px',
+  height: '80vh',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '90vw',
+  maxWidth: '600px',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+}
 
 const SpecimensOverview = () => {
   const { metaTitleId } = useParams()
+  const [modalOpened, setModalOpened] = useState(false)
   const { t } = useTranslation()
   const {
     resetAll,
@@ -67,15 +89,64 @@ const SpecimensOverview = () => {
       sx={{
         display: 'flex',
         gap: '16px',
-        height: '100%',
-        maxHeight: '80vh',
         position: 'relative',
+        width: '100%',
       }}
     >
+      <Modal
+        open={modalOpened}
+        onClose={() => setModalOpened(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            color: '#fff',
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={modalOpened}>
+          <Box sx={modalStyle}>
+            <Typography
+              sx={(theme) => ({
+                color: theme.palette.blue['900'],
+                fontSize: '24px',
+                fontWeight: 'bold',
+              })}
+            >
+              {t('specimens_overview.help')}
+            </Typography>
+            <Typography
+              sx={{
+                marginBottom: '5px',
+                fontWeight: '600',
+              }}
+            >
+              {t('specimens_overview.help_desc_1')}
+            </Typography>
+            <Typography
+              sx={{
+                marginBottom: '5px',
+              }}
+            >
+              {t('specimens_overview.help_desc_2')}
+            </Typography>
+            <img
+              alt="Help"
+              src={SpecimenDayDetailExampleImage}
+              width={200}
+              style={{ marginBottom: '20px' }}
+            />
+            {/* <Text size="sm"> */}
+            {/*  {t('specimens_overview.help_desc_3')} */}
+            {/* </Text> */}
+          </Box>
+        </Fade>
+      </Modal>
       <Box
         sx={{
           // width: '20%',
-          width: '280px',
+          width: '350px',
           // color: theme.colors.dark[9],
           padding: '16px',
           backgroundColor: 'white',
@@ -214,51 +285,7 @@ const SpecimensOverview = () => {
             <Button
               variant="contained"
               startIcon={<HelpOutlineIcon />}
-              onClick={() => {
-                modals.open({
-                  centered: true,
-                  size: 'auto',
-                  title: (
-                    <Typography
-                      sx={(theme) => ({
-                        color: theme.palette.blue['900'],
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                      })}
-                    >
-                      {t('specimens_overview.help')}
-                    </Typography>
-                  ),
-                  children: (
-                    <>
-                      <Typography
-                        sx={{
-                          marginBottom: '5px',
-                          fontWeight: '600',
-                        }}
-                      >
-                        {t('specimens_overview.help_desc_1')}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          marginBottom: '5px',
-                        }}
-                      >
-                        {t('specimens_overview.help_desc_2')}
-                      </Typography>
-                      <img
-                        alt="Help"
-                        src={SpecimenDayDetailExampleImage}
-                        width={200}
-                        style={{ marginBottom: '20px' }}
-                      />
-                      {/* <Text size="sm"> */}
-                      {/*  {t('specimens_overview.help_desc_3')} */}
-                      {/* </Text> */}
-                    </>
-                  ),
-                })
-              }}
+              onClick={() => setModalOpened(true)}
             >
               {t('specimens_overview.help')}
             </Button>

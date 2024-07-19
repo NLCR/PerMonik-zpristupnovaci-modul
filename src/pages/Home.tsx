@@ -12,7 +12,7 @@ const Home = () => {
   const { data, isLoading, isError } = useMetaTitleOverviewListQuery()
 
   return (
-    <Box sx={{ textAlign: 'center' }}>
+    <Box sx={{ textAlign: 'center', marginTop: '50px', width: '100%' }}>
       <Typography variant="h3" color="blue.900">
         {t('home.title')}
       </Typography>

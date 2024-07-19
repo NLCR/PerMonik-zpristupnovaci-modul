@@ -1,99 +1,85 @@
-import { createStyles, Divider, Flex, rem } from '@mantine/core'
+import React from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Box, Divider } from '@mui/material'
+import styled from '@emotion/styled'
 
-const useStyles = createStyles((theme) => ({
-  container: {
-    backgroundColor: 'white',
-    padding: theme.spacing.lg,
-    borderRadius: theme.spacing.xs,
-    boxShadow: theme.shadows.xs,
-    flexDirection: 'column',
-    height: '80vh',
+const Container = styled(Box)(({ theme }) => ({
+  backgroundColor: 'white',
+  padding: theme.spacing(4),
+  borderRadius: theme.spacing(1),
+  boxShadow: theme.shadows[1],
+  display: 'flex',
+  width: '100%',
+  flexDirection: 'column',
+  marginBottom: '5px',
+  // height: '80vh',
+}))
+
+const Menu = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  gap: theme.spacing(1),
+}))
+
+const Link = styled(NavLink)(({ theme }) => ({
+  display: 'block',
+  lineHeight: 1,
+  padding: `${theme.spacing(1.25)} ${theme.spacing(2.25)}`,
+  borderRadius: theme.shape.borderRadius,
+  textDecoration: 'none',
+  color: theme.palette.text.primary,
+  fontSize: theme.typography.pxToRem(16),
+  fontWeight: 500,
+  backgroundColor: theme.palette.primary.main,
+  '&:hover': {
+    backgroundColor: theme.palette.primary.light,
   },
-  menu: {
-    gap: theme.spacing.xs,
-  },
-  link: {
-    display: 'block',
-    lineHeight: 1,
-    padding: `${rem(10)} ${rem(18)}`,
-    borderRadius: theme.radius.sm,
-    textDecoration: 'none',
-    color: theme.colors.dark[9],
-    fontSize: theme.fontSizes.md,
-    fontWeight: 500,
-    backgroundColor: theme.colors.blue[8],
-    '&:hover': {
-      backgroundColor: theme.colors.blue[6],
-    },
-    '&.active, &.active:hover': {
-      backgroundColor: theme.fn.variant({
-        variant: 'light',
-        color: theme.primaryColor,
-      }).background,
-      // color: theme.fn.variant({ variant: 'light', color: theme.primaryColor })
-      //   .color,
-    },
-  },
-  divider: {
-    marginTop: rem(10),
-    marginBottom: rem(20),
-    borderColor: theme.colors.gray[3],
+  '&.active, &.active:hover': {
+    backgroundColor: theme.palette.primary.light,
   },
 }))
 
+const StyledDivider = styled(Divider)(({ theme }) => ({
+  marginTop: theme.spacing(1.25),
+  marginBottom: theme.spacing(2.5),
+  borderColor: theme.palette.grey[300],
+}))
+
 const Administration = () => {
-  const { classes } = useStyles()
   const { t, i18n } = useTranslation()
 
   return (
-    <Flex className={classes.container}>
-      <Flex className={classes.menu}>
-        <NavLink
-          className={classes.link}
-          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t(
-            'urls.users'
-          )}`}
+    <Container>
+      <Menu>
+        <Link
+          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t('urls.users')}`}
         >
           {t('administration.users')}
-        </NavLink>
-        <NavLink
-          className={classes.link}
-          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t(
-            'urls.owners'
-          )}`}
+        </Link>
+        <Link
+          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t('urls.owners')}`}
         >
           {t('administration.owners')}
-        </NavLink>
-        <NavLink
-          className={classes.link}
-          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t(
-            'urls.meta_titles'
-          )}`}
+        </Link>
+        <Link
+          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t('urls.meta_titles')}`}
         >
           {t('administration.meta_titles')}
-        </NavLink>
-        <NavLink
-          className={classes.link}
-          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t(
-            'urls.publications'
-          )}`}
+        </Link>
+        <Link
+          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t('urls.publications')}`}
         >
           {t('administration.publications')}
-        </NavLink>
-        <NavLink
-          className={classes.link}
-          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t(
-            'urls.mutations'
-          )}`}
+        </Link>
+        <Link
+          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t('urls.mutations')}`}
         >
           {t('administration.mutations')}
-        </NavLink>
-      </Flex>
-      <Divider className={classes.divider} />
+        </Link>
+      </Menu>
+      <StyledDivider />
       <Outlet />
-    </Flex>
+    </Container>
   )
 }
 
