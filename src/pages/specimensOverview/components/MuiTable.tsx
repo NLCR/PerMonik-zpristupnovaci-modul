@@ -149,7 +149,7 @@ const MuiTable: FC<Props> = ({ metaTitle }) => {
     // isError: specimensError,
   } = useSpecimenListQuery(metaTitle.id)
 
-  const columns: GridColDef[] = useMemo(() => {
+  const columns = useMemo<GridColDef<TSpecimen>[]>(() => {
     return [
       {
         field: 'mutationId',

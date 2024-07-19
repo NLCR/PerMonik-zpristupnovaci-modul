@@ -60,6 +60,7 @@ export const SpecimenFacetSchema = z.object({
   count: z.number(),
 })
 
+export type TSpecimenDamageTypes = z.infer<typeof SpecimenDamageTypesSchema>
 export type TSpecimen = z.infer<typeof SpecimenSchema>
 export type TEditableSpecimen = z.infer<typeof EditableSpecimenSchema>
 export type TSpecimenFacet = z.infer<typeof SpecimenFacetSchema>
