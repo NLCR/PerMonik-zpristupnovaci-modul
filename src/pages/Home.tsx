@@ -45,10 +45,10 @@ const Home = () => {
                 backgroundColor: 'white',
                 textAlign: 'left',
                 borderRadius: theme.spacing(2),
-                boxShadow: theme.shadows['1'],
+                boxShadow: theme.shadows[1],
                 transition: 'all 0.2s',
                 ':hover': {
-                  boxShadow: theme.shadows['3'],
+                  boxShadow: theme.shadows[3],
                   cursor: 'pointer',
                 },
               })}

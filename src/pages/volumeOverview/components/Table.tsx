@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import CheckIcon from '@mui/icons-material/Check'
 import { csCZ } from '@mui/x-data-grid/locales'
+import { Box } from '@mui/material'
 import { TSpecimen } from '../../../schema/specimen'
 import { TVolumeDetail } from '../../../schema/volume'
 import { useLanguageCode } from '../../../utils/helperHooks'
@@ -13,6 +14,22 @@ import { usePublicationListQuery } from '../../../api/publication'
 
 type TProps = {
   volume?: TVolumeDetail
+}
+
+const CenteredIcon = (show: boolean) => {
+  return show ? (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+      }}
+    >
+      <CheckIcon />
+    </Box>
+  ) : null
 }
 
 const Table: FC<TProps> = ({ volume = undefined }) => {
@@ -27,6 +44,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         field: 'publicationDate',
         headerName: t('table.publication_date'),
         flex: 1,
+        minWidth: 120,
         valueFormatter: (value) => {
           return dayjs(value).format('dd DD.MM.YYYY')
         },
@@ -36,7 +54,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('volume_overview.is_in_volume'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.numExists ? <CheckIcon /> : null
+          return CenteredIcon(row.numExists)
         },
       },
       {
@@ -44,7 +62,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('volume_overview.missing_number'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.numMissing ? <CheckIcon /> : null
+          return CenteredIcon(row.numMissing)
         },
       },
       {
@@ -98,7 +116,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.OK'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.damageTypes.includes('OK') ? <CheckIcon /> : null
+          return CenteredIcon(!!row.damageTypes?.includes('OK'))
         },
       },
       {
@@ -106,7 +124,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.PP'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.damageTypes.includes('PP') ? <CheckIcon /> : null
+          return CenteredIcon(!!row.damageTypes?.includes('PP'))
         },
       },
       {
@@ -114,7 +132,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.Deg'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.damageTypes.includes('Deg') ? <CheckIcon /> : null
+          return CenteredIcon(!!row.damageTypes?.includes('Deg'))
         },
       },
       {
@@ -122,7 +140,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChS'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.damageTypes.includes('ChS') ? <CheckIcon /> : null
+          return CenteredIcon(!!row.damageTypes?.includes('ChS'))
         },
       },
       {
@@ -130,7 +148,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChPag'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.damageTypes.includes('ChPag') ? <CheckIcon /> : null
+          return CenteredIcon(!!row.damageTypes?.includes('ChPag'))
         },
       },
       {
@@ -138,7 +156,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChDatum'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.damageTypes.includes('ChDatum') ? <CheckIcon /> : null
+          return CenteredIcon(!!row.damageTypes?.includes('ChDatum'))
         },
       },
       {
@@ -146,7 +164,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChCis'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.damageTypes.includes('ChCis') ? <CheckIcon /> : null
+          return CenteredIcon(!!row.damageTypes?.includes('ChCis'))
         },
       },
       {
@@ -154,7 +172,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChSv'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.damageTypes.includes('ChSv') ? <CheckIcon /> : null
+          return CenteredIcon(!!row.damageTypes?.includes('ChSv'))
         },
       },
       {
@@ -162,11 +180,13 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.Cz'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.damageTypes.includes('Cz') ? <CheckIcon /> : null
+          return CenteredIcon(!!row.damageTypes?.includes('Cz'))
         },
       },
       {
         field: 'note',
+        flex: 1,
+        minWidth: 180,
         headerName: t('volume_overview.note'),
       },
     ]

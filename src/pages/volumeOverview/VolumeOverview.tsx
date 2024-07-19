@@ -1,15 +1,16 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
-  createStyles,
-  Flex,
-  rem,
-  ScrollArea,
+  Box,
+  Typography,
   Table,
-  Title,
-} from '@mantine/core'
-import { Box } from '@mui/material'
-import React, { useState } from 'react'
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  useTheme,
+} from '@mui/material'
+import React from 'react'
 import dayjs from 'dayjs'
 import { usePublicVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
@@ -21,37 +22,8 @@ import { useOwnerListQuery } from '../../api/owner'
 import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
 
-const useStyles = createStyles((theme) => ({
-  borderBottomNone: {
-    borderBottom: 'none !important',
-  },
-  header: {
-    position: 'sticky',
-    top: 0,
-    backgroundColor:
-      theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
-    transition: 'box-shadow 150ms ease',
-    zIndex: 2,
-    '&::after': {
-      content: '""',
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      borderBottom: `${rem(1)} solid ${
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[3]
-          : theme.colors.gray[2]
-      }`,
-    },
-  },
-  scrolled: {
-    boxShadow: theme.shadows.sm,
-  },
-}))
-
 const VolumeOverview = () => {
-  const { classes, cx } = useStyles()
+  const theme = useTheme()
   const { volumeId } = useParams()
   const { t } = useTranslation()
   const {
@@ -65,7 +37,6 @@ const VolumeOverview = () => {
     isError: ownersError,
   } = useOwnerListQuery()
   const { languageCode } = useLanguageCode()
-  const [inputDataScrolled, setInputDataScrolled] = useState(false)
   const {
     data: volume,
     isLoading: volumeLoading,
@@ -85,153 +56,133 @@ const VolumeOverview = () => {
     return <ShowInfoMessage message={t('volume_overview.not_found')} />
 
   return (
-    <Flex
+    <Box
       sx={{
-        alignItems: 'stretch',
-        justifyContent: 'space-between',
+        display: 'flex',
+        gap: '16px',
+        width: '100%',
       }}
     >
-      <Flex
-        direction="column"
-        sx={() => ({
-          // width: '35%',
-          width: '23%',
-          maxHeight: '80vh',
-          justifyContent: 'space-between',
-        })}
-      >
-        <Flex
-          direction="column"
-          sx={(theme) => ({
-            // maxHeight: '49%',
-            height: '100%',
-            padding: theme.spacing.md,
-            backgroundColor: 'white',
-            borderRadius: theme.spacing.xs,
-            boxShadow: theme.shadows.xs,
-          })}
-        >
-          <Title
-            order={5}
-            sx={(theme) => ({
-              marginBottom: theme.spacing.xs,
-              color: theme.colors.blue[9],
-            })}
-          >
-            {t('volume_overview.volume_information')}
-          </Title>
-          <ScrollArea
-            onScrollPositionChange={({ y }) => setInputDataScrolled(y !== 0)}
-          >
-            <Table verticalSpacing="xs" fontSize="xs">
-              <thead
-                className={cx(classes.header, {
-                  [classes.scrolled]: inputDataScrolled,
-                })}
-              >
-                <tr>
-                  <th className={classes.borderBottomNone}>
-                    {t('volume_overview.name')}
-                  </th>
-                  <th className={classes.borderBottomNone}>
-                    {t('volume_overview.value')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{t('volume_overview.meta_title')}</td>
-                  <td>
-                    {
-                      metaTitles.find((m) => m.id === volume.volume.metaTitleId)
-                        ?.name
-                    }
-                  </td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.mutation')}</td>
-                  <td>
-                    {
-                      mutations.find((m) => m.id === volume.volume.mutationId)
-                        ?.name[languageCode]
-                    }
-                  </td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.publication_mark')}</td>
-                  <td>{volume.volume.publicationMark}</td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.bar_code')}</td>
-                  <td>{volume.volume.barCode}</td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.signature')}</td>
-                  <td>{volume.volume.signature}</td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.year')}</td>
-                  <td>{volume.volume.year}</td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.date_from')}</td>
-                  <td>
-                    {dayjs(volume.volume.dateFrom).format('DD. MMMM YYYY')}
-                  </td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.date_to')}</td>
-                  <td>{dayjs(volume.volume.dateTo).format('DD. MMMM YYYY')}</td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.first_number')}</td>
-                  <td>{volume.volume.firstNumber}</td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.last_number')}</td>
-                  <td>{volume.volume.lastNumber}</td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.owner')}</td>
-                  <td>
-                    {owners.find((o) => o.id === volume.volume.ownerId)?.name}
-                  </td>
-                </tr>
-                <tr>
-                  <td>{t('volume_overview.note')}</td>
-                  <td>{volume.volume.note}</td>
-                </tr>
-              </tbody>
-            </Table>
-          </ScrollArea>
-        </Flex>
-      </Flex>
-
-      <Flex
-        direction="column"
-        sx={(theme) => ({
-          height: '100%',
-          maxHeight: '80vh',
-          padding: theme.spacing.md,
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '380px',
+          padding: '16px',
           backgroundColor: 'white',
-          borderRadius: theme.spacing.xs,
-          boxShadow: theme.shadows.xs,
-          // width: '64%',
-          width: '76%',
-        })}
+          borderRadius: '8px',
+          // boxShadow: theme.shadows[1],
+          flexShrink: 0,
+        }}
       >
-        <Title
-          order={5}
-          sx={(theme) => ({
-            marginBottom: theme.spacing.xs,
-            color: theme.colors.blue[9],
-          })}
+        <Typography
+          variant="h5"
+          sx={{
+            marginBottom: '8px',
+            color: theme.palette.blue['900'],
+          }}
+        >
+          {t('volume_overview.volume_information')}
+        </Typography>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>{t('volume_overview.name')}</TableCell>
+              <TableCell>{t('volume_overview.value')}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell>{t('volume_overview.meta_title')}</TableCell>
+              <TableCell>
+                {
+                  metaTitles.find((m) => m.id === volume.volume.metaTitleId)
+                    ?.name
+                }
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.mutation')}</TableCell>
+              <TableCell>
+                {
+                  mutations.find((m) => m.id === volume.volume.mutationId)
+                    ?.name[languageCode]
+                }
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.publication_mark')}</TableCell>
+              <TableCell>{volume.volume.publicationMark}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.bar_code')}</TableCell>
+              <TableCell>{volume.volume.barCode}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.signature')}</TableCell>
+              <TableCell>{volume.volume.signature}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.year')}</TableCell>
+              <TableCell>{volume.volume.year}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.date_from')}</TableCell>
+              <TableCell>
+                {dayjs(volume.volume.dateFrom).format('DD. MMMM YYYY')}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.date_to')}</TableCell>
+              <TableCell>
+                {dayjs(volume.volume.dateTo).format('DD. MMMM YYYY')}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.first_number')}</TableCell>
+              <TableCell>{volume.volume.firstNumber}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.last_number')}</TableCell>
+              <TableCell>{volume.volume.lastNumber}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.owner')}</TableCell>
+              <TableCell>
+                {owners.find((o) => o.id === volume.volume.ownerId)?.name}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t('volume_overview.note')}</TableCell>
+              <TableCell>{volume.volume.note}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '16px',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          width: '100%',
+          overflow: 'auto',
+          // boxShadow: theme.shadows[1],
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            marginBottom: '8px',
+            color: theme.palette.blue['900'],
+          }}
         >
           {t('volume_overview.volume_description')}
-        </Title>
+        </Typography>
         <SpecimensTable volume={volume} />
-      </Flex>
-    </Flex>
+      </Box>
+    </Box>
   )
 }
 

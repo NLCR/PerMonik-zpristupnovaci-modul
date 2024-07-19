@@ -27,7 +27,7 @@ const App: FC = () => {
           paddingTop: '15px',
           paddingBottom: '10px',
           maxHeight: `calc(100vh - 64px)`,
-          height: '100%',
+          minHeight: `calc(100vh - 64px)`,
           width: '100%',
           // maxHeight: `700px`,
           // overflow: 'hidden',

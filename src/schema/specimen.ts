@@ -28,7 +28,7 @@ export const SpecimenSchema = z.object({
   numExists: z.boolean(),
   numMissing: z.boolean(),
   ownerId: z.string(),
-  damageTypes: SpecimenDamageTypesSchema.array(),
+  damageTypes: SpecimenDamageTypesSchema.array().nullable(),
   damagedPages: z.number().array(),
   missingPages: z.number().array(),
   note: z.string(),

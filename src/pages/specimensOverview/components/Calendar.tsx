@@ -249,7 +249,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
               >
                 {t('specimens_overview.specimens')}
               </Typography>
-              <Table>
+              <Table size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell>{t('specimens_overview.mutation')}</TableCell>

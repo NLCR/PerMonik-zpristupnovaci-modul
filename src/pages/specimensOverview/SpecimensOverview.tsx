@@ -166,11 +166,12 @@ const SpecimensOverview = () => {
           width: '100%',
           paddingLeft: '16px',
           paddingRight: '16px',
+          paddingBottom: '16px',
           backgroundColor: 'white',
           borderRadius: '8px',
           boxShadow: '8px',
           flexDirection: 'column',
-          overflow: 'hidden',
+          // overflow: 'hidden',
         }}
       >
         <Box
