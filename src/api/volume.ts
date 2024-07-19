@@ -18,9 +18,10 @@ export const usePublicVolumeDetailQuery = (id?: string) =>
     enabled: !!id,
   })
 
-export const useVolumeOverviewStatsQuery = (id: string) =>
+export const useVolumeOverviewStatsQuery = (id?: string) =>
   useQuery({
     queryKey: ['volume', 'stats', id],
     queryFn: () =>
       api().get(`volume/${id}/stats`).json<TVolumeOverviewStats | null>(),
+    enabled: !!id,
   })

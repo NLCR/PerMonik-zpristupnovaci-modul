@@ -15,10 +15,12 @@ const bolderTextStyle = {
 }
 
 type TProps = {
-  volumeBarCode: string
+  volumeBarCode?: string
 }
 
-const VolumeOverviewStatsModal: FC<TProps> = ({ volumeBarCode }) => {
+const VolumeOverviewStatsModal: FC<TProps> = ({
+  volumeBarCode = undefined,
+}) => {
   const { t } = useTranslation()
 
   const { languageCode } = useLanguageCode()

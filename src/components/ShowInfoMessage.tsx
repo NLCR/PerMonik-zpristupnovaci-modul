@@ -1,25 +1,22 @@
-import { FC } from 'react'
-import { Container, createStyles } from '@mantine/core'
-import { IconMessageCircleExclamation } from '@tabler/icons-react'
+import React, { FC } from 'react'
+
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
+import { Container, Box } from '@mui/material'
 
 type TShowErrorProps = {
   message: string
 }
 
-const useStyles = createStyles(() => ({
-  icon: {
-    display: 'block',
-    margin: '0 auto',
-  },
-}))
-
 const ShowInfoMessage: FC<TShowErrorProps> = ({ message }) => {
-  const { classes } = useStyles()
-
   return (
-    <Container sx={{ textAlign: 'center', marginTop: 50, marginBottom: 50 }}>
-      <IconMessageCircleExclamation size={50} className={classes.icon} />
-      <span>{message}</span>
+    <Container
+      sx={{ marginTop: '50px', marginBottom: '50px', textAlign: 'center' }}
+    >
+      <ErrorOutlineIcon
+        fontSize="large"
+        sx={{ display: 'block', margin: '0 auto', marginBottom: '10px' }}
+      />
+      <Box component="span">{message}</Box>
     </Container>
   )
 }

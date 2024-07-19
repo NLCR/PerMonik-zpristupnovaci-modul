@@ -1,28 +1,31 @@
-import { Container, createStyles, Footer as MFooter, Text } from '@mantine/core'
-
-const useStyles = createStyles(() => ({
-  footer: {
-    // marginTop: theme.spacing.xl,
-  },
-  container: {
-    padding: 0,
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-  },
-}))
+import { Box, Container, Typography } from '@mui/material'
 
 const Footer = () => {
-  const { classes } = useStyles()
-
   return (
-    <MFooter height={40} className={classes.footer}>
-      <Container className={classes.container} size="xl">
-        <Text size="xs">Copyright Permonik 2023</Text>
+    <Box
+      sx={{
+        height: '40px',
+      }}
+    >
+      <Container
+        sx={{
+          padding: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: '12px',
+          }}
+        >
+          Copyright Permonik 2023
+        </Typography>
       </Container>
-    </MFooter>
+    </Box>
   )
 }
 

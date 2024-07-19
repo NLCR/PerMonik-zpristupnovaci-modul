@@ -88,6 +88,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
     day: string
   } | null>(null)
   const [subModalOpened, setSubModalOpened] = useState(false)
+  const [subModalData, setSubModalData] = useState<TSpecimen | null>(null)
 
   const {
     data: calendarDateFromQuery,
@@ -335,6 +336,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                           })}
                           onClick={() => {
                             setSubModalOpened(true)
+                            setSubModalData(s)
                           }}
                         >
                           {t('specimens_overview.open')}
@@ -344,38 +346,6 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                             }}
                           />
                         </Typography>
-                        <Modal
-                          open={subModalOpened}
-                          onClose={() => setSubModalOpened(false)}
-                          closeAfterTransition
-                          slots={{ backdrop: Backdrop }}
-                          slotProps={{
-                            backdrop: {
-                              color: '#fff',
-                              timeout: 500,
-                            },
-                          }}
-                        >
-                          <Fade in={subModalOpened}>
-                            <Box sx={subModalStyle}>
-                              <Typography
-                                sx={(theme) => ({
-                                  color: theme.palette.blue['900'],
-                                  fontSize: '24px',
-                                  fontWeight: 'bold',
-                                })}
-                              >
-                                {t(
-                                  'specimens_overview.volume_overview_modal_link'
-                                )}{' '}
-                                {s.barCode}
-                              </Typography>
-                              <VolumeOverviewStatsModal
-                                volumeBarCode={s.volumeId}
-                              />
-                            </Box>
-                          </Fade>
-                        </Modal>
                       </TableCell>
                       <TableCell>
                         <Typography
@@ -410,6 +380,37 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
               </Table>
             </Box>
             {/* <CalendarModal row={row} day={day.day} /> */}
+          </Box>
+        </Fade>
+      </Modal>
+      <Modal
+        open={subModalOpened}
+        onClose={() => {
+          setSubModalOpened(false)
+          setSubModalData(null)
+        }}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            color: '#fff',
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={subModalOpened}>
+          <Box sx={subModalStyle}>
+            <Typography
+              sx={(theme) => ({
+                color: theme.palette.blue['900'],
+                fontSize: '24px',
+                fontWeight: 'bold',
+              })}
+            >
+              {t('specimens_overview.volume_overview_modal_link')}{' '}
+              {subModalData?.barCode}
+            </Typography>
+            <VolumeOverviewStatsModal volumeBarCode={subModalData?.volumeId} />
           </Box>
         </Fade>
       </Modal>
