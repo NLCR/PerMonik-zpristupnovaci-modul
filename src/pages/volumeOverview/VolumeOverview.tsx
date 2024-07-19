@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
-  // Checkbox,
   createStyles,
   Flex,
   rem,
@@ -9,19 +8,18 @@ import {
   Table,
   Title,
 } from '@mantine/core'
-import React, { Suspense, useEffect, useState } from 'react'
+import { Box } from '@mui/material'
+import React, { useState } from 'react'
 import dayjs from 'dayjs'
-import { useVolumeDetailQuery } from '../api/volume'
-import Loader from '../components/reusableComponents/Loader'
-import ShowError from '../components/reusableComponents/ShowError'
-import ShowInfoMessage from '../components/reusableComponents/ShowInfoMessage'
-import { useLanguageCode } from '../utils/helperHooks'
-import { useMutationListQuery } from '../api/mutation'
-import { useOwnerListQuery } from '../api/owner'
-
-const SpecimensTable = React.lazy(
-  () => import('../components/volumeOverview/Table')
-)
+import { usePublicVolumeDetailQuery } from '../../api/volume'
+import Loader from '../../components/Loader'
+import ShowError from '../../components/ShowError'
+import ShowInfoMessage from '../../components/ShowInfoMessage'
+import { useLanguageCode } from '../../utils/helperHooks'
+import { useMutationListQuery } from '../../api/mutation'
+import { useOwnerListQuery } from '../../api/owner'
+import SpecimensTable from './components/Table'
+import { useMetaTitleListQuery } from '../../api/metaTitle'
 
 const useStyles = createStyles((theme) => ({
   borderBottomNone: {
@@ -56,27 +54,34 @@ const VolumeOverview = () => {
   const { classes, cx } = useStyles()
   const { volumeId } = useParams()
   const { t } = useTranslation()
-  const { data: mutations } = useMutationListQuery()
-  const { data: owners } = useOwnerListQuery()
+  const {
+    data: mutations,
+    isLoading: mutationsLoading,
+    isError: mutationsError,
+  } = useMutationListQuery()
+  const {
+    data: owners,
+    isLoading: ownersLoading,
+    isError: ownersError,
+  } = useOwnerListQuery()
   const { languageCode } = useLanguageCode()
-  const [showTable, setShowTable] = useState(false)
   const [inputDataScrolled, setInputDataScrolled] = useState(false)
-  // const [dailyReleasesScrolled, setDailyReleasesScrolled] = useState(false)
   const {
     data: volume,
     isLoading: volumeLoading,
     isError: volumeError,
-  } = useVolumeDetailQuery(volumeId as string)
+  } = usePublicVolumeDetailQuery(volumeId)
+  const {
+    data: metaTitles,
+    isLoading: metaTitlesLoading,
+    isError: metaTitlesError,
+  } = useMetaTitleListQuery()
 
-  useEffect(() => {
-    if (volume) {
-      setShowTable(true)
-    }
-  }, [volume])
-
-  if (volumeLoading) return <Loader />
-  if (volumeError) return <ShowError />
-  if (!volume)
+  if (volumeLoading || mutationsLoading || ownersLoading || metaTitlesLoading)
+    return <Loader />
+  if (volumeError || mutationsError || ownersError || metaTitlesError)
+    return <ShowError />
+  if (!volume || !mutations || !owners || !metaTitles)
     return <ShowInfoMessage message={t('volume_overview.not_found')} />
 
   return (
@@ -136,13 +141,18 @@ const VolumeOverview = () => {
               <tbody>
                 <tr>
                   <td>{t('volume_overview.meta_title')}</td>
-                  <td>{volume.metaTitle.name}</td>
+                  <td>
+                    {
+                      metaTitles.find((m) => m.id === volume.volume.metaTitleId)
+                        ?.name
+                    }
+                  </td>
                 </tr>
                 <tr>
                   <td>{t('volume_overview.mutation')}</td>
                   <td>
                     {
-                      mutations?.find((m) => m.id === volume.volume.mutationId)
+                      mutations.find((m) => m.id === volume.volume.mutationId)
                         ?.name[languageCode]
                     }
                   </td>
@@ -184,7 +194,7 @@ const VolumeOverview = () => {
                 <tr>
                   <td>{t('volume_overview.owner')}</td>
                   <td>
-                    {owners?.find((o) => o.id === volume.volume.ownerId)?.name}
+                    {owners.find((o) => o.id === volume.volume.ownerId)?.name}
                   </td>
                 </tr>
                 <tr>
@@ -195,69 +205,6 @@ const VolumeOverview = () => {
             </Table>
           </ScrollArea>
         </Flex>
-        {/* <Flex */}
-        {/*  direction="column" */}
-        {/*  sx={(theme) => ({ */}
-        {/*    maxHeight: '49%', */}
-        {/*    padding: theme.spacing.md, */}
-        {/*    backgroundColor: 'white', */}
-        {/*    borderRadius: theme.spacing.xs, */}
-        {/*    boxShadow: theme.shadows.xs, */}
-        {/*    // maxHeight: '400px', */}
-        {/*  })} */}
-        {/* > */}
-        {/*  <Title */}
-        {/*    order={5} */}
-        {/*    sx={(theme) => ({ */}
-        {/*      marginBottom: theme.spacing.xs, */}
-        {/*      color: theme.colors.blue[9], */}
-        {/*    })} */}
-        {/*  > */}
-        {/*    {t('volume_overview.daily_releases')} */}
-        {/*  </Title> */}
-        {/*  <ScrollArea */}
-        {/*    onScrollPositionChange={({ y }) => */}
-        {/*      setDailyReleasesScrolled(y !== 0) */}
-        {/*    } */}
-        {/*  > */}
-        {/*    <Table verticalSpacing="xs" fontSize="xs"> */}
-        {/*      <thead */}
-        {/*        className={cx(classes.header, { */}
-        {/*          [classes.scrolled]: dailyReleasesScrolled, */}
-        {/*        })} */}
-        {/*      > */}
-        {/*        <tr> */}
-        {/*          <th>{t('volume_overview.releasing')}</th> */}
-        {/*          <th>{t('volume_overview.is_in_volume')}</th> */}
-        {/*          <th>{t('volume_overview.publication')}</th> */}
-        {/*          <th>{t('volume_overview.pages_count')}</th> */}
-        {/*          <th>{t('volume_overview.name')}</th> */}
-        {/*          <th>{t('volume_overview.sub_name')}</th> */}
-        {/*        </tr> */}
-        {/*      </thead> */}
-        {/*      <tbody> */}
-        {/*        {volume.volume.periodicity.map((p) => ( */}
-        {/*          <tr key={p.day}> */}
-        {/*            <td>{t(`volume_overview.days.${p.day}`)}</td> */}
-        {/*            <td> */}
-        {/*              <Checkbox checked={p.active} readOnly /> */}
-        {/*            </td> */}
-        {/*            <td> */}
-        {/*              { */}
-        {/*                publications.find( */}
-        {/*                  (pb) => pb.id === Number(p.publication) */}
-        {/*                )?.name */}
-        {/*              } */}
-        {/*            </td> */}
-        {/*            <td>{p.pagesCount}</td> */}
-        {/*            <td>{p.name}</td> */}
-        {/*            <td>{p.subName}</td> */}
-        {/*          </tr> */}
-        {/*        ))} */}
-        {/*      </tbody> */}
-        {/*    </Table> */}
-        {/*  </ScrollArea> */}
-        {/* </Flex> */}
       </Flex>
 
       <Flex
@@ -282,13 +229,7 @@ const VolumeOverview = () => {
         >
           {t('volume_overview.volume_description')}
         </Title>
-        {showTable ? (
-          <Suspense fallback={<Loader />}>
-            <SpecimensTable volume={volume} />
-          </Suspense>
-        ) : (
-          <Loader />
-        )}
+        <SpecimensTable volume={volume} />
       </Flex>
     </Flex>
   )

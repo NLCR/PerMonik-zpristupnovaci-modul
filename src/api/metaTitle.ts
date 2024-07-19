@@ -4,10 +4,11 @@ import { api, queryClient } from './index'
 import { TMetaTitleOverview } from '../@types/metaTitle'
 import { TMetaTitle, TEditableMetaTitle } from '../schema/metaTitle'
 
-export const useMetaTitleQuery = (id: string) =>
+export const useMetaTitleQuery = (metaTitleId?: string) =>
   useQuery({
-    queryKey: ['metatitle', id],
-    queryFn: () => api().get(`metatitle/${id}`).json<TMetaTitle>(),
+    queryKey: ['metatitle', metaTitleId],
+    queryFn: () => api().get(`metatitle/${metaTitleId}`).json<TMetaTitle>(),
+    enabled: !!metaTitleId,
   })
 
 export const useMetaTitleOverviewListQuery = () =>

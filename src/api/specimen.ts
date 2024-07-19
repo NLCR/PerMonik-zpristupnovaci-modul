@@ -11,10 +11,7 @@ import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
 
 export interface TSpecimenFacets extends TSpecimensFacets {}
 
-export const useSpecimenFacetsQuery = (
-  metaTitleId: string,
-  enabled: boolean
-) => {
+export const useSpecimenFacetsQuery = (metaTitleId?: string) => {
   const { params, barCodeInput } = useSpecimensOverviewStore()
   const [debouncedBarCodeInput] = useDebouncedValue(barCodeInput, 400)
 
@@ -43,7 +40,7 @@ export const useSpecimenFacetsQuery = (
         .json<TSpecimenFacets>()
     },
     placeholderData: keepPreviousData,
-    enabled,
+    enabled: !!metaTitleId,
   })
 }
 
@@ -52,7 +49,7 @@ export interface TSpecimenList extends TSpecimensPublicationDays {
   count: number
 }
 
-export const useSpecimenListQuery = (metaTitleId: string, enabled: boolean) => {
+export const useSpecimenListQuery = (metaTitleId?: string) => {
   const { params, pagination, barCodeInput, view, calendarDate } =
     useSpecimensOverviewStore()
   const [debouncedBarCodeInput] = useDebouncedValue(barCodeInput, 400)
@@ -109,17 +106,15 @@ export const useSpecimenListQuery = (metaTitleId: string, enabled: boolean) => {
     // enabled:
     //   enabled &&
     //   (view === 'table' || (view === 'calendar' && calendarDate !== undefined)),
-    enabled,
+    enabled: !!metaTitleId,
   })
 }
 
-export const useSpecimensStartDateForCalendar = (
-  id: string,
-  enabled: boolean
-) => {
+export const useSpecimensStartDateForCalendar = (metaTitleId?: string) => {
   return useQuery({
-    queryKey: ['specimen', 'date', id],
-    queryFn: () => api().get(`specimen/${id}/start-date`).json<number>(),
-    enabled,
+    queryKey: ['specimen', 'date', metaTitleId],
+    queryFn: () =>
+      api().get(`specimen/${metaTitleId}/start-date`).json<number>(),
+    enabled: !!metaTitleId,
   })
 }

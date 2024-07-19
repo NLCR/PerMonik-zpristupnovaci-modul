@@ -47,13 +47,21 @@ interface TState extends TVariablesState {
 
 export const useSpecimensOverviewStore = create<TState>()((set) => ({
   params: initialParams,
-  pagination: { pageIndex: 0, pageSize: 25 },
+  pagination: { pageIndex: 0, pageSize: 100 },
   barCodeInput: '',
   view: 'calendar',
   calendarDate: null,
   calendarMinDate: undefined,
-  setParams: (values) => set(() => ({ params: values })),
-  setBarCodeInput: (value) => set(() => ({ barCodeInput: value })),
+  setParams: (values) =>
+    set((state) => ({
+      params: values,
+      pagination: { ...state.pagination, pageIndex: 0 },
+    })),
+  setBarCodeInput: (value) =>
+    set((state) => ({
+      barCodeInput: value,
+      pagination: { ...state.pagination, pageIndex: 0 },
+    })),
   setPagination: (value) => set(() => ({ pagination: value })),
   resetAll: () =>
     set((state) => ({

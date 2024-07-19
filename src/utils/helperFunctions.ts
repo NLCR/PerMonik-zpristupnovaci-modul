@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { z } from 'zod'
 
 // eslint-disable-next-line import/prefer-default-export
 export const getFirstMondayOfMonth = (date: Date | null) => {
@@ -13,4 +14,16 @@ export const getFirstMondayOfMonth = (date: Date | null) => {
   }
 
   return firstMonday
+}
+
+export function getDefaultsFromZodSchema<Schema extends z.AnyZodObject>(
+  schema: Schema
+) {
+  return Object.fromEntries(
+    Object.entries(schema.shape).map(([key, value]) => {
+      // eslint-disable-next-line no-underscore-dangle
+      if (value instanceof z.ZodDefault) return [key, value._def.defaultValue()]
+      return [key, undefined]
+    })
+  )
 }

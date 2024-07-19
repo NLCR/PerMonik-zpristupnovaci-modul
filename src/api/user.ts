@@ -17,7 +17,10 @@ export const useMeQuery = () => {
               email: 'stastny@inqool.cz',
               firstName: 'Petr',
               lastName: 'Šťastný',
-              owners: ['1', '2'],
+              owners: [
+                'cd2449f8-4c74-46fd-9557-ed0a9162407c',
+                'fc1c2ff3-7e86-475e-83dd-3190cae113f2',
+              ],
               role: 'admin',
               userName: 'stastny',
             })

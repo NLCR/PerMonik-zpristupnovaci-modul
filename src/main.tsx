@@ -6,10 +6,16 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { init as SentryInit, browserTracingIntegration } from '@sentry/react'
 import { MantineProvider, rem } from '@mantine/core'
 import { ToastContainer } from 'react-toastify'
+// import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider } from '@emotion/react'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import i18next from './i18next'
 import { queryClient } from './api'
 import { WrappedApp } from './App'
 import 'react-toastify/dist/ReactToastify.css'
+import theme from './theme'
+// eslint-disable-next-line import/order
+import { LocalizationProvider } from '@mui/x-date-pickers'
 
 const { MODE, VITE_SENTRY_DNS } = import.meta.env
 
@@ -34,6 +40,7 @@ SentryInit({
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
+    {/* <CssBaseline /> */}
     <QueryClientProvider client={queryClient}>
       <I18nextProvider i18n={i18next}>
         <MantineProvider
@@ -59,7 +66,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             },
           }}
         >
-          <WrappedApp />
+          <ThemeProvider theme={theme}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <WrappedApp />
+            </LocalizationProvider>
+          </ThemeProvider>
         </MantineProvider>
       </I18nextProvider>
       <ReactQueryDevtools />

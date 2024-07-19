@@ -28,7 +28,8 @@
     "records": "Záznamy",
     "specimens": "Exempláře",
     "mutations": "Mutace",
-    "owners": "Vlastníci"
+    "owners": "Vlastníci",
+    "no_meta_titles_found": "Nebyly nalezeny žádné metatituly"
   },
   "specimens_overview": {
     "meta_title_not_found": "Tento metatitul nebyl nalezen",

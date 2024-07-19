@@ -19,8 +19,8 @@ import React, { useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import { toast } from 'react-toastify'
 import { useUserListQuery, useUpdateUserMutation } from '../../api/user'
-import Loader from '../../components/reusableComponents/Loader'
-import ShowError from '../../components/reusableComponents/ShowError'
+import Loader from '../../components/Loader'
+import ShowError from '../../components/ShowError'
 import { TUser, EditableUserSchema } from '../../schema/user'
 import { useOwnerListQuery } from '../../api/owner'
 
@@ -174,7 +174,7 @@ const Users = () => {
           {user && users ? (
             <Flex className={classes.userContainer}>
               <Title order={4}>
-                {users.find((u) => u.id === user.id)?.firstName}
+                {users.find((u) => u.id === user.id)?.firstName}{' '}
                 {users.find((u) => u.id === user.id)?.lastName}
               </Title>
               <Flex gap={10}>

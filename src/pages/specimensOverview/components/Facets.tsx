@@ -1,46 +1,35 @@
-/* eslint-disable react/prop-types */
-import {
-  Button,
-  Divider,
-  RangeSlider,
-  ScrollArea,
-  Text,
-  TextInput,
-  Title,
-} from '@mantine/core'
-import { IconEraser } from '@tabler/icons-react'
 import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DatePickerValue, MonthPicker } from '@mantine/dates'
 import dayjs from 'dayjs'
-import FacetGroup from './FacetGroup'
-import { damageTypes } from '../../utils/constants'
 import {
-  TSpecimen,
-  TSpecimensFacets,
-  TSpecimensPublicationDays,
-} from '../../@types/specimen'
-import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
-import { useMutationListQuery } from '../../api/mutation'
-import { usePublicationListQuery } from '../../api/publication'
-import { useLanguageCode } from '../../utils/helperHooks'
-import { useOwnerListQuery } from '../../api/owner'
+  Typography,
+  Divider,
+  Box,
+  Slider,
+  TextField,
+  Button,
+} from '@mui/material'
+import { DateCalendar } from '@mui/x-date-pickers'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import FacetGroup from './FacetGroup'
+import { damageTypes } from '../../../utils/constants'
+import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
+import { useMutationListQuery } from '../../../api/mutation'
+import { usePublicationListQuery } from '../../../api/publication'
+import { useLanguageCode } from '../../../utils/helperHooks'
+import { useOwnerListQuery } from '../../../api/owner'
+import {
+  useSpecimenFacetsQuery,
+  useSpecimenListQuery,
+} from '../../../api/specimen'
+import { TMetaTitle } from '../../../schema/metaTitle'
+import ShowError from '../../../components/ShowError'
 
 type TProps = {
-  metaTitleName: string
-  specimensRefetching: boolean
-  facets: TSpecimensFacets
-  specimens: TSpecimen[]
-} & TSpecimensPublicationDays
+  metaTitle: TMetaTitle
+}
 
-const Facets: FC<TProps> = ({
-  metaTitleName,
-  specimensRefetching,
-  facets,
-  specimens,
-  publicationDayMin,
-  publicationDayMax,
-}) => {
+const Facets: FC<TProps> = ({ metaTitle }) => {
   const { t } = useTranslation()
   const { data: mutations } = useMutationListQuery()
   const { data: publications } = usePublicationListQuery()
@@ -58,8 +47,20 @@ const Facets: FC<TProps> = ({
     resetAll,
   } = useSpecimensOverviewStore()
 
-  const datesMin = Number(publicationDayMin?.substring(0, 4)) || 1900
-  const datesMax = Number(publicationDayMax?.substring(0, 4)) || 2023
+  const {
+    data: facets,
+    isError: facetsError,
+    isFetching: facetsFetching,
+  } = useSpecimenFacetsQuery(metaTitle.id)
+
+  const {
+    data: specimens,
+    isError: specimensError,
+    isFetching: specimensFetching,
+  } = useSpecimenListQuery(metaTitle.id)
+
+  const datesMin = Number(specimens?.publicationDayMin?.substring(0, 4)) || 1900
+  const datesMax = Number(specimens?.publicationDayMax?.substring(0, 4)) || 2023
 
   const [date, setDate] = useState(calendarMinDate)
   const [range, setRange] = useState<[number, number]>([datesMin, datesMax])
@@ -68,99 +69,138 @@ const Facets: FC<TProps> = ({
     if (
       state.view === 'calendar' &&
       prevState.view === 'table' &&
-      specimens.length
+      specimens?.specimens.length
     ) {
-      setCalendarDate(dayjs(specimens[0].publicationDate).toDate())
-      setDate(dayjs(specimens[0].publicationDate).toDate())
+      setCalendarDate(dayjs(specimens.specimens[0].publicationDate).toDate())
+      setDate(dayjs(specimens.specimens[0].publicationDate).toDate())
     }
   })
 
+  const fetching = facetsFetching || specimensFetching
+
+  if (facetsError || specimensError) {
+    return (
+      <>
+        <Typography
+          variant="h6"
+          sx={(theme) => ({
+            color: theme.palette.blue['900'],
+          })}
+        >
+          {metaTitle.name}
+        </Typography>
+        <ShowError />
+      </>
+    )
+  }
+
   return (
     <>
-      <Title size="h4" color="blue.9">
-        {metaTitleName}
-      </Title>
-      <Divider mt={10} mb={10} />
-      <Text fz="sm" fw={700}>
+      <Typography
+        variant="h6"
+        sx={(theme) => ({
+          color: theme.palette.blue['900'],
+          fontWeight: '600',
+        })}
+      >
+        {metaTitle.name}
+      </Typography>
+      <Divider
+        sx={{
+          marginTop: '10px',
+          marginBottom: '10px',
+        }}
+      />
+      <Typography
+        variant="body1"
+        sx={{
+          fontWeight: '700',
+        }}
+      >
         {t('specimens_overview.date')}
-      </Text>
+      </Typography>
       {view === 'calendar' ? (
-        <>
-          <MonthPicker
-            value={calendarDate}
-            date={date}
-            onChange={(value: DatePickerValue) => {
-              setCalendarDate(value)
+        <Box>
+          <DateCalendar
+            value={dayjs(calendarDate)}
+            minDate={dayjs(datesMin.toString())}
+            maxDate={dayjs(datesMax.toString())}
+            onChange={(value: dayjs.Dayjs) => {
+              setCalendarDate(value.toDate())
               setRange((prevState) => [
-                Number(dayjs(value).format('YYYY')),
+                Number(value.format('YYYY')),
                 prevState[1],
               ])
               setParams({
                 ...params,
-                dateStart: Number(dayjs(value).format('YYYY')),
+                dateStart: Number(value.format('YYYY')),
                 dateEnd: range[1],
               })
             }}
-            onDateChange={setDate}
-            maxDate={dayjs(datesMax.toString()).toDate()}
-            minDate={dayjs(datesMin.toString()).toDate()}
           />
-          <Divider mt={10} />
-        </>
-      ) : null}
-      <RangeSlider
-        mt="sm"
-        step={1}
-        minRange={0}
-        value={range}
-        min={datesMin}
-        max={datesMax}
-        disabled={specimensRefetching}
-        onChange={(value) => setRange(value)}
-        onChangeEnd={(value) => {
-          setCalendarDate(dayjs(value[0].toString()).toDate())
-          setDate(dayjs(value[0].toString()).toDate())
-          setParams({
-            ...params,
-            dateStart: value[0],
-            dateEnd: value[1],
-          })
+          <Divider
+            sx={{
+              marginTop: '10px',
+            }}
+          />
+        </Box>
+      ) : (
+        <Slider
+          disableSwap
+          step={1}
+          // defaultValue={date}
+          // minRange={0}
+          marks={[
+            { value: datesMin, label: `${datesMin}` },
+            { value: datesMax, label: `${datesMax}` },
+          ]}
+          value={range}
+          onChange={(event, value) => setRange(value)}
+          onChangeCommitted={(event, value) => {
+            setCalendarDate(dayjs(value[0].toString()).toDate())
+            setDate(dayjs(value[0].toString()).toDate())
+            setParams({
+              ...params,
+              dateStart: value[0],
+              dateEnd: value[1],
+            })
+          }}
+          min={datesMin}
+          max={datesMax}
+          disabled={fetching}
+        />
+      )}
+      <Typography
+        variant="body2"
+        sx={{
+          marginTop: '30px',
+          marginBottom: '30px',
+          fontWeight: '700',
         }}
-        // labelAlwaysOn
-        marks={[
-          {
-            value: datesMin,
-            label: datesMin,
-          },
-          {
-            value: datesMax,
-            label: datesMax,
-          },
-        ]}
-      />
-      {/* {view === 'table' ? ( */}
-      {/* <> */}
-      <Text mt={30} mb={5} fz="sm" fw={700}>
+      >
         {t('specimens_overview.volume')}
-      </Text>
-      <TextInput
+      </Typography>
+      <TextField
+        size="small"
         value={barCodeInput}
-        // disabled={specimensRefetching}
+        disabled={fetching}
         onChange={(event) => setBarCodeInput(event.target.value)}
       />
-      {/* </> */}
-      {/* ) : null} */}
-
-      <Divider mt={10} />
-      <ScrollArea
-        sx={(theme) => ({
-          paddingRight: theme.spacing.xs,
+      <Divider
+        sx={{
+          marginTop: '10px',
+        }}
+      />
+      <Box
+        sx={() => ({
+          paddingRight: '8px',
+          overflowY: 'scroll',
         })}
       >
         <FacetGroup
-          disabled={specimensRefetching}
+          disabled={fetching}
           facets={
-            facets.names.length
+            facets?.names.length
               ? facets.names
               : params.names.map((p) => ({ name: p, count: 0 }))
           }
@@ -169,9 +209,9 @@ const Facets: FC<TProps> = ({
           values={params.names}
         />
         <FacetGroup
-          disabled={specimensRefetching}
+          disabled={fetching}
           facets={
-            facets.subNames.length
+            facets?.subNames.length
               ? facets.subNames
               : params.subNames.map((p) => ({ name: p, count: 0 }))
           }
@@ -180,9 +220,9 @@ const Facets: FC<TProps> = ({
           values={params.subNames}
         />
         <FacetGroup
-          disabled={specimensRefetching}
+          disabled={fetching}
           facets={
-            facets.mutationIds.length
+            facets?.mutationIds.length
               ? facets.mutationIds.map((m) => ({
                   name: m.name,
                   count: m.count,
@@ -202,9 +242,9 @@ const Facets: FC<TProps> = ({
           values={params.mutationIds}
         />
         <FacetGroup
-          disabled={specimensRefetching}
+          disabled={fetching}
           facets={
-            facets.publicationIds.length
+            facets?.publicationIds.length
               ? facets.publicationIds.map((m) => ({
                   name: m.name,
                   count: m.count,
@@ -229,9 +269,9 @@ const Facets: FC<TProps> = ({
           values={params.publicationIds}
         />
         <FacetGroup
-          disabled={specimensRefetching}
+          disabled={fetching}
           facets={
-            facets.publicationMarks.length
+            facets?.publicationMarks.length
               ? facets.publicationMarks
               : params.publicationMarks.map((p) => ({ name: p, count: 0 }))
           }
@@ -245,9 +285,9 @@ const Facets: FC<TProps> = ({
           values={params.publicationMarks}
         />
         <FacetGroup
-          disabled={specimensRefetching}
+          disabled={fetching}
           facets={
-            facets.ownerIds.length
+            facets?.ownerIds.length
               ? facets.ownerIds.map((m) => ({
                   name: m.name,
                   count: m.count,
@@ -269,9 +309,9 @@ const Facets: FC<TProps> = ({
           values={params.ownerIds}
         />
         <FacetGroup
-          disabled={specimensRefetching}
+          disabled={fetching}
           facets={
-            facets.damageTypes.length
+            facets?.damageTypes.length
               ? facets.damageTypes.map((m) => ({
                   name: m.name,
                   count: m.count,
@@ -296,12 +336,16 @@ const Facets: FC<TProps> = ({
           }
           values={params.damageTypes}
         />
-      </ScrollArea>
-      <Divider mb={10} />
+      </Box>
+      <Divider
+        sx={{
+          marginBottom: '10px',
+        }}
+      />
       <Button
-        leftIcon={<IconEraser />}
-        variant="white"
-        color="red"
+        startIcon={<DeleteOutlineOutlinedIcon />}
+        variant="outlined"
+        color="error"
         onClick={() => {
           resetAll()
           setDate(dayjs(datesMin.toString()).toDate())

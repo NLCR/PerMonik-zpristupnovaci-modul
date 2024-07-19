@@ -2,31 +2,31 @@
 import {
   MantineReactTable,
   MRT_ColumnDef,
-  // MRT_RowSelectionState,
   useMantineReactTable,
 } from 'mantine-react-table'
-// import { Checkbox } from '@mantine/core'
-import { FC, memo, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import { IconCheck } from '@tabler/icons-react'
-import { TSpecimen } from '../../@types/specimen'
-import { TVolumeDetail } from '../../@types/volume'
-import { useLanguageCode, useMantineTableLang } from '../../utils/helperHooks'
-import { useMutationListQuery } from '../../api/mutation'
-import { usePublicationListQuery } from '../../api/publication'
+import { TSpecimen } from '../../../schema/specimen'
+import { TVolumeDetail } from '../../../schema/volume'
+import {
+  useLanguageCode,
+  useMantineTableLang,
+} from '../../../utils/helperHooks'
+import { useMutationListQuery } from '../../../api/mutation'
+import { usePublicationListQuery } from '../../../api/publication'
 
 type TProps = {
-  volume: TVolumeDetail
+  volume?: TVolumeDetail
 }
 
-const Table: FC<TProps> = memo(function Table({ volume }) {
+const Table: FC<TProps> = ({ volume = undefined }) => {
   const { data: mutations } = useMutationListQuery()
   const { data: publications } = usePublicationListQuery()
   const { languageCode } = useLanguageCode()
   const { mantineTableLocale } = useMantineTableLang()
   const { t } = useTranslation()
-  // const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({})
 
   const columns = useMemo<MRT_ColumnDef<TSpecimen>[]>(
     () => [
@@ -46,7 +46,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         },
         Cell: ({ row }) =>
           row.original.numExists ? <IconCheck size="1rem" /> : null,
-        // <Checkbox checked={row.original.numExists} readOnly />
       },
       {
         accessorKey: 'numMissing',
@@ -57,7 +56,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
         },
         Cell: ({ row }) =>
           row.original.numMissing ? <IconCheck size="1rem" /> : null,
-        // <Checkbox checked={row.original.numMissing} readOnly />
       },
       {
         accessorKey: 'number',
@@ -126,7 +124,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.damageTypes?.includes('OK') ? (
             <IconCheck size="1rem" />
           ) : null,
-        // <Checkbox checked={row.original.states?.includes('OK')} readOnly />
       },
       {
         accessorKey: 'damageTypes',
@@ -140,7 +137,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.damageTypes?.includes('PP') ? (
             <IconCheck size="1rem" />
           ) : null,
-        // <Checkbox checked={row.original.states?.includes('PP')} readOnly />
       },
       {
         accessorKey: 'damageTypes',
@@ -154,7 +150,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.damageTypes?.includes('Deg') ? (
             <IconCheck size="1rem" />
           ) : null,
-        // <Checkbox checked={row.original.states?.includes('Deg')} readOnly />
       },
       {
         accessorKey: 'damageTypes',
@@ -168,7 +163,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.damageTypes?.includes('ChS') ? (
             <IconCheck size="1rem" />
           ) : null,
-        // <Checkbox checked={row.original.states?.includes('ChS')} readOnly />
       },
       {
         accessorKey: 'damageTypes',
@@ -182,7 +176,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.damageTypes?.includes('ChPag') ? (
             <IconCheck size="1rem" />
           ) : null,
-        // <Checkbox checked={row.original.states?.includes('ChPag')} readOnly />
       },
       {
         accessorKey: 'damageTypes',
@@ -196,10 +189,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.damageTypes?.includes('ChDatum') ? (
             <IconCheck size="1rem" />
           ) : null,
-        // <Checkbox
-        //   checked={row.original.states?.includes('ChDatum')}
-        //   readOnly
-        // />
       },
       {
         accessorKey: 'damageTypes',
@@ -213,7 +202,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.damageTypes?.includes('ChCis') ? (
             <IconCheck size="1rem" />
           ) : null,
-        // <Checkbox checked={row.original.states?.includes('ChCis')} readOnly />
       },
       {
         accessorKey: 'damageTypes',
@@ -227,7 +215,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.damageTypes?.includes('ChSv') ? (
             <IconCheck size="1rem" />
           ) : null,
-        // <Checkbox checked={row.original.states?.includes('ChSv')} readOnly />
       },
       {
         accessorKey: 'damageTypes',
@@ -241,7 +228,6 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           row.original.damageTypes?.includes('Cz') ? (
             <IconCheck size="1rem" />
           ) : null,
-        // <Checkbox checked={row.original.states?.includes('Cz')} readOnly />
       },
       {
         accessorKey: 'note',
@@ -254,29 +240,17 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
 
   const table = useMantineReactTable({
     columns,
-    data: volume.specimens.specimenList,
+    data: volume?.specimens || [],
     localization: mantineTableLocale,
     enableStickyHeader: true,
     enableFilters: false,
     enableSorting: false,
     enablePagination: false,
-    // enableRowSelection: true,
-    // onRowSelectionChange: setRowSelection,
+    enableDensityToggle: false,
     initialState: {
       density: 'xs',
     },
-    // state: { rowSelection },
-    // mantineTableBodyRowProps: ({ row }) => ({
-    //   onClick: () =>
-    //     setRowSelection((prev) => ({
-    //       ...prev,
-    //       [row.id]: !prev[row.id],
-    //     })),
-    //   selected: rowSelection[row.id],
-    //   sx: {
-    //     cursor: 'pointer',
-    //   },
-    // }),
+    state: { showSkeletons: !volume },
     mantineTableHeadRowProps: {
       sx: (theme) => ({
         boxShadow: `${theme.shadows.xs} !important`,
@@ -307,6 +281,7 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           position: 'sticky',
           left: 0,
           backgroundColor: theme.colors.blue[0],
+          zIndex: 2,
         },
       }),
     },
@@ -323,12 +298,13 @@ const Table: FC<TProps> = memo(function Table({ volume }) {
           left: 0,
           backgroundColor: theme.colors.blue[0],
           borderColor: theme.colors.blue[9],
+          zIndex: 2,
         },
       }),
     },
   })
 
   return <MantineReactTable table={table} />
-})
+}
 
 export default Table

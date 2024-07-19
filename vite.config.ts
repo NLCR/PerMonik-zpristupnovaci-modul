@@ -5,6 +5,7 @@ import svgr from 'vite-plugin-svgr'
 import eslintPlugin from 'vite-plugin-eslint'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { visualizer } from 'rollup-plugin-visualizer'
+import commonjs from '@rollup/plugin-commonjs'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -13,6 +14,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
+      commonjs(),
       svgr(),
       eslintPlugin(),
       sentryVitePlugin({
@@ -42,6 +44,15 @@ export default defineConfig(({ mode }) => {
       }),
       // splitVendorChunkPlugin(),
     ],
+    // optimizeDeps: {
+    //   include: [
+    //     '@mui/icons-material',
+    //     '@mui/material',
+    //     '@mui/x-date-pickers',
+    //     '@emotion/react',
+    //     '@emotion/styled',
+    //   ],
+    // },
     build: {
       // required for sentry: tells vite to create source maps
       sourcemap: true,

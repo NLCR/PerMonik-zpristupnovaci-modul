@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next'
 import React, { useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import { toast } from 'react-toastify'
-import Loader from '../../components/reusableComponents/Loader'
-import ShowError from '../../components/reusableComponents/ShowError'
+import Loader from '../../components/Loader'
+import ShowError from '../../components/ShowError'
 import { useLanguageCode } from '../../utils/helperHooks'
 import {
   EditableMutationSchema,

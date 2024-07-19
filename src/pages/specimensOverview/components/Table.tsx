@@ -1,6 +1,5 @@
-/* eslint-disable react/prop-types */
 import { Box, createStyles, Flex, rem, Tooltip } from '@mantine/core'
-import { FC, memo, useEffect, useMemo, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import {
   MantineReactTable,
   MRT_ColumnDef,
@@ -12,14 +11,21 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { IconFileSymlink } from '@tabler/icons-react'
 import dayjs from 'dayjs'
-import { damageTypes } from '../../utils/constants'
-import i18next from '../../i18next'
-import { TSpecimen } from '../../@types/specimen'
-import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStore'
-import { useLanguageCode, useMantineTableLang } from '../../utils/helperHooks'
-import { useMutationListQuery } from '../../api/mutation'
-import { usePublicationListQuery } from '../../api/publication'
-import { useOwnerListQuery } from '../../api/owner'
+import { damageTypes } from '../../../utils/constants'
+import i18next from '../../../i18next'
+import { TSpecimen } from '../../../@types/specimen'
+import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
+import {
+  useLanguageCode,
+  useMantineTableLang,
+} from '../../../utils/helperHooks'
+import { useMutationListQuery } from '../../../api/mutation'
+import { usePublicationListQuery } from '../../../api/publication'
+import { useOwnerListQuery } from '../../../api/owner'
+import { TMetaTitle } from '../../../schema/metaTitle'
+import { useSpecimenListQuery } from '../../../api/specimen'
+import ShowInfoMessage from '../../../components/ShowInfoMessage'
+import ShowError from '../../../components/ShowError'
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -114,11 +120,12 @@ const getSpecimenState = (sp: TSpecimen) => {
 
 const OwnersBarCodeCell: FC<{
   row: MRT_Row<TSpecimen>
-}> = ({ row }) => {
+  ownerId: string
+}> = ({ row, ownerId }) => {
   const { classes } = useStyles()
   const { t, i18n } = useTranslation()
 
-  return (
+  return row.original.ownerId === ownerId ? (
     <Flex
       sx={(theme) => ({
         gap: theme.spacing.xs,
@@ -137,45 +144,49 @@ const OwnersBarCodeCell: FC<{
       </Link>
       {getSpecimenState(row.original)}
     </Flex>
-  )
+  ) : undefined
 }
 
-type TProps = {
-  specimens: TSpecimen[]
-  count: number
-  specimensRefetching: boolean
+type Props = {
+  metaTitle: TMetaTitle
 }
 
-const Table: FC<TProps> = memo(function Table({
-  specimens,
-  count,
-  specimensRefetching,
-}) {
+const Table: FC<Props> = ({ metaTitle }) => {
   const [localPagination, setLocalPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 25,
   })
   const { t } = useTranslation()
-  const { setPagination } = useSpecimensOverviewStore()
+  const { pagination, setPagination } = useSpecimensOverviewStore()
   const { mantineTableLocale } = useMantineTableLang()
   const { data: mutations } = useMutationListQuery()
   const { data: publications } = usePublicationListQuery()
   const { data: owners } = useOwnerListQuery()
   const { languageCode } = useLanguageCode()
 
+  const {
+    data: specimens,
+    isFetching: specimensFetching,
+    isError: specimensError,
+  } = useSpecimenListQuery(metaTitle.id)
+
   useEffect(() => {
     setPagination(localPagination)
   }, [localPagination, setPagination])
+
+  useEffect(() => {
+    setLocalPagination(pagination)
+  }, [pagination])
 
   const columns = useMemo<MRT_ColumnDef<TSpecimen>[]>(() => {
     const ownersArray = owners
       ? owners.map((o) => ({
           id: `owner${o.name}`,
-          accessorKey: 'owner',
+          accessorKey: 'ownerId',
           header: o.name,
           maxSize: 0,
           Cell: ({ row }: { row: MRT_Row<TSpecimen> }) => (
-            <OwnersBarCodeCell row={row} />
+            <OwnersBarCodeCell row={row} ownerId={o.id} />
           ),
         }))
       : []
@@ -227,21 +238,22 @@ const Table: FC<TProps> = memo(function Table({
 
   const table = useMantineReactTable({
     columns,
-    data: specimens || [],
+    data: specimens?.specimens || [],
     localization: mantineTableLocale,
     enableStickyHeader: true,
     enableFilters: false,
     enableSorting: false,
+    enableDensityToggle: false,
     initialState: {
       density: 'xs',
     },
     state: {
-      pagination: localPagination,
+      pagination,
       showSkeletons: false,
-      showProgressBars: specimensRefetching,
+      showProgressBars: specimensFetching,
     },
     manualPagination: true,
-    rowCount: count,
+    rowCount: specimens?.count,
     onPaginationChange: setLocalPagination,
     mantinePaginationProps: {
       rowsPerPageOptions: ['25', '50', '100'],
@@ -282,7 +294,17 @@ const Table: FC<TProps> = memo(function Table({
     },
   })
 
+  if (specimensError) {
+    return <ShowError />
+  }
+
+  if (!specimens?.specimens && !specimensFetching) {
+    return (
+      <ShowInfoMessage message={t('specimens_overview.specimens_not_found')} />
+    )
+  }
+
   return <MantineReactTable table={table} />
-})
+}
 
 export default Table

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Box } from '@mantine/core'
-import ShowInfoMessage from '../components/reusableComponents/ShowInfoMessage'
+import ShowInfoMessage from '../components/ShowInfoMessage'
 
 const NotFound = () => {
   const { t } = useTranslation()

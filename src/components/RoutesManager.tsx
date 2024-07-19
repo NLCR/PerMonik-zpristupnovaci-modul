@@ -5,8 +5,8 @@ import { Container } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
-import Loader from './reusableComponents/Loader'
-import SpecimensOverview from '../pages/SpecimensOverview'
+import Loader from './Loader'
+import SpecimensOverview from '../pages/specimensOverview/SpecimensOverview'
 import { useMeQuery } from '../api/user'
 import Administration from '../pages/administration/Administration'
 import Users from '../pages/administration/Users'
@@ -15,7 +15,12 @@ import MetaTitles from '../pages/administration/MetaTitles'
 import Publications from '../pages/administration/Publications'
 import Mutations from '../pages/administration/Mutations'
 
-const VolumeOverview = React.lazy(() => import('../pages/VolumeOverview'))
+const VolumeOverview = React.lazy(
+  () => import('../pages/volumeOverview/VolumeOverview')
+)
+const VolumeManagement = React.lazy(
+  () => import('../pages/volumeManagement/VolumeManagement')
+)
 
 const SuspenseLoader = () => {
   return (
@@ -28,11 +33,15 @@ const SuspenseLoader = () => {
 const RoutesManager = () => {
   const location = useLocation()
   const { t } = useTranslation('global', { keyPrefix: 'urls' })
-  const { data: me } = useMeQuery()
+  const { data: me, isLoading: meLoading } = useMeQuery()
 
   useEffect(() => {
     modals.closeAll()
   }, [location])
+
+  if (meLoading) {
+    return <Loader />
+  }
 
   return (
     <Suspense fallback={<SuspenseLoader />}>
@@ -43,10 +52,23 @@ const RoutesManager = () => {
           path={`/:lang/${t('specimens_overview')}/:metaTitleId`}
           element={<SpecimensOverview />}
         />
-        <Route
-          path={`/:lang/${t('volume_overview')}/:volumeId`}
-          element={<VolumeOverview />}
-        />
+        {me ? (
+          <>
+            <Route
+              path={`/:lang/${t('volume_overview')}`}
+              element={<VolumeManagement />}
+            />
+            <Route
+              path={`/:lang/${t('volume_overview')}/:volumeId`}
+              element={<VolumeManagement />}
+            />
+          </>
+        ) : (
+          <Route
+            path={`/:lang/${t('volume_overview')}/:volumeId`}
+            element={<VolumeOverview />}
+          />
+        )}
         {me?.role === 'admin' ? (
           <Route
             path={`/:lang/${t('administration')}`}
