@@ -1,6 +1,6 @@
 import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import {
   Typography,
   Divider,
@@ -125,7 +125,7 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
             value={dayjs(calendarDate)}
             minDate={dayjs(datesMin.toString())}
             maxDate={dayjs(datesMax.toString())}
-            onChange={(value: dayjs.Dayjs) => {
+            onChange={(value: Dayjs) => {
               setCalendarDate(value.toDate())
               setRange((prevState) => [
                 Number(value.format('YYYY')),

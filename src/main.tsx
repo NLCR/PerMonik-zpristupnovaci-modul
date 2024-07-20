@@ -7,14 +7,12 @@ import { init as SentryInit, browserTracingIntegration } from '@sentry/react'
 import { ToastContainer } from 'react-toastify'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@emotion/react'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import i18next from './i18next'
 import { queryClient } from './api'
 import { WrappedApp } from './App'
 import 'react-toastify/dist/ReactToastify.css'
 import theme from './theme'
 // eslint-disable-next-line import/order
-import { LocalizationProvider } from '@mui/x-date-pickers'
 import './styles.css'
 
 const { MODE, VITE_SENTRY_DNS } = import.meta.env
@@ -44,9 +42,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <I18nextProvider i18n={i18next}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <WrappedApp />
-          </LocalizationProvider>
+          <WrappedApp />
         </ThemeProvider>
       </I18nextProvider>
       <ReactQueryDevtools />

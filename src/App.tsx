@@ -3,7 +3,8 @@ import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter } from 'react-router-dom'
 import { Container } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'dayjs'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers'
 import RoutesManager from './components/RoutesManager'
 import ScrollToTop from './components/ScrollToTop'
 import Header from './components/Header'
@@ -41,18 +42,21 @@ const App: FC = () => {
 export const WrappedApp = () => {
   const { t, i18n } = useTranslation()
 
-  dayjs.locale(i18n.resolvedLanguage)
-
   return (
-    <BrowserRouter>
-      <HelmetProvider>
-        <Helmet>
-          <title>{t('helmet.title')}</title>
-        </Helmet>
-        <ScrollToTop />
-        <App />
-      </HelmetProvider>
-    </BrowserRouter>
+    <LocalizationProvider
+      dateAdapter={AdapterDayjs}
+      adapterLocale={i18n.resolvedLanguage}
+    >
+      <BrowserRouter>
+        <HelmetProvider>
+          <Helmet>
+            <title>{t('helmet.title')}</title>
+          </Helmet>
+          <ScrollToTop />
+          <App />
+        </HelmetProvider>
+      </BrowserRouter>
+    </LocalizationProvider>
   )
 }
 

@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { create } from 'zustand'
 import { produce } from 'immer'
+import { Dayjs } from 'dayjs'
 import {
   TEditableVolume,
   TEditableVolumePeriodicity,
@@ -64,8 +65,8 @@ interface TState extends TVariablesState {
     setBarCode: (value: string) => void
     setSignature: (value: string) => void
     setYear: (value: string) => void
-    setDateFrom: (value: string) => void
-    setDateTo: (value: string) => void
+    setDateFrom: (value: Dayjs | null) => void
+    setDateTo: (value: Dayjs | null) => void
     setFirstNumber: (value: string) => void
     setLastNumber: (value: string) => void
     setOwnerId: (value: string | null) => void
@@ -136,31 +137,35 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
     setYear: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.year = value
+          state.volumeState.year = value.replace(/\D/g, '')
         })
       ),
     setDateFrom: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.dateFrom = value
+          state.volumeState.dateFrom = value?.isValid()
+            ? value.format('YYYY-MM-DD')
+            : ''
         })
       ),
     setDateTo: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.dateTo = value
+          state.volumeState.dateTo = value?.isValid()
+            ? value.format('YYYY-MM-DD')
+            : ''
         })
       ),
     setFirstNumber: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.firstNumber = value
+          state.volumeState.firstNumber = value.replace(/\D/g, '')
         })
       ),
     setLastNumber: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.lastNumber = value
+          state.volumeState.lastNumber = value.replace(/\D/g, '')
         })
       ),
     setOwnerId: (value) =>
@@ -192,7 +197,10 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
     setPagesCount: (value: string, index: number) =>
       set(
         produce((state: TState) => {
-          state.volumeState.periodicity[index].pagesCount = value
+          state.volumeState.periodicity[index].pagesCount = value.replace(
+            /\D/g,
+            ''
+          )
         })
       ),
     setName: (value: string, index: number) =>
