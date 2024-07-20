@@ -4,11 +4,10 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import CheckIcon from '@mui/icons-material/Check'
-import { csCZ } from '@mui/x-data-grid/locales'
 import { Box } from '@mui/material'
 import { TSpecimen } from '../../../schema/specimen'
 import { TVolumeDetail } from '../../../schema/volume'
-import { useLanguageCode } from '../../../utils/helperHooks'
+import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useMutationListQuery } from '../../../api/mutation'
 import { usePublicationListQuery } from '../../../api/publication'
 
@@ -33,6 +32,7 @@ const CenteredIcon = (show: boolean) => {
 }
 
 const Table: FC<TProps> = ({ volume = undefined }) => {
+  const { MuiTableLocale } = useMuiTableLang()
   const { data: mutations } = useMutationListQuery()
   const { data: publications } = usePublicationListQuery()
   const { languageCode } = useLanguageCode()
@@ -194,7 +194,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
 
   return (
     <DataGrid
-      localeText={csCZ.components.MuiDataGrid.defaultProps.localeText}
+      localeText={MuiTableLocale}
       density="compact"
       rows={volume?.specimens}
       columns={columns}

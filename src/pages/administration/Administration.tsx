@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Box, Divider } from '@mui/material'
-import styled from '@emotion/styled'
+import { styled } from '@mui/material/styles'
 
 const Container = styled(Box)(({ theme }) => ({
   backgroundColor: 'white',

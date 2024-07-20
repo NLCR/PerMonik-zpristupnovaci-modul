@@ -1,7 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { MRT_Localization_CS } from 'mantine-react-table/locales/cs'
-import { MRT_Localization_SK } from 'mantine-react-table/locales/sk'
-import { MRT_Localization_EN } from 'mantine-react-table/locales/en'
+import { csCZ, skSK, enUS } from '@mui/x-data-grid/locales'
 import { TSupportedLanguages } from '../i18next'
 
 export const useLanguageCode = () => {
@@ -9,21 +7,21 @@ export const useLanguageCode = () => {
   return { languageCode: i18n.resolvedLanguage as TSupportedLanguages }
 }
 
-export const useMantineTableLang = () => {
+export const useMuiTableLang = () => {
   const { i18n } = useTranslation()
 
   const getLocale = () => {
     switch (i18n.resolvedLanguage) {
       case 'cs':
-        return MRT_Localization_CS
+        return csCZ.components.MuiDataGrid.defaultProps.localeText
       case 'sk':
-        return MRT_Localization_SK
+        return skSK.components.MuiDataGrid.defaultProps.localeText
       case 'en':
-        return MRT_Localization_EN
+        return enUS.components.MuiDataGrid.defaultProps.localeText
       default:
-        return MRT_Localization_CS
+        return csCZ.components.MuiDataGrid.defaultProps.localeText
     }
   }
 
-  return { mantineTableLocale: getLocale() }
+  return { MuiTableLocale: getLocale() }
 }

@@ -13,7 +13,7 @@ import {
   Divider,
   Avatar,
 } from '@mui/material'
-import { styled } from '@mui/system'
+import { styled } from '@mui/material/styles'
 import MenuIcon from '@mui/icons-material/Menu'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Logo from '../assets/logo.png'

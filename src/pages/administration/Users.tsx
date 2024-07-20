@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import { clsx } from 'clsx'
 import { toast } from 'react-toastify'
-import styled from '@emotion/styled'
+import { styled } from '@mui/material/styles'
 import { LoadingButton } from '@mui/lab'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'

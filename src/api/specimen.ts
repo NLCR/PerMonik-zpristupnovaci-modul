@@ -1,5 +1,5 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { useDebouncedValue } from '@mantine/hooks'
+import { useDebounce } from 'use-debounce'
 import dayjs from 'dayjs'
 import { api } from './index'
 import {
@@ -13,7 +13,7 @@ export interface TSpecimenFacets extends TSpecimensFacets {}
 
 export const useSpecimenFacetsQuery = (metaTitleId?: string) => {
   const { params, barCodeInput } = useSpecimensOverviewStore()
-  const [debouncedBarCodeInput] = useDebouncedValue(barCodeInput, 400)
+  const [debouncedBarCodeInput] = useDebounce(barCodeInput, 400)
 
   return useQuery({
     queryKey: [
@@ -52,7 +52,7 @@ export interface TSpecimenList extends TSpecimensPublicationDays {
 export const useSpecimenListQuery = (metaTitleId?: string) => {
   const { params, pagination, barCodeInput, view, calendarDate } =
     useSpecimensOverviewStore()
-  const [debouncedBarCodeInput] = useDebouncedValue(barCodeInput, 400)
+  const [debouncedBarCodeInput] = useDebounce(barCodeInput, 400)
 
   return useQuery({
     queryKey: [

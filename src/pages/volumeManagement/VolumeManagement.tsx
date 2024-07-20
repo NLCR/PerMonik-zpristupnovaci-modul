@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Box } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import React, { useEffect } from 'react'
 import { useMangedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
@@ -16,6 +16,7 @@ import { useVolumeManagementStore } from '../../slices/useVolumeManagementStore'
 import InputData from './components/InputData'
 
 const VolumeManagement = () => {
+  const theme = useTheme()
   const { volumeId } = useParams()
   const { data: me, isLoading: meLoading, isError: meError } = useMeQuery()
   const { t } = useTranslation()
@@ -98,23 +99,67 @@ const VolumeManagement = () => {
     <Box
       sx={{
         display: 'flex',
-        alignItems: 'stretch',
-        justifyContent: 'space-between',
+        gap: '16px',
+        width: '100%',
       }}
     >
-      <InputData
-        canEdit={canEdit}
-        me={me}
-        mutations={mutations}
-        owners={owners}
-        publications={publications}
-        metaTitles={metaTitles}
-      />
-      <SpecimensTable
-        canEdit={canEdit}
-        mutations={mutations}
-        publications={publications}
-      />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '380px',
+          padding: '16px',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          // boxShadow: theme.shadows[1],
+          flexShrink: 0,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            marginBottom: '8px',
+            color: theme.palette.blue['900'],
+          }}
+        >
+          {t('volume_overview.volume_information')}
+        </Typography>
+        <InputData
+          canEdit={canEdit}
+          me={me}
+          mutations={mutations}
+          owners={owners}
+          publications={publications}
+          metaTitles={metaTitles}
+        />
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '16px',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          width: '100%',
+          overflow: 'auto',
+          // boxShadow: theme.shadows[1],
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            marginBottom: '8px',
+            color: theme.palette.blue['900'],
+          }}
+        >
+          {t('volume_overview.volume_description')}
+        </Typography>
+        <SpecimensTable
+          canEdit={canEdit}
+          mutations={mutations}
+          publications={publications}
+        />
+      </Box>
     </Box>
   )
 }

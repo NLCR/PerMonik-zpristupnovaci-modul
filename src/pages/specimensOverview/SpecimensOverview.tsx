@@ -26,7 +26,7 @@ import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStor
 import SpecimenDayDetailExampleImage from '../../assets/images/specimen-day-detail-example.png'
 import Facets from './components/Facets'
 import Calendar from './components/Calendar'
-import MuiTable from './components/MuiTable'
+import Table from './components/Table'
 
 const modalStyle = {
   position: 'absolute' as const,
@@ -297,7 +297,7 @@ const SpecimensOverview = () => {
         ) : (
           <Suspense>
             {/* <Table metaTitle={metaTitle} /> */}
-            <MuiTable metaTitle={metaTitle} />
+            <Table metaTitle={metaTitle} />
           </Suspense>
         )}
       </Box>

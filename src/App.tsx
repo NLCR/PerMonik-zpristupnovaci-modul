@@ -2,10 +2,8 @@ import { FC } from 'react'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter } from 'react-router-dom'
 import { Container } from '@mui/material'
-import { DatesProvider } from '@mantine/dates'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import { ModalsProvider } from '@mantine/modals'
 import RoutesManager from './components/RoutesManager'
 import ScrollToTop from './components/ScrollToTop'
 import Header from './components/Header'
@@ -47,17 +45,13 @@ export const WrappedApp = () => {
 
   return (
     <BrowserRouter>
-      <ModalsProvider>
-        <HelmetProvider>
-          <DatesProvider settings={{ locale: i18n.resolvedLanguage }}>
-            <Helmet>
-              <title>{t('helmet.title')}</title>
-            </Helmet>
-            <ScrollToTop />
-            <App />
-          </DatesProvider>
-        </HelmetProvider>
-      </ModalsProvider>
+      <HelmetProvider>
+        <Helmet>
+          <title>{t('helmet.title')}</title>
+        </Helmet>
+        <ScrollToTop />
+        <App />
+      </HelmetProvider>
     </BrowserRouter>
   )
 }

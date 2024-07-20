@@ -4,7 +4,6 @@ import { I18nextProvider } from 'react-i18next'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { init as SentryInit, browserTracingIntegration } from '@sentry/react'
-import { MantineProvider, rem } from '@mantine/core'
 import { ToastContainer } from 'react-toastify'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@emotion/react'
@@ -43,36 +42,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <I18nextProvider i18n={i18next}>
-        <MantineProvider
-          withGlobalStyles
-          withNormalizeCSS
-          theme={{
-            loader: 'bars',
-            fontFamily: 'Verdana, sans-serif',
-            colorScheme: 'light',
-            components: {
-              Container: {
-                defaultProps: {
-                  sizes: {
-                    xs: rem(540),
-                    sm: rem(720),
-                    md: rem(960),
-                    lg: rem(1140),
-                    xl: rem(1320),
-                    xxl: rem(1700),
-                  },
-                },
-              },
-            },
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <WrappedApp />
-            </LocalizationProvider>
-          </ThemeProvider>
-        </MantineProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <WrappedApp />
+          </LocalizationProvider>
+        </ThemeProvider>
       </I18nextProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
