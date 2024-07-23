@@ -64,3 +64,57 @@ export type TSpecimenDamageTypes = z.infer<typeof SpecimenDamageTypesSchema>
 export type TSpecimen = z.infer<typeof SpecimenSchema>
 export type TEditableSpecimen = z.infer<typeof EditableSpecimenSchema>
 export type TSpecimenFacet = z.infer<typeof SpecimenFacetSchema>
+
+export const filterSpecimen = (input: TEditableSpecimen): TEditableSpecimen => {
+  return {
+    id: input.id,
+    metaTitleId: input.metaTitleId,
+    volumeId: input.volumeId,
+    barCode: input.barCode,
+    numExists: input.numExists,
+    numMissing: input.numMissing,
+    ownerId: input.ownerId,
+    damageTypes: input.damageTypes,
+    damagedPages: input.damagedPages,
+    missingPages: input.missingPages,
+    note: input.note,
+    name: input.name,
+    subName: input.subName,
+    publicationId: input.publicationId,
+    mutationId: input.mutationId,
+    publicationMark: input.publicationMark,
+    publicationDate: input.publicationDate,
+    publicationDateString: input.publicationDateString,
+    number: input.number,
+    pagesCount: input.pagesCount,
+    isAttachment: input.isAttachment,
+  }
+}
+
+export const createNewSpecimen = (
+  input: Partial<TEditableSpecimen>
+): TEditableSpecimen => {
+  return {
+    id: input.id ?? '',
+    metaTitleId: input.metaTitleId ?? '',
+    volumeId: input.volumeId ?? '',
+    barCode: input.barCode ?? '',
+    numExists: input.numExists ?? false,
+    numMissing: input.numMissing ?? false,
+    ownerId: input.ownerId ?? '',
+    damageTypes: input.damageTypes ?? [],
+    damagedPages: input.damagedPages ?? [],
+    missingPages: input.missingPages ?? [],
+    note: input.note ?? '',
+    name: input.name ?? '',
+    subName: input.subName ?? '',
+    publicationId: input.publicationId ?? '',
+    mutationId: input.mutationId ?? '',
+    publicationMark: input.publicationMark ?? '',
+    publicationDate: input.publicationDate ?? '',
+    publicationDateString: input.publicationDateString ?? '',
+    number: input.number ?? '',
+    pagesCount: input.pagesCount ?? 0,
+    isAttachment: input.isAttachment ?? false,
+  }
+}

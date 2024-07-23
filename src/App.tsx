@@ -5,6 +5,7 @@ import { Container } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers'
+import dayjs from 'dayjs'
 import RoutesManager from './components/RoutesManager'
 import ScrollToTop from './components/ScrollToTop'
 import Header from './components/Header'
@@ -41,6 +42,8 @@ const App: FC = () => {
 
 export const WrappedApp = () => {
   const { t, i18n } = useTranslation()
+
+  dayjs.locale(i18n.resolvedLanguage)
 
   return (
     <LocalizationProvider

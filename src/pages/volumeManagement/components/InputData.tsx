@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import dayjs from 'dayjs'
 import {
   Checkbox,
@@ -12,6 +12,12 @@ import {
   MenuItem,
   Select,
   TextField,
+  Button,
+  Backdrop,
+  Fade,
+  Typography,
+  Modal,
+  useTheme,
 } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useLanguageCode } from '../../../utils/helperHooks'
@@ -21,6 +27,23 @@ import { TMutation } from '../../../schema/mutation'
 import { TOwner } from '../../../schema/owner'
 import { TPublication } from '../../../schema/publication'
 import { TMetaTitle } from '../../../schema/metaTitle'
+import PublicationMarkSelectorModal from '../../specimensOverview/components/PublicationMarkSelectorModal'
+
+const mainModalStyle = {
+  overflowY: 'auto',
+  position: 'absolute' as const,
+  maxHeight: '600px',
+  height: '80vh',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '90vw',
+  maxWidth: '1200px',
+  borderRadius: '4px',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+}
 
 interface InputDataProps {
   canEdit: boolean
@@ -41,6 +64,11 @@ const InputData: FC<InputDataProps> = ({
 }) => {
   const { t } = useTranslation()
   const { languageCode } = useLanguageCode()
+  const theme = useTheme()
+
+  const [publicationMarksModalOpened, setPublicationMarksModalOpened] =
+    useState(false)
+  const [periodicityModalVisible, setPeriodicityModalVisible] = useState(false)
 
   const volumeState = useVolumeManagementStore((state) => state.volumeState)
   const volumeActions = useVolumeManagementStore((state) => state.volumeActions)
@@ -50,6 +78,137 @@ const InputData: FC<InputDataProps> = ({
 
   return (
     <Box>
+      {periodicityModalVisible ? (
+        <Modal
+          open={periodicityModalVisible}
+          onClose={() => {
+            setPeriodicityModalVisible(false)
+          }}
+          closeAfterTransition
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: {
+              color: '#fff',
+              timeout: 500,
+            },
+          }}
+        >
+          <Fade in={periodicityModalVisible}>
+            <Box sx={mainModalStyle}>
+              <Typography
+                variant="h5"
+                sx={{
+                  marginBottom: '8px',
+                  color: theme.palette.blue['900'],
+                }}
+              >
+                {t('volume_overview.periodicity')}
+              </Typography>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{t('volume_overview.releasing')}</TableCell>
+                    <TableCell>{t('volume_overview.is_in_volume')}</TableCell>
+                    <TableCell>{t('volume_overview.publication')}</TableCell>
+                    <TableCell>{t('volume_overview.pages_count')}</TableCell>
+                    <TableCell>{t('volume_overview.name')}</TableCell>
+                    <TableCell>{t('volume_overview.sub_name')}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {volumeState.periodicity.map((p, index) => (
+                    <TableRow key={p.day}>
+                      <TableCell>
+                        {t(`volume_overview.days.${p.day}`)}
+                      </TableCell>
+                      <TableCell>
+                        <Checkbox
+                          size="small"
+                          checked={p.active}
+                          onChange={(event) =>
+                            volumePeriodicityActions.setActive(
+                              event.target.checked,
+                              index
+                            )
+                          }
+                          disabled={!canEdit}
+                          sx={{
+                            // marginTop: 1,
+                            // marginBottom: 1,
+                            cursor: 'pointer',
+                            // width: '100%',
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          size="small"
+                          sx={{
+                            minWidth: '218px',
+                          }}
+                          value={p.publication}
+                          disabled={!canEdit}
+                          onChange={(event) =>
+                            volumePeriodicityActions.setPublicationId(
+                              event.target.value,
+                              index
+                            )
+                          }
+                        >
+                          {publications.map((o) => (
+                            <MenuItem key={o.id} value={o.id}>
+                              {o.name[languageCode]}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          size="small"
+                          value={p.pagesCount}
+                          disabled={!canEdit}
+                          onChange={(event) =>
+                            volumePeriodicityActions.setPagesCount(
+                              event.target.value,
+                              index
+                            )
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          size="small"
+                          value={p.name}
+                          disabled={!canEdit}
+                          onChange={(event) =>
+                            volumePeriodicityActions.setName(
+                              event.target.value,
+                              index
+                            )
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          size="small"
+                          value={p.subName}
+                          disabled={!canEdit}
+                          onChange={(event) =>
+                            volumePeriodicityActions.setSubName(
+                              event.target.value,
+                              index
+                            )
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Fade>
+        </Modal>
+      ) : null}
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -104,7 +263,24 @@ const InputData: FC<InputDataProps> = ({
           </TableRow>
           <TableRow>
             <TableCell>{t('volume_overview.publication_mark')}</TableCell>
-            <TableCell>TODO</TableCell>
+            <TableCell>
+              <TextField
+                disabled={!canEdit}
+                value={volumeState.publicationMark}
+                size="small"
+                onClick={() => setPublicationMarksModalOpened(true)}
+              />
+              {publicationMarksModalOpened ? (
+                <PublicationMarkSelectorModal
+                  row={volumeState}
+                  open={publicationMarksModalOpened}
+                  onClose={() => setPublicationMarksModalOpened(false)}
+                  onSave={(data) =>
+                    volumeActions.setPublicationMark(data.publicationMark)
+                  }
+                />
+              ) : null}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>{t('volume_overview.bar_code')}</TableCell>
@@ -231,102 +407,16 @@ const InputData: FC<InputDataProps> = ({
           </TableRow>
         </TableBody>
       </Table>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>{t('volume_overview.releasing')}</TableCell>
-            <TableCell>{t('volume_overview.is_in_volume')}</TableCell>
-            <TableCell>{t('volume_overview.publication')}</TableCell>
-            <TableCell>{t('volume_overview.pages_count')}</TableCell>
-            <TableCell>{t('volume_overview.name')}</TableCell>
-            <TableCell>{t('volume_overview.sub_name')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {volumeState.periodicity.map((p, index) => (
-            <TableRow key={p.day}>
-              <TableCell>{t(`volume_overview.days.${p.day}`)}</TableCell>
-              <TableCell>
-                <Checkbox
-                  size="small"
-                  checked={p.active}
-                  onChange={(event) =>
-                    volumePeriodicityActions.setActive(
-                      event.target.checked,
-                      index
-                    )
-                  }
-                  disabled={!canEdit}
-                  sx={{
-                    // marginTop: 1,
-                    // marginBottom: 1,
-                    cursor: 'pointer',
-                    // width: '100%',
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                <Select
-                  size="small"
-                  sx={{
-                    minWidth: '218px',
-                  }}
-                  value={p.publication}
-                  disabled={!canEdit}
-                  onChange={(event) =>
-                    volumePeriodicityActions.setPublicationId(
-                      event.target.value,
-                      index
-                    )
-                  }
-                >
-                  {publications.map((o) => (
-                    <MenuItem key={o.id} value={o.id}>
-                      {o.name[languageCode]}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </TableCell>
-              <TableCell>
-                <TextField
-                  size="small"
-                  value={p.pagesCount}
-                  disabled={!canEdit}
-                  onChange={(event) =>
-                    volumePeriodicityActions.setPagesCount(
-                      event.target.value,
-                      index
-                    )
-                  }
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  size="small"
-                  value={p.name}
-                  disabled={!canEdit}
-                  onChange={(event) =>
-                    volumePeriodicityActions.setName(event.target.value, index)
-                  }
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  size="small"
-                  value={p.subName}
-                  disabled={!canEdit}
-                  onChange={(event) =>
-                    volumePeriodicityActions.setSubName(
-                      event.target.value,
-                      index
-                    )
-                  }
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <Button
+        disabled={!canEdit}
+        variant="contained"
+        sx={{
+          marginTop: '15px',
+        }}
+        onClick={() => setPeriodicityModalVisible(true)}
+      >
+        {t('volume_overview.edit_periodicity')}
+      </Button>
     </Box>
   )
 }

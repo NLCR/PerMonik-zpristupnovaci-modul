@@ -107,7 +107,9 @@
     "physical_condition": "Fyzický stav",
     "damaged_numbers": "Poškozená čísla",
     "notes": "Poznámky",
-    "volume_information": "Údaje o svazku"
+    "volume_information": "Údaje o svazku",
+    "periodicity": "Periodicita",
+    "edit_periodicity": "Upravit periodicitu"
   },
   "table": {
     "mutations": "Mutace",
@@ -117,7 +119,8 @@
     "number": "Číslo",
     "pages_count": "Poč. stran",
     "owners": "Vlastníci",
-    "basic_info": "Základní údaje"
+    "basic_info": "Základní údaje",
+    "pages": "Strany"
   },
   "tooltip_states": {
     "uncontrolled": "Nekontrolováno",

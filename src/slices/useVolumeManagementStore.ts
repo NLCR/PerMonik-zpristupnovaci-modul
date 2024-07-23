@@ -7,7 +7,7 @@ import {
   TEditableVolumePeriodicity,
   TVolumePeriodicityDays,
 } from '../schema/volume'
-import { TEditableSpecimen } from '../schema/specimen'
+import { filterSpecimen, TEditableSpecimen } from '../schema/specimen'
 
 const periodicityDays: TVolumePeriodicityDays[] = [
   'Monday',
@@ -81,6 +81,7 @@ interface TState extends TVariablesState {
   }
   specimensActions: {
     setSpecimensState: (value: TEditableSpecimen[]) => void
+    setSpecimen: (value: TEditableSpecimen) => void
     setNumExists: (value: boolean, id: string) => void
   }
 }
@@ -107,19 +108,7 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
     setPublicationMark: (value) =>
       set(
         produce((state: TState) => {
-          console.log(value, `state ${state.volumeState.publicationMark}`)
           state.volumeState.publicationMark = value
-
-          // const currentValue = state.volumeState.publicationMark
-          // console.log(value, `val ${currentValue}`)
-          // if (value && (currentValue === '' || currentValue.includes(value))) {
-          //   if (value.length >= currentValue.length) {
-          //     state.volumeState.publicationMark += value
-          //   } else {
-          //     state.volumeState.publicationMark =
-          //       state.volumeState.publicationMark.slice()
-          //   }
-          // }
         })
       ),
     setBarCode: (value) =>
@@ -226,6 +215,13 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
         produce((state: TState) => {
           const index = state.specimensState.findIndex((s) => s.id === id)
           if (index >= 0) state.specimensState[index].numExists = value
+        })
+      ),
+    setSpecimen: (value) =>
+      set(
+        produce((state: TState) => {
+          const index = state.specimensState.findIndex((s) => s.id === value.id)
+          if (index >= 0) state.specimensState[index] = filterSpecimen(value)
         })
       ),
   },
