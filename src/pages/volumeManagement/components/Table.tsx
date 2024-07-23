@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useEffect, useState } from 'react'
+import React, { ChangeEvent, FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
@@ -15,7 +15,10 @@ import {
 } from '@mui/x-data-grid/models/params/gridCellParams'
 import { clone } from 'lodash-es'
 import CheckIcon from '@mui/icons-material/Check'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import {
+  duplicateSpecimen,
   TEditableSpecimen,
   TSpecimenDamageTypes,
 } from '../../../schema/specimen'
@@ -310,7 +313,74 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     (state) => state.specimensActions
   )
 
+  const duplicateRow = useCallback(
+    (row: TEditableSpecimen) => {
+      const specimensStateClone = clone(specimensState)
+      const duplicatedSpecimen = duplicateSpecimen(row)
+      const originalSpecimenIndex = specimensState.findIndex(
+        (s) => s.id === row.id
+      )
+
+      if (originalSpecimenIndex >= 0) {
+        specimensStateClone.splice(
+          originalSpecimenIndex + 1,
+          0,
+          duplicatedSpecimen
+        )
+        specimenActions.setSpecimensState(specimensStateClone)
+      }
+    },
+    [specimenActions, specimensState]
+  )
+
+  const removeRow = useCallback(
+    (id: string) => {
+      const specimensStateClone = clone(specimensState)
+      const specimenIndex = specimensState.findIndex((s) => s.id === id)
+
+      if (specimenIndex >= 0) {
+        specimensStateClone.splice(specimenIndex, 1)
+        specimenActions.setSpecimensState(specimensStateClone)
+      }
+    },
+    [specimenActions, specimensState]
+  )
+
   const columns: GridColDef<TEditableSpecimen>[] = [
+    {
+      field: 'newRow',
+      headerName: '',
+      flex: 1,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return canEdit ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
+            {row.duplicated ? (
+              <DeleteOutlineIcon
+                onClick={() => removeRow(row.id)}
+                sx={{
+                  cursor: 'pointer',
+                }}
+              />
+            ) : (
+              <AddCircleOutlineIcon
+                onClick={() => duplicateRow(row)}
+                sx={{
+                  cursor: 'pointer',
+                }}
+              />
+            )}
+          </Box>
+        ) : null
+      },
+    },
     {
       field: 'publicationDate',
       headerName: t('table.publication_date'),

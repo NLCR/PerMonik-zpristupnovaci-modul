@@ -7,7 +7,7 @@ export const EditableUserSchema = z.object({
   userName: z.string(),
   firstName: z.string().min(1, i18next.t('schema.first_name_min_length')),
   lastName: z.string().min(1, i18next.t('schema.last_name_min_length')),
-  role: z.enum(['user', 'admin']),
+  role: z.enum(['user', 'admin', 'super_admin']),
   active: z.boolean(),
   owners: z.string().array(),
 })

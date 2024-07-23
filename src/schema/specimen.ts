@@ -1,4 +1,7 @@
 import { z } from 'zod'
+import { v4 as uuid } from 'uuid'
+// eslint-disable-next-line import/no-cycle
+import { TEditableVolume } from './volume'
 
 export const SpecimenDamageTypesSchema = z.enum([
   'OK',
@@ -29,8 +32,8 @@ export const SpecimenSchema = z.object({
   numMissing: z.boolean(),
   ownerId: z.string(),
   damageTypes: SpecimenDamageTypesSchema.array().nullable(),
-  damagedPages: z.number().array(),
-  missingPages: z.number().array(),
+  damagedPages: z.number().array().nullable(),
+  missingPages: z.number().array().nullable(),
   note: z.string(),
   name: z.string(),
   subName: z.string(),
@@ -44,7 +47,9 @@ export const SpecimenSchema = z.object({
   isAttachment: z.boolean(),
 })
 
-export const EditableSpecimenSchema = SpecimenSchema
+export const EditableSpecimenSchema = SpecimenSchema.extend({
+  duplicated: z.boolean().optional(),
+})
 // export const EditableSpecimenSchema = SpecimenSchema.partial({
 //   id: true,
 // metaTitleId: true,
@@ -91,11 +96,40 @@ export const filterSpecimen = (input: TEditableSpecimen): TEditableSpecimen => {
   }
 }
 
-export const createNewSpecimen = (
+export const repairSpecimen = (
+  specimen: Partial<TEditableSpecimen>,
+  volume: TEditableVolume
+): TSpecimen => {
+  return {
+    id: specimen.id ?? uuid(),
+    metaTitleId: volume.metaTitleId ?? '',
+    volumeId: volume.id ?? '',
+    barCode: volume.barCode ?? '',
+    numExists: specimen.numExists ?? false,
+    numMissing: specimen.numMissing ?? false,
+    ownerId: volume.ownerId ?? '',
+    damageTypes: specimen.damageTypes ?? [],
+    damagedPages: specimen.damagedPages ?? [],
+    missingPages: specimen.missingPages ?? [],
+    note: specimen.note ?? '',
+    name: specimen.name ?? '',
+    subName: specimen.subName ?? '',
+    publicationId: specimen.publicationId ?? '',
+    mutationId: specimen.mutationId ?? '',
+    publicationMark: specimen.publicationMark ?? '',
+    publicationDate: specimen.publicationDate ?? '',
+    publicationDateString: specimen.publicationDateString ?? '',
+    number: specimen.number ?? '',
+    pagesCount: specimen.pagesCount ?? 0,
+    isAttachment: specimen.isAttachment ?? false,
+  }
+}
+
+export const duplicateSpecimen = (
   input: Partial<TEditableSpecimen>
 ): TEditableSpecimen => {
   return {
-    id: input.id ?? '',
+    id: uuid(),
     metaTitleId: input.metaTitleId ?? '',
     volumeId: input.volumeId ?? '',
     barCode: input.barCode ?? '',
@@ -116,5 +150,6 @@ export const createNewSpecimen = (
     number: input.number ?? '',
     pagesCount: input.pagesCount ?? 0,
     isAttachment: input.isAttachment ?? false,
+    duplicated: true,
   }
 }

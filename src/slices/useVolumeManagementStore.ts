@@ -21,12 +21,13 @@ const periodicityDays: TVolumePeriodicityDays[] = [
 
 const initialPeriodicity: TEditableVolumePeriodicity[] = [
   ...periodicityDays.map((d) => ({
-    active: false,
-    publication: null,
+    numExists: false,
+    publicationId: null,
     day: d,
     pagesCount: '',
     name: '',
     subName: '',
+    isAttachment: false,
   })),
 ]
 
@@ -71,9 +72,10 @@ interface TState extends TVariablesState {
     setLastNumber: (value: string) => void
     setOwnerId: (value: string | null) => void
     setNote: (value: string) => void
+    setShowAttachmentsAtTheEnd: (value: boolean) => void
   }
   volumePeriodicityActions: {
-    setActive: (value: boolean, index: number) => void
+    setNumExists: (value: boolean, index: number) => void
     setPublicationId: (value: string | null, index: number) => void
     setPagesCount: (value: string, index: number) => void
     setName: (value: string, index: number) => void
@@ -169,18 +171,24 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
           state.volumeState.note = value
         })
       ),
-  },
-  volumePeriodicityActions: {
-    setActive: (value: boolean, index: number) =>
+    setShowAttachmentsAtTheEnd: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.periodicity[index].active = value
+          state.volumeState.showAttachmentsAtTheEnd = value
+        })
+      ),
+  },
+  volumePeriodicityActions: {
+    setNumExists: (value: boolean, index: number) =>
+      set(
+        produce((state: TState) => {
+          state.volumeState.periodicity[index].numExists = value
         })
       ),
     setPublicationId: (value: string | null, index: number) =>
       set(
         produce((state: TState) => {
-          state.volumeState.periodicity[index].publication = value
+          state.volumeState.periodicity[index].publicationId = value
         })
       ),
     setPagesCount: (value: string, index: number) =>

@@ -1,7 +1,15 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Box, Typography, useTheme } from '@mui/material'
+import {
+  Box,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import React, { useEffect } from 'react'
+import SaveIcon from '@mui/icons-material/Save'
 import { useMangedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
@@ -14,6 +22,7 @@ import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
 import { useVolumeManagementStore } from '../../slices/useVolumeManagementStore'
 import InputData from './components/InputData'
+import { useVolumeManagementActions } from '../../hooks/useVolumeManagementActions'
 
 const VolumeManagement = () => {
   const theme = useTheme()
@@ -25,6 +34,16 @@ const VolumeManagement = () => {
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
+
+  const { doUpdate } = useVolumeManagementActions()
+
+  const actions = [
+    {
+      icon: <SaveIcon />,
+      name: t('administration.save'),
+      onClick: doUpdate,
+    },
+  ]
 
   const {
     data: mutations,
@@ -93,7 +112,9 @@ const VolumeManagement = () => {
   }
 
   const canEdit =
-    me.owners.some((o) => o === volume?.volume.ownerId) || !volumeId?.length
+    me.owners.some((o) => o === volume?.volume.ownerId) ||
+    !volumeId?.length ||
+    me.role === 'super_admin'
 
   return (
     <Box
@@ -160,6 +181,20 @@ const VolumeManagement = () => {
           publications={publications}
         />
       </Box>
+      <SpeedDial
+        ariaLabel=""
+        sx={{ position: 'absolute', bottom: 16, right: 16 }}
+        icon={<SpeedDialIcon />}
+      >
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+            onClick={action.onClick}
+          />
+        ))}
+      </SpeedDial>
     </Box>
   )
 }

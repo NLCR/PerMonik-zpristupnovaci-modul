@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
-import { api } from './index'
-import { TVolumeDetail, TVolumeOverviewStats } from '../schema/volume'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { api, queryClient } from './index'
+import { TVolume, TVolumeDetail, TVolumeOverviewStats } from '../schema/volume'
+import { TSpecimen } from '../schema/specimen'
 
 export const useMangedVolumeDetailQuery = (id?: string) =>
   useQuery({
@@ -24,4 +25,32 @@ export const useVolumeOverviewStatsQuery = (id?: string) =>
     queryFn: () =>
       api().get(`volume/${id}/stats`).json<TVolumeOverviewStats | null>(),
     enabled: !!id,
+  })
+
+type TUpdatableVolume = {
+  volume: TVolume
+  specimens: TSpecimen[]
+}
+
+export const useUpdateVolumeWithSpecimensMutation = () =>
+  useMutation<void, unknown, TUpdatableVolume>({
+    mutationFn: (data) => {
+      return api()
+        .put(`volume/${data.volume.id}`, {
+          json: {
+            volume: {
+              ...data.volume,
+              // JSON.stringify periodicity, because solr stores periodicity as String
+              periodicity: JSON.stringify(data.volume.periodicity),
+            },
+            specimens: data.specimens,
+          },
+        })
+        .json<void>()
+    },
+    onSuccess: (_, editArgs) => {
+      queryClient.invalidateQueries({
+        queryKey: ['volume', 'detail', editArgs.volume.id],
+      })
+    },
   })

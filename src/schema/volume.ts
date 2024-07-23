@@ -1,4 +1,5 @@
 import { z } from 'zod'
+// eslint-disable-next-line import/no-cycle
 import {
   SpecimenSchema,
   SpecimenFacetSchema,
@@ -16,8 +17,9 @@ export const VolumePeriodicityDaysSchema = z.enum([
 ])
 
 export const VolumePeriodicitySchema = z.object({
-  active: z.boolean(),
-  publication: z.string(),
+  numExists: z.boolean(),
+  isAttachment: z.boolean(),
+  publicationId: z.string(),
   day: VolumePeriodicityDaysSchema,
   pagesCount: z.number(),
   name: z.string(),
@@ -25,8 +27,9 @@ export const VolumePeriodicitySchema = z.object({
 })
 
 export const EditableVolumePeriodicitySchema = z.object({
-  active: z.boolean(),
-  publication: z.string().nullable(),
+  numExists: z.boolean(),
+  isAttachment: z.boolean(),
+  publicationId: z.string().nullable(),
   day: VolumePeriodicityDaysSchema,
   pagesCount: z.number().or(z.string()),
   name: z.string(),
@@ -111,3 +114,23 @@ export type TEditableVolume = z.infer<typeof EditableVolumeSchema>
 export type TCreatableVolume = z.infer<typeof CreatableVolumeSchema>
 export type TVolumeDetail = z.infer<typeof VolumeDetailSchema>
 export type TVolumeOverviewStats = z.infer<typeof VolumeOverviewStatsSchema>
+
+// export const repairVolume = (volume: TEditableVolume): TVolume => {
+//   return {
+//     id: volume.id ?? uuid(),
+//     barCode: volume.id || '',
+//     dateFrom: volume.dateFrom ?? '',
+//     dateTo: volume.dateTo ?? '',
+//     metaTitleId: volume.metaTitleId ?? '',
+//     mutationId: volume.mutationId ?? '',
+//     periodicity: volume.periodicity ?? [],
+//     firstNumber: volume.firstNumber ?? '',
+//     lastNumber: z.number(),
+//     note: z.string(),
+//     showAttachmentsAtTheEnd: z.boolean(),
+//     signature: z.string(),
+//     ownerId: z.string(),
+//     year: z.number(),
+//     publicationMark: z.string(),
+//   }
+// }

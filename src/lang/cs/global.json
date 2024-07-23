@@ -109,7 +109,8 @@
     "notes": "Poznámky",
     "volume_information": "Údaje o svazku",
     "periodicity": "Periodicita",
-    "edit_periodicity": "Upravit periodicitu"
+    "edit_periodicity": "Upravit periodicitu",
+    "show_attachments_at_the_end": "Zobrazit přílohy na konci svazku"
   },
   "table": {
     "mutations": "Mutace",
