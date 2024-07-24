@@ -110,7 +110,14 @@
     "volume_information": "Údaje o svazku",
     "periodicity": "Periodicita",
     "edit_periodicity": "Upravit periodicitu",
-    "show_attachments_at_the_end": "Zobrazit přílohy na konci svazku"
+    "show_attachments_at_the_end": "Zobrazit přílohy na konci svazku",
+    "volume_input_data_validation_error": "Vstupní data svazku jsou nesprávná (chyba validace)",
+    "specimens_validation_error": "Exempáře obsahují neplatná data (chyba validace)",
+    "volume_updated_successfully": "Svazek byl úspěšně upraven",
+    "volume_update_error": "Nastala chyba při úpravě svazku",
+    "generate_volume": "Vygenerovat svazek",
+    "changes_are_saved_automatically": "* Změny se ukládají automaticky",
+    "close": "Zavřít"
   },
   "table": {
     "mutations": "Mutace",

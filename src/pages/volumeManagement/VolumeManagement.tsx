@@ -31,19 +31,12 @@ const VolumeManagement = () => {
   const { t } = useTranslation()
 
   const volumeActions = useVolumeManagementStore((state) => state.volumeActions)
+  const volumePeriodicityActions = useVolumeManagementStore(
+    (state) => state.volumePeriodicityActions
+  )
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
-
-  const { doUpdate } = useVolumeManagementActions()
-
-  const actions = [
-    {
-      icon: <SaveIcon />,
-      name: t('administration.save'),
-      onClick: doUpdate,
-    },
-  ]
 
   const {
     data: mutations,
@@ -71,12 +64,30 @@ const VolumeManagement = () => {
     isError: metaTitlesError,
   } = useMetaTitleListQuery()
 
+  const { doUpdate, pendingActions } = useVolumeManagementActions(
+    publications || []
+  )
+
   useEffect(() => {
     if (volume) {
       volumeActions.setVolumeState(volume.volume)
       specimensActions.setSpecimensState(volume.specimens)
     }
   }, [specimensActions, volume, volumeActions])
+
+  useEffect(() => {
+    if (!volumeId && publications) {
+      volumePeriodicityActions.setDefaultPeriodicityPublication(publications)
+    }
+  }, [publications, volumeId, volumePeriodicityActions])
+
+  const actions = [
+    {
+      icon: <SaveIcon />,
+      name: t('administration.save'),
+      onClick: doUpdate,
+    },
+  ]
 
   if (
     volumeLoading ||
@@ -124,6 +135,24 @@ const VolumeManagement = () => {
         width: '100%',
       }}
     >
+      {pendingActions ? (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 100,
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Loader />
+        </Box>
+      ) : null}
       <Box
         sx={{
           display: 'flex',

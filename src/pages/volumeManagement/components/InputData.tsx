@@ -228,13 +228,19 @@ const InputData: FC<InputDataProps> = ({
                   volumeActions.setOwnerId(event.target.value as string)
                 }
               >
-                {owners
-                  .filter((o) => me.owners.includes(o.id))
-                  .map((o) => (
-                    <MenuItem key={o.id} value={o.id}>
-                      {o.name}
-                    </MenuItem>
-                  ))}
+                {me.role === 'super_admin'
+                  ? owners.map((o) => (
+                      <MenuItem key={o.id} value={o.id}>
+                        {o.name}
+                      </MenuItem>
+                    ))
+                  : owners
+                      .filter((o) => me.owners.includes(o.id))
+                      .map((o) => (
+                        <MenuItem key={o.id} value={o.id}>
+                          {o.name}
+                        </MenuItem>
+                      ))}
               </Select>
             </TableCell>
           </TableRow>

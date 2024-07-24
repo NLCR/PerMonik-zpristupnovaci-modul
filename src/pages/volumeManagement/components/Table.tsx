@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
   DataGrid,
+  gridClasses,
   GridColDef,
   GridRenderCellParams,
   useGridApiContext,
 } from '@mui/x-data-grid'
-import { Box, Button, Checkbox, Modal, Typography } from '@mui/material'
-
+import { alpha, Box, Button, Checkbox, Modal, Typography } from '@mui/material'
 import {
   GridCellParams,
   GridRenderEditCellParams,
@@ -17,6 +17,7 @@ import { clone } from 'lodash-es'
 import CheckIcon from '@mui/icons-material/Check'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import { styled } from '@mui/material/styles'
 import {
   duplicateSpecimen,
   TEditableSpecimen,
@@ -32,6 +33,50 @@ function createArrayOfNumbers(n: number): number[] {
   // TODO: when changing pagesCount, watch for damaged and missing pages with number larger then pagesCount and delete them
   return Array.from({ length: n }, (_, i) => i + 1)
 }
+
+const ODD_OPACITY = 0.2
+
+const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
+  [`& .${gridClasses.row}.even`]: {
+    backgroundColor: theme.palette.grey[200],
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
+      '@media (hover: none)': {
+        backgroundColor: 'transparent',
+      },
+    },
+    '&.Mui-selected': {
+      backgroundColor: alpha(
+        theme.palette.primary.main,
+        ODD_OPACITY + theme.palette.action.selectedOpacity
+      ),
+      '&:hover': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          ODD_OPACITY +
+            theme.palette.action.selectedOpacity +
+            theme.palette.action.hoverOpacity
+        ),
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            ODD_OPACITY + theme.palette.action.selectedOpacity
+          ),
+        },
+      },
+    },
+  },
+  [`& .${gridClasses.row}.attachment`]: {
+    backgroundColor: theme.palette.blue[200],
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
+      '@media (hover: none)': {
+        backgroundColor: 'transparent',
+      },
+    },
+  },
+}))
 
 const CenteredIcon = (show: boolean) => {
   return show ? (
@@ -306,12 +351,26 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
   const { MuiTableLocale } = useMuiTableLang()
   const { t } = useTranslation()
 
+  const showAttachmentsAtTheEnd = useVolumeManagementStore(
+    (state) => state.volumeState.showAttachmentsAtTheEnd
+  )
+
   const specimensState = useVolumeManagementStore(
     (state) => state.specimensState
   )
   const specimenActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
+
+  const sortedSpecimensState = clone(specimensState)
+
+  if (showAttachmentsAtTheEnd) {
+    sortedSpecimensState.sort((a, b) => {
+      if (a.isAttachment && !b.isAttachment) return 1
+      if (!a.isAttachment && b.isAttachment) return -1
+      return 0 // Keep the original order if both are attachments or both are not
+    })
+  }
 
   const duplicateRow = useCallback(
     (row: TEditableSpecimen) => {
@@ -623,10 +682,18 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
   }
 
   return (
-    <DataGrid
+    <StripedDataGrid
       localeText={MuiTableLocale}
       density="compact"
-      rows={specimensState}
+      getRowClassName={(params) => {
+        let classes =
+          params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
+        if (params.row.isAttachment) {
+          classes += ' attachment'
+        }
+        return classes
+      }}
+      rows={sortedSpecimensState}
       columns={columns}
       initialState={{
         pagination: {

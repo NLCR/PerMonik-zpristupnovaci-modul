@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { v4 as uuid } from 'uuid'
 // eslint-disable-next-line import/no-cycle
-import { TEditableVolume } from './volume'
+import { TVolume } from './volume'
 
 export const SpecimenDamageTypesSchema = z.enum([
   'OK',
@@ -24,24 +24,24 @@ export const SpecimenDamageTypesFacet = z.object({
 })
 
 export const SpecimenSchema = z.object({
-  id: z.string(),
-  metaTitleId: z.string(),
-  volumeId: z.string(),
-  barCode: z.string(),
+  id: z.string().length(36),
+  metaTitleId: z.string().length(36),
+  volumeId: z.string().length(36),
+  barCode: z.string().min(1),
   numExists: z.boolean(),
   numMissing: z.boolean(),
-  ownerId: z.string(),
+  ownerId: z.string().length(36),
   damageTypes: SpecimenDamageTypesSchema.array().nullable(),
   damagedPages: z.number().array().nullable(),
   missingPages: z.number().array().nullable(),
   note: z.string(),
   name: z.string(),
   subName: z.string(),
-  publicationId: z.string(),
-  mutationId: z.string(),
+  publicationId: z.string().length(36),
+  mutationId: z.string().length(36),
   publicationMark: z.string(),
-  publicationDate: z.string(),
-  publicationDateString: z.string(),
+  publicationDate: z.string().min(1),
+  publicationDateString: z.string().min(1),
   number: z.string(),
   pagesCount: z.number(),
   isAttachment: z.boolean(),
@@ -93,21 +93,22 @@ export const filterSpecimen = (input: TEditableSpecimen): TEditableSpecimen => {
     number: input.number,
     pagesCount: input.pagesCount,
     isAttachment: input.isAttachment,
+    duplicated: input.duplicated,
   }
 }
 
 export const repairSpecimen = (
   specimen: Partial<TEditableSpecimen>,
-  volume: TEditableVolume
+  volume: TVolume
 ): TSpecimen => {
   return {
     id: specimen.id ?? uuid(),
-    metaTitleId: volume.metaTitleId ?? '',
-    volumeId: volume.id ?? '',
-    barCode: volume.barCode ?? '',
+    metaTitleId: volume.metaTitleId,
+    volumeId: volume.id,
+    barCode: volume.barCode,
     numExists: specimen.numExists ?? false,
     numMissing: specimen.numMissing ?? false,
-    ownerId: volume.ownerId ?? '',
+    ownerId: volume.ownerId,
     damageTypes: specimen.damageTypes ?? [],
     damagedPages: specimen.damagedPages ?? [],
     missingPages: specimen.missingPages ?? [],

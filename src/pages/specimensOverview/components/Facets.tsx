@@ -62,6 +62,7 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
   const datesMin = Number(specimens?.publicationDayMin?.substring(0, 4)) || 1900
   const datesMax = Number(specimens?.publicationDayMax?.substring(0, 4)) || 2023
 
+  // TODO: fix date
   const [date, setDate] = useState(calendarMinDate)
   const [range, setRange] = useState<[number, number]>([datesMin, datesMax])
 

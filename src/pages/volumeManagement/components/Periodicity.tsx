@@ -18,12 +18,15 @@ import {
   useTheme,
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { clone } from 'lodash-es'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { useLanguageCode } from '../../../utils/helperHooks'
 import { TPublication } from '../../../schema/publication'
+import { repairVolume, VolumeSchema } from '../../../schema/volume'
 
 const mainModalStyle = {
-  overflowY: 'auto',
+  overflow: 'auto',
   position: 'absolute' as const,
   maxHeight: '600px',
   height: '80vh',
@@ -53,6 +56,18 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
     (state) => state.volumePeriodicityActions
   )
   const volumeState = useVolumeManagementStore((state) => state.volumeState)
+
+  const generateVolume = () => {
+    const volumeClone = clone(volumeState)
+
+    const repairedVolume = repairVolume(volumeClone, publications)
+
+    const validation = VolumeSchema.safeParse(repairedVolume)
+
+    if (!validation.success) {
+      toast.error(t('volume_overview.volume_input_data_validation_error'))
+    }
+  }
 
   return (
     <>
@@ -105,7 +120,6 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
                 </TableHead>
                 <TableBody>
                   {volumeState.periodicity.map((p, index) => {
-                    console.log(p, index)
                     return (
                       <TableRow key={`volume-periodicity-${p.day}`}>
                         <TableCell>
@@ -196,6 +210,33 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
                   })}
                 </TableBody>
               </Table>
+              {/* <Typography */}
+              {/*  variant="body2" */}
+              {/*  sx={{ */}
+              {/*    marginTop: '5px', */}
+              {/*    textAlign: 'right', */}
+              {/*    color: theme.palette.grey['600'], */}
+              {/*  }} */}
+              {/* > */}
+              {/*  {t('volume_overview.changes_are_saved_automatically')} */}
+              {/* </Typography> */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: '10px',
+                  marginTop: '20px',
+                }}
+              >
+                <Button variant="outlined" onClick={() => generateVolume()}>
+                  {t('volume_overview.generate_volume')}
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => setPeriodicityModalVisible(false)}
+                >
+                  {t('volume_overview.close')}
+                </Button>
+              </Box>
             </Box>
           </Fade>
         </Modal>

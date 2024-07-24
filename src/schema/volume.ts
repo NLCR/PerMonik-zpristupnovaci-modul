@@ -1,10 +1,12 @@
 import { z } from 'zod'
+import { v4 as uuid } from 'uuid'
 // eslint-disable-next-line import/no-cycle
 import {
   SpecimenSchema,
   SpecimenFacetSchema,
   SpecimenDamageTypesFacet,
 } from './specimen'
+import { TPublication } from './publication'
 
 export const VolumePeriodicityDaysSchema = z.enum([
   'Monday',
@@ -19,7 +21,7 @@ export const VolumePeriodicityDaysSchema = z.enum([
 export const VolumePeriodicitySchema = z.object({
   numExists: z.boolean(),
   isAttachment: z.boolean(),
-  publicationId: z.string(),
+  publicationId: z.string().length(36),
   day: VolumePeriodicityDaysSchema,
   pagesCount: z.number(),
   name: z.string(),
@@ -37,20 +39,20 @@ export const EditableVolumePeriodicitySchema = z.object({
 })
 
 export const VolumeSchema = z.object({
-  id: z.string(),
-  barCode: z.string(),
-  dateFrom: z.string(),
-  dateTo: z.string(),
-  metaTitleId: z.string(),
-  mutationId: z.string(),
+  id: z.string().length(36),
+  barCode: z.string().min(1),
+  dateFrom: z.string().min(1),
+  dateTo: z.string().min(1),
+  metaTitleId: z.string().length(36),
+  mutationId: z.string().length(36),
   periodicity: VolumePeriodicitySchema.array(),
-  firstNumber: z.number(),
-  lastNumber: z.number(),
+  firstNumber: z.number().min(0),
+  lastNumber: z.number().min(0),
   note: z.string(),
   showAttachmentsAtTheEnd: z.boolean(),
   signature: z.string(),
-  ownerId: z.string(),
-  year: z.number(),
+  ownerId: z.string().length(36),
+  year: z.number().min(0),
   publicationMark: z.string(),
 })
 
@@ -115,22 +117,37 @@ export type TCreatableVolume = z.infer<typeof CreatableVolumeSchema>
 export type TVolumeDetail = z.infer<typeof VolumeDetailSchema>
 export type TVolumeOverviewStats = z.infer<typeof VolumeOverviewStatsSchema>
 
-// export const repairVolume = (volume: TEditableVolume): TVolume => {
-//   return {
-//     id: volume.id ?? uuid(),
-//     barCode: volume.id || '',
-//     dateFrom: volume.dateFrom ?? '',
-//     dateTo: volume.dateTo ?? '',
-//     metaTitleId: volume.metaTitleId ?? '',
-//     mutationId: volume.mutationId ?? '',
-//     periodicity: volume.periodicity ?? [],
-//     firstNumber: volume.firstNumber ?? '',
-//     lastNumber: z.number(),
-//     note: z.string(),
-//     showAttachmentsAtTheEnd: z.boolean(),
-//     signature: z.string(),
-//     ownerId: z.string(),
-//     year: z.number(),
-//     publicationMark: z.string(),
-//   }
-// }
+export const repairVolume = (
+  volume: TEditableVolume,
+  publications: TPublication[]
+): TVolume => {
+  return {
+    id: volume.id ?? uuid(),
+    barCode: volume.barCode || '',
+    dateFrom: volume.dateFrom ?? '',
+    dateTo: volume.dateTo ?? '',
+    metaTitleId: volume.metaTitleId ?? '',
+    mutationId: volume.mutationId ?? '',
+    periodicity:
+      volume.periodicity.map((p) => ({
+        numExists: p.numExists ?? false,
+        isAttachment: p.isAttachment ?? false,
+        publicationId:
+          p.publicationId ??
+          publications.find((pub) => pub.isDefault)?.id ??
+          '',
+        day: p.day,
+        pagesCount: Number(p.pagesCount) ?? 0,
+        name: p.name ?? '',
+        subName: p.subName ?? '',
+      })) ?? [],
+    firstNumber: Number(volume.firstNumber) ?? -1,
+    lastNumber: Number(volume.lastNumber),
+    note: volume.note ?? '',
+    showAttachmentsAtTheEnd: volume.showAttachmentsAtTheEnd ?? false,
+    signature: volume.signature ?? '',
+    ownerId: volume.ownerId ?? '',
+    year: Number(volume.year) ?? -1,
+    publicationMark: volume.publicationMark ?? '',
+  }
+}

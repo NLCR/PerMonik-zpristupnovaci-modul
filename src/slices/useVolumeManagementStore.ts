@@ -8,6 +8,7 @@ import {
   TVolumePeriodicityDays,
 } from '../schema/volume'
 import { filterSpecimen, TEditableSpecimen } from '../schema/specimen'
+import { TPublication } from '../schema/publication'
 
 const periodicityDays: TVolumePeriodicityDays[] = [
   'Monday',
@@ -75,6 +76,7 @@ interface TState extends TVariablesState {
     setShowAttachmentsAtTheEnd: (value: boolean) => void
   }
   volumePeriodicityActions: {
+    setDefaultPeriodicityPublication: (values: TPublication[]) => void
     setNumExists: (value: boolean, index: number) => void
     setPublicationId: (value: string | null, index: number) => void
     setPagesCount: (value: string, index: number) => void
@@ -179,6 +181,17 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
       ),
   },
   volumePeriodicityActions: {
+    setDefaultPeriodicityPublication: (values: TPublication[]) =>
+      set(
+        produce((state: TState) => {
+          state.volumeState.periodicity = state.volumeState.periodicity.map(
+            (p) => ({
+              ...p,
+              publicationId: values.find((pub) => pub.isDefault)?.id || '',
+            })
+          )
+        })
+      ),
     setNumExists: (value: boolean, index: number) =>
       set(
         produce((state: TState) => {
