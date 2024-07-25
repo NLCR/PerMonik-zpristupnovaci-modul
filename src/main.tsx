@@ -22,8 +22,8 @@ SentryInit({
   dsn: VITE_SENTRY_DNS,
   tracePropagationTargets: [
     'localhost',
-    // 'permonik.cz',
-    // 'api.permonik.com',
+    'permonik.nkp.cz',
+    'permonik-test.nkp.cz',
     /^\//,
   ],
   integrations: [browserTracingIntegration()],
@@ -45,7 +45,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <WrappedApp />
         </ThemeProvider>
       </I18nextProvider>
-      <ReactQueryDevtools />
+      <ReactQueryDevtools buttonPosition="bottom-left" />
     </QueryClientProvider>
     <ToastContainer
       position="bottom-left"

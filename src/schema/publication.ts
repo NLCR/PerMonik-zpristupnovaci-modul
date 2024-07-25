@@ -10,6 +10,7 @@ export const PublicationSchema = z.object({
   }),
   isDefault: z.boolean(),
   isAttachment: z.boolean(),
+  isPeriodicAttachment: z.boolean(),
 })
 
 export const EditablePublicationSchema = PublicationSchema.partial({ id: true })

@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+
 import React, { FC, useState } from 'react'
 import {
   Backdrop,
@@ -100,8 +102,9 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
 
     const specimens: TEditableSpecimen[] = []
 
-    let idx = repairedVolume.firstNumber
+    let number = repairedVolume.firstNumber
     let attachmentNumber = 1
+    let periodicAttachmentNumber = 1
     const defaultPublication = publications.find(
       (publication) => publication.isDefault
     )
@@ -114,6 +117,9 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
           const isAttachment = !!publications.find(
             (pub) => pub.id === p.publicationId
           )?.isAttachment
+          const isPeriodicAttachment = !!publications.find(
+            (pub) => pub.id === p.publicationId
+          )?.isPeriodicAttachment
 
           const specimen = repairOrCreateSpecimen(
             {
@@ -128,16 +134,20 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
               publicationId: p.publicationId,
               isAttachment,
               number: isAttachment
-                ? attachmentNumber.toString()
-                : idx.toString(),
+                ? isPeriodicAttachment
+                  ? periodicAttachmentNumber.toString()
+                  : attachmentNumber.toString()
+                : number.toString(),
             },
             repairedVolume
           )
 
-          if (isAttachment) {
+          if (isPeriodicAttachment) {
+            periodicAttachmentNumber += 1
+          } else if (isAttachment) {
             attachmentNumber += 1
           } else {
-            idx += 1
+            number += 1
           }
 
           inserted = true

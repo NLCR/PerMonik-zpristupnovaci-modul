@@ -123,6 +123,8 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
       {view === 'calendar' ? (
         <Box>
           <DateCalendar
+            views={['month', 'year']}
+            openTo="month"
             value={dayjs(calendarDate)}
             minDate={dayjs(datesMin.toString())}
             maxDate={dayjs(datesMax.toString())}
