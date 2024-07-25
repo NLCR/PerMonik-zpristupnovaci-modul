@@ -72,3 +72,26 @@ export const useUpdateVolumeWithSpecimensMutation = () =>
       })
     },
   })
+
+export const useUpdateRegeneratedVolumeWithSpecimensMutation = () =>
+  useMutation<void, unknown, TUpdatableVolume>({
+    mutationFn: (data) => {
+      return api()
+        .put(`volume/${data.volume.id}/regenerated`, {
+          json: {
+            volume: {
+              ...data.volume,
+              // JSON.stringify periodicity, because solr stores periodicity as String
+              periodicity: JSON.stringify(data.volume.periodicity),
+            },
+            specimens: data.specimens,
+          },
+        })
+        .json<void>()
+    },
+    onSuccess: (_, editArgs) => {
+      queryClient.invalidateQueries({
+        queryKey: ['volume', 'detail', editArgs.volume.id],
+      })
+    },
+  })

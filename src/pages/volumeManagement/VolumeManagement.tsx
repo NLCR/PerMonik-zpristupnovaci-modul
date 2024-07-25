@@ -65,11 +65,11 @@ const VolumeManagement = () => {
     isError: metaTitlesError,
   } = useMetaTitleListQuery()
 
-  const { doUpdate, doCreate, pendingActions } = useVolumeManagementActions(
-    publications || []
-  )
+  const { doUpdate, doRegeneratedUpdate, doCreate, pendingActions } =
+    useVolumeManagementActions(publications || [])
 
   useEffect(() => {
+    // TODO: set empty volume when no volumeId
     if (volume) {
       volumeActions.setVolumeState(volume.volume)
       specimensActions.setSpecimensState(volume.specimens)
@@ -83,17 +83,21 @@ const VolumeManagement = () => {
     }
   }, [publications, volumeId, volumePeriodicityActions])
 
+  // TODO: filter actions
   const actions = [
     {
       icon: <UpdateIcon />,
       name: t('administration.update'),
-      enabled: !!volumeId?.length,
       onClick: doUpdate,
+    },
+    {
+      icon: <UpdateIcon />,
+      name: t('administration.update'),
+      onClick: doRegeneratedUpdate,
     },
     {
       icon: <SaveIcon />,
       name: t('administration.save'),
-      enabled: !volumeId?.length,
       onClick: doCreate,
     },
   ]

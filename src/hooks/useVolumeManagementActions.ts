@@ -7,6 +7,7 @@ import { repairVolume, VolumeSchema } from '../schema/volume'
 import { repairOrCreateSpecimen, SpecimenSchema } from '../schema/specimen'
 import {
   useCreateVolumeWithSpecimensMutation,
+  useUpdateRegeneratedVolumeWithSpecimensMutation,
   useUpdateVolumeWithSpecimensMutation,
 } from '../api/volume'
 import { TPublication } from '../schema/publication'
@@ -19,6 +20,11 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
     useUpdateVolumeWithSpecimensMutation()
   const { mutateAsync: callCreate, status: createStatus } =
     useCreateVolumeWithSpecimensMutation()
+  const {
+    mutateAsync: callRegeneratedUpdate,
+    status: regeneratedUpdateStatus,
+  } = useUpdateRegeneratedVolumeWithSpecimensMutation()
+
   const volumeState = useVolumeManagementStore((state) => state.volumeState)
   const specimensState = useVolumeManagementStore(
     (state) => state.specimensState
@@ -72,6 +78,24 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
     }
   }
 
+  const doRegeneratedUpdate = async () => {
+    try {
+      const data = doValidation()
+
+      try {
+        await callRegeneratedUpdate({
+          volume: data.repairedVolume,
+          specimens: data.repairedSpecimens,
+        })
+        toast.success(t('volume_overview.volume_updated_successfully'))
+      } catch (error) {
+        toast.error(t('volume_overview.volume_update_error'))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const doCreate = async () => {
     try {
       const data = doValidation()
@@ -93,7 +117,11 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
 
   return {
     doUpdate,
+    doRegeneratedUpdate,
     doCreate,
-    pendingActions: updateStatus === 'pending' || createStatus === 'pending',
+    pendingActions:
+      updateStatus === 'pending' ||
+      createStatus === 'pending' ||
+      regeneratedUpdateStatus === 'pending',
   }
 }
