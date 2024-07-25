@@ -123,7 +123,7 @@ export const repairVolume = (
 ): TVolume => {
   return {
     id: volume.id ?? uuid(),
-    barCode: volume.barCode || '',
+    barCode: volume.barCode.trim() || '',
     dateFrom: volume.dateFrom ?? '',
     dateTo: volume.dateTo ?? '',
     metaTitleId: volume.metaTitleId ?? '',

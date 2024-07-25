@@ -6,7 +6,6 @@ import {
   gridClasses,
   GridColDef,
   GridRenderCellParams,
-  useGridApiContext,
 } from '@mui/x-data-grid'
 import { alpha, Box, Button, Checkbox, Modal, Typography } from '@mui/material'
 import {
@@ -38,7 +37,7 @@ const ODD_OPACITY = 0.2
 
 const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
   [`& .${gridClasses.row}.even`]: {
-    backgroundColor: theme.palette.grey[200],
+    backgroundColor: theme.palette.grey[100],
     '&:hover': {
       backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
       '@media (hover: none)': {
@@ -68,7 +67,7 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
     },
   },
   [`& .${gridClasses.row}.attachment`]: {
-    backgroundColor: theme.palette.blue[200],
+    backgroundColor: theme.palette.blue[100],
     '&:hover': {
       backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
       '@media (hover: none)': {
@@ -304,13 +303,12 @@ const renderDamageTypesInputCell = (
 const PublicationMarkSelectorModalContainer = (
   props: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
-  const { row } = props
+  const { row, api } = props
   const [modalOpened, setModalOpened] = useState(false)
   const { t } = useTranslation()
-  const apiRef = useGridApiContext()
 
   const handleSave = (updatedRow: TEditableSpecimen) => {
-    apiRef.current.updateRows([updatedRow])
+    api.updateRows([updatedRow])
     // setModalOpened(false)
   }
 
@@ -478,9 +476,24 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
         const { row } = params
         return row.numExists && !row.isAttachment ? row.number : null
       },
+      // TODO: edit cell, call on editEnd
+      // renderEditCell: (params: GridRenderEditCellParams<TEditableSpecimen>) => {
+      //   const { row, api } = params
+      //
+      //   return (
+      //     <TextField
+      //       size="small"
+      //       value={row.number}
+      //       onChange={(event) => {
+      //         api.updateRows([
+      //           { ...row, number: event.target.value.replace(/\D/g, '') },
+      //         ])
+      //       }}
+      //     />
+      //   )
+      // },
     },
     {
-      /* TODO: editCell */
       field: 'attachmentNumber',
       headerName: t('volume_overview.attachment_number'),
       type: 'number',
@@ -489,6 +502,22 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
         const { row } = params
         return row.isAttachment ? row.number : null
       },
+      // TODO: edit cell, call on editEnd
+      // renderEditCell: (params: GridRenderEditCellParams<TEditableSpecimen>) => {
+      //   const { row, api } = params
+      //
+      //   return (
+      //     <TextField
+      //       size="small"
+      //       value={row.number}
+      //       onChange={(event) => {
+      //         api.updateRows([
+      //           { ...row, number: event.target.value.replace(/\D/g, '') },
+      //         ])
+      //       }}
+      //     />
+      //   )
+      // },
     },
     {
       field: 'mutationId',

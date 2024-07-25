@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import SaveIcon from '@mui/icons-material/Save'
+import UpdateIcon from '@mui/icons-material/Update'
 import { useMangedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
@@ -64,7 +65,7 @@ const VolumeManagement = () => {
     isError: metaTitlesError,
   } = useMetaTitleListQuery()
 
-  const { doUpdate, pendingActions } = useVolumeManagementActions(
+  const { doUpdate, doCreate, pendingActions } = useVolumeManagementActions(
     publications || []
   )
 
@@ -72,8 +73,9 @@ const VolumeManagement = () => {
     if (volume) {
       volumeActions.setVolumeState(volume.volume)
       specimensActions.setSpecimensState(volume.specimens)
+      volumePeriodicityActions.setPeriodicityGenerationUsed(false)
     }
-  }, [specimensActions, volume, volumeActions])
+  }, [specimensActions, volume, volumeActions, volumePeriodicityActions])
 
   useEffect(() => {
     if (!volumeId && publications) {
@@ -83,9 +85,16 @@ const VolumeManagement = () => {
 
   const actions = [
     {
+      icon: <UpdateIcon />,
+      name: t('administration.update'),
+      enabled: !!volumeId?.length,
+      onClick: doUpdate,
+    },
+    {
       icon: <SaveIcon />,
       name: t('administration.save'),
-      onClick: doUpdate,
+      enabled: !volumeId?.length,
+      onClick: doCreate,
     },
   ]
 

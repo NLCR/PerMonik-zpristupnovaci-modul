@@ -117,7 +117,10 @@
     "volume_update_error": "Nastala chyba při úpravě svazku",
     "generate_volume": "Vygenerovat svazek",
     "changes_are_saved_automatically": "* Změny se ukládají automaticky",
-    "close": "Zavřít"
+    "close": "Zavřít",
+    "specimens_generated_successfully": "Exempláře byly úspěšně vygenerovány",
+    "volume_created_successfully": "Svazek byl úspěšně vytvořen",
+    "volume_create_error": "Nastala chyba při vytváření svazku"
   },
   "table": {
     "mutations": "Mutace",

@@ -32,6 +32,24 @@ type TUpdatableVolume = {
   specimens: TSpecimen[]
 }
 
+export const useCreateVolumeWithSpecimensMutation = () =>
+  useMutation<string, unknown, TUpdatableVolume>({
+    mutationFn: (data) => {
+      return api()
+        .post(`volume`, {
+          json: {
+            volume: {
+              ...data.volume,
+              // JSON.stringify periodicity, because solr stores periodicity as String
+              periodicity: JSON.stringify(data.volume.periodicity),
+            },
+            specimens: data.specimens,
+          },
+        })
+        .json<string>()
+    },
+  })
+
 export const useUpdateVolumeWithSpecimensMutation = () =>
   useMutation<void, unknown, TUpdatableVolume>({
     mutationFn: (data) => {

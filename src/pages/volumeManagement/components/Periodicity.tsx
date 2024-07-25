@@ -20,10 +20,15 @@ import {
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import { clone } from 'lodash-es'
+import dayjs from 'dayjs'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { useLanguageCode } from '../../../utils/helperHooks'
 import { TPublication } from '../../../schema/publication'
 import { repairVolume, VolumeSchema } from '../../../schema/volume'
+import {
+  repairOrCreateSpecimen,
+  TEditableSpecimen,
+} from '../../../schema/specimen'
 
 const mainModalStyle = {
   overflow: 'auto',
@@ -41,6 +46,23 @@ const mainModalStyle = {
   p: 4,
 }
 
+const getDaysArray = (start: string, end: string): string[] => {
+  const arr: string[] = []
+  let current = dayjs(start)
+  const endDay = dayjs(end)
+
+  while (current.isBefore(endDay) || current.isSame(endDay, 'day')) {
+    arr.push(current.format('YYYY-MM-DD'))
+    current = current.add(1, 'day')
+  }
+
+  return arr
+}
+
+const getDayName = (date: string): string => {
+  return dayjs(date).format('dddd')
+}
+
 interface PeriodicityProps {
   publications: TPublication[]
   canEdit: boolean
@@ -49,15 +71,20 @@ interface PeriodicityProps {
 const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
   const [periodicityModalVisible, setPeriodicityModalVisible] = useState(false)
   const theme = useTheme()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { languageCode } = useLanguageCode()
 
   const volumePeriodicityActions = useVolumeManagementStore(
     (state) => state.volumePeriodicityActions
   )
+  const specimensActions = useVolumeManagementStore(
+    (state) => state.specimensActions
+  )
   const volumeState = useVolumeManagementStore((state) => state.volumeState)
 
   const generateVolume = () => {
+    // This ensures that `getDayName` will return english name of day
+    dayjs.locale('en')
     const volumeClone = clone(volumeState)
 
     const repairedVolume = repairVolume(volumeClone, publications)
@@ -66,7 +93,81 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
 
     if (!validation.success) {
       toast.error(t('volume_overview.volume_input_data_validation_error'))
+      return
     }
+
+    const dates = getDaysArray(repairedVolume.dateFrom, repairedVolume.dateTo)
+
+    const specimens: TEditableSpecimen[] = []
+
+    let idx = repairedVolume.firstNumber
+    let attachmentNumber = 1
+    const defaultPublication = publications.find(
+      (publication) => publication.isDefault
+    )
+
+    dates.forEach((dt) => {
+      const dayStr = getDayName(dt)
+      let inserted = false
+      repairedVolume.periodicity.forEach((p) => {
+        if (p.numExists && p.day === dayStr) {
+          const isAttachment = !!publications.find(
+            (pub) => pub.id === p.publicationId
+          )?.isAttachment
+
+          const specimen = repairOrCreateSpecimen(
+            {
+              publicationDate: dt,
+              publicationDateString: dayjs(dt).format('YYYYMMDD'),
+              publicationMark: repairedVolume.publicationMark,
+              mutationId: repairedVolume.mutationId,
+              numExists: true,
+              pagesCount: p.pagesCount,
+              name: p.name,
+              subName: p.subName,
+              publicationId: p.publicationId,
+              isAttachment,
+              number: isAttachment
+                ? attachmentNumber.toString()
+                : idx.toString(),
+            },
+            repairedVolume
+          )
+
+          if (isAttachment) {
+            attachmentNumber += 1
+          } else {
+            idx += 1
+          }
+
+          inserted = true
+
+          specimens.push(specimen)
+        }
+      })
+
+      if (!inserted) {
+        const specimen = repairOrCreateSpecimen(
+          {
+            publicationDate: dt,
+            publicationDateString: dayjs(dt).format('YYYYMMDD'),
+            publicationMark: repairedVolume.publicationMark,
+            mutationId: repairedVolume.mutationId,
+            numExists: false,
+            publicationId: defaultPublication?.id,
+          },
+          repairedVolume
+        )
+
+        specimens.push(specimen)
+      }
+    })
+
+    dayjs.locale(i18n.resolvedLanguage)
+    specimensActions.setSpecimensState(specimens)
+    volumePeriodicityActions.setPeriodicityGenerationUsed(true)
+    toast.success(t('volume_overview.specimens_generated_successfully'))
+    setPeriodicityModalVisible(false)
   }
 
   return (

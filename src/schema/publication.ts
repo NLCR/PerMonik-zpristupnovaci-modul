@@ -9,6 +9,7 @@ export const PublicationSchema = z.object({
     en: z.string().min(1, i18next.t('schema.en_name_min_length')),
   }),
   isDefault: z.boolean(),
+  isAttachment: z.boolean(),
 })
 
 export const EditablePublicationSchema = PublicationSchema.partial({ id: true })

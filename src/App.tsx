@@ -6,12 +6,16 @@ import { useTranslation } from 'react-i18next'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+import weekday from 'dayjs/plugin/weekday'
 import RoutesManager from './components/RoutesManager'
 import ScrollToTop from './components/ScrollToTop'
 import Header from './components/Header'
 import 'dayjs/locale/cs'
 import 'dayjs/locale/sk'
 import 'dayjs/locale/en'
+// eslint-disable-next-line import/order
+import localeData from 'dayjs/plugin/localeData'
 // import Footer from './components/Footer'
 
 // App without react-router, useful for testing
@@ -43,6 +47,9 @@ const App: FC = () => {
 export const WrappedApp = () => {
   const { t, i18n } = useTranslation()
 
+  dayjs.extend(localizedFormat)
+  dayjs.extend(weekday)
+  dayjs.extend(localeData)
   dayjs.locale(i18n.resolvedLanguage)
 
   return (

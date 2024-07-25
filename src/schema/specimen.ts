@@ -97,7 +97,7 @@ export const filterSpecimen = (input: TEditableSpecimen): TEditableSpecimen => {
   }
 }
 
-export const repairSpecimen = (
+export const repairOrCreateSpecimen = (
   specimen: Partial<TEditableSpecimen>,
   volume: TVolume
 ): TSpecimen => {

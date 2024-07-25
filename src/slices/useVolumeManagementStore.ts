@@ -51,11 +51,13 @@ export const initialState: TVariablesState = {
     year: undefined,
   },
   specimensState: [],
+  periodicityGenerationUsed: false,
 }
 
 interface TVariablesState {
   volumeState: TEditableVolume
   specimensState: TEditableSpecimen[]
+  periodicityGenerationUsed: boolean
 }
 
 interface TState extends TVariablesState {
@@ -82,6 +84,7 @@ interface TState extends TVariablesState {
     setPagesCount: (value: string, index: number) => void
     setName: (value: string, index: number) => void
     setSubName: (value: string, index: number) => void
+    setPeriodicityGenerationUsed: (value: boolean) => void
   }
   specimensActions: {
     setSpecimensState: (value: TEditableSpecimen[]) => void
@@ -118,7 +121,7 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
     setBarCode: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.barCode = value
+          state.volumeState.barCode = value.trim()
         })
       ),
     setSignature: (value) =>
@@ -223,6 +226,12 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
       set(
         produce((state: TState) => {
           state.volumeState.periodicity[index].subName = value
+        })
+      ),
+    setPeriodicityGenerationUsed: (value: boolean) =>
+      set(
+        produce((state: TState) => {
+          state.periodicityGenerationUsed = value
         })
       ),
   },
