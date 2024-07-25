@@ -3,13 +3,22 @@ import { useDebounce } from 'use-debounce'
 import dayjs from 'dayjs'
 import { api } from './index'
 import {
-  TSpecimen,
-  TSpecimensFacets,
   TSpecimensPublicationDays,
-} from '../@types/specimen'
+  TSpecimen,
+  TSpecimenDamageTypesFacet,
+  TSpecimenFacet,
+} from '../schema/specimen'
 import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
 
-export interface TSpecimenFacets extends TSpecimensFacets {}
+interface TSpecimensFacets {
+  names: TSpecimenFacet[]
+  subNames: TSpecimenFacet[]
+  mutationIds: TSpecimenFacet[]
+  publicationIds: TSpecimenFacet[]
+  publicationMarks: TSpecimenFacet[]
+  ownerIds: TSpecimenFacet[]
+  damageTypes: TSpecimenDamageTypesFacet[]
+}
 
 export const useSpecimenFacetsQuery = (metaTitleId?: string) => {
   const { params, barCodeInput } = useSpecimensOverviewStore()
@@ -37,7 +46,7 @@ export const useSpecimenFacetsQuery = (metaTitleId?: string) => {
         .post(`specimen/${metaTitleId}/list/facets`, {
           body: formData,
         })
-        .json<TSpecimenFacets>()
+        .json<TSpecimensFacets>()
     },
     placeholderData: keepPreviousData,
     enabled: !!metaTitleId,

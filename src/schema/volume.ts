@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { v4 as uuid } from 'uuid'
-// eslint-disable-next-line import/no-cycle
 import {
   SpecimenSchema,
   SpecimenFacetSchema,

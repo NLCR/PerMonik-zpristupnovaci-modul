@@ -60,6 +60,9 @@ const initialState: TEditablePublication = {
     sk: '',
     en: '',
   },
+  isDefault: false,
+  isAttachment: false,
+  isPeriodicAttachment: false,
 }
 
 const Publications = () => {

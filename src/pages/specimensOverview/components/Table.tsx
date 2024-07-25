@@ -15,7 +15,7 @@ import { useMutationListQuery } from '../../../api/mutation'
 import { usePublicationListQuery } from '../../../api/publication'
 import { useOwnerListQuery } from '../../../api/owner'
 import { useSpecimenListQuery } from '../../../api/specimen'
-import { TSpecimen } from '../../../@types/specimen'
+import { TSpecimen } from '../../../schema/specimen'
 import { damageTypes } from '../../../utils/constants'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 

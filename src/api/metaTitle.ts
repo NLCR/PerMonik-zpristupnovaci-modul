@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { clone } from 'lodash-es'
 import { api, queryClient } from './index'
-import { TMetaTitleOverview } from '../@types/metaTitle'
 import { TMetaTitle, TEditableMetaTitle } from '../schema/metaTitle'
+import { TSpecimensPublicationDays } from '../schema/specimen'
 
 export const useMetaTitleQuery = (metaTitleId?: string) =>
   useQuery({
@@ -10,6 +10,17 @@ export const useMetaTitleQuery = (metaTitleId?: string) =>
     queryFn: () => api().get(`metatitle/${metaTitleId}`).json<TMetaTitle>(),
     enabled: !!metaTitleId,
   })
+
+interface TMetaTitleOverview {
+  id: string
+  name: string
+  specimens: {
+    mutationsCount: number
+    ownersCount: number
+    // groupedSpecimens: number
+    matchedSpecimens: number
+  } & TSpecimensPublicationDays
+}
 
 export const useMetaTitleOverviewListQuery = () =>
   useQuery({

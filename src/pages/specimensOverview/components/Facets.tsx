@@ -12,7 +12,6 @@ import {
 import { DateCalendar } from '@mui/x-date-pickers'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import FacetGroup from './FacetGroup'
-import { damageTypes } from '../../../utils/constants'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { useMutationListQuery } from '../../../api/mutation'
 import { usePublicationListQuery } from '../../../api/publication'
@@ -24,6 +23,7 @@ import {
 } from '../../../api/specimen'
 import { TMetaTitle } from '../../../schema/metaTitle'
 import ShowError from '../../../components/ShowError'
+import { TSpecimenDamageTypes } from '../../../schema/specimen'
 
 type TProps = {
   metaTitle: TMetaTitle
@@ -313,16 +313,12 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
               ? facets.damageTypes.map((m) => ({
                   name: m.name,
                   count: m.count,
-                  displayedName: t(
-                    `facet_states.${m.name as (typeof damageTypes)[number]}`
-                  ),
+                  displayedName: t(`facet_states.${m.name}`),
                 }))
               : params.damageTypes.map((p) => ({
                   name: p,
                   count: 0,
-                  displayedName: t(
-                    `facet_states.${p as (typeof damageTypes)[number]}`
-                  ),
+                  displayedName: t(`facet_states.${p as TSpecimenDamageTypes}`),
                 }))
           }
           header={t('specimens_overview.state')}

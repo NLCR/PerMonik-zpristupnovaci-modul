@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { v4 as uuid } from 'uuid'
-// eslint-disable-next-line import/no-cycle
-import { TVolume } from './volume'
+import type { TVolume } from './volume'
 
 export const SpecimenDamageTypesSchema = z.enum([
   'OK',
@@ -17,6 +16,11 @@ export const SpecimenDamageTypesSchema = z.enum([
   'CzV',
   'ChDatum',
 ])
+
+const SpecimensPublicationDaysSchema = z.object({
+  publicationDayMin: z.string().nullable(),
+  publicationDayMax: z.string().nullable(),
+})
 
 export const SpecimenDamageTypesFacet = z.object({
   name: SpecimenDamageTypesSchema,
@@ -69,6 +73,10 @@ export type TSpecimenDamageTypes = z.infer<typeof SpecimenDamageTypesSchema>
 export type TSpecimen = z.infer<typeof SpecimenSchema>
 export type TEditableSpecimen = z.infer<typeof EditableSpecimenSchema>
 export type TSpecimenFacet = z.infer<typeof SpecimenFacetSchema>
+export type TSpecimenDamageTypesFacet = z.infer<typeof SpecimenDamageTypesFacet>
+export type TSpecimensPublicationDays = z.infer<
+  typeof SpecimensPublicationDaysSchema
+>
 
 export const filterSpecimen = (input: TEditableSpecimen): TEditableSpecimen => {
   return {
