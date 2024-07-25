@@ -7,6 +7,7 @@ import { repairVolume, VolumeSchema } from '../schema/volume'
 import { repairOrCreateSpecimen, SpecimenSchema } from '../schema/specimen'
 import {
   useCreateVolumeWithSpecimensMutation,
+  useDeleteVolumeWithSpecimensMutation,
   useUpdateRegeneratedVolumeWithSpecimensMutation,
   useUpdateVolumeWithSpecimensMutation,
 } from '../api/volume'
@@ -20,6 +21,8 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
     useUpdateVolumeWithSpecimensMutation()
   const { mutateAsync: callCreate, status: createStatus } =
     useCreateVolumeWithSpecimensMutation()
+  const { mutateAsync: callDelete, status: deleteStatus } =
+    useDeleteVolumeWithSpecimensMutation()
   const {
     mutateAsync: callRegeneratedUpdate,
     status: regeneratedUpdateStatus,
@@ -115,13 +118,31 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
     }
   }
 
+  const doDelete = async () => {
+    try {
+      const data = doValidation()
+
+      try {
+        await callDelete(data.repairedVolume.id)
+        toast.success(t('volume_overview.volume_deleted_successfully'))
+        navigate(`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/`)
+      } catch (error) {
+        toast.error(t('volume_overview.volume_deletion_error'))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return {
     doUpdate,
     doRegeneratedUpdate,
     doCreate,
+    doDelete,
     pendingActions:
       updateStatus === 'pending' ||
       createStatus === 'pending' ||
-      regeneratedUpdateStatus === 'pending',
+      regeneratedUpdateStatus === 'pending' ||
+      deleteStatus === 'pending',
   }
 }

@@ -11,6 +11,7 @@ import {
 import React, { useEffect } from 'react'
 import SaveIcon from '@mui/icons-material/Save'
 import UpdateIcon from '@mui/icons-material/Update'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { useMangedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
@@ -31,6 +32,9 @@ const VolumeManagement = () => {
   const { data: me, isLoading: meLoading, isError: meError } = useMeQuery()
   const { t } = useTranslation()
 
+  const setInitialState = useVolumeManagementStore(
+    (state) => state.setInitialState
+  )
   const volumeActions = useVolumeManagementStore((state) => state.volumeActions)
   const volumePeriodicityActions = useVolumeManagementStore(
     (state) => state.volumePeriodicityActions
@@ -65,11 +69,10 @@ const VolumeManagement = () => {
     isError: metaTitlesError,
   } = useMetaTitleListQuery()
 
-  const { doUpdate, doRegeneratedUpdate, doCreate, pendingActions } =
+  const { doUpdate, doRegeneratedUpdate, doCreate, doDelete, pendingActions } =
     useVolumeManagementActions(publications || [])
 
   useEffect(() => {
-    // TODO: set empty volume when no volumeId
     if (volume) {
       volumeActions.setVolumeState(volume.volume)
       specimensActions.setSpecimensState(volume.specimens)
@@ -78,12 +81,15 @@ const VolumeManagement = () => {
   }, [specimensActions, volume, volumeActions, volumePeriodicityActions])
 
   useEffect(() => {
-    if (!volumeId && publications) {
-      volumePeriodicityActions.setDefaultPeriodicityPublication(publications)
+    if (!volumeId) {
+      setInitialState()
+      if (publications) {
+        volumePeriodicityActions.setDefaultPeriodicityPublication(publications)
+      }
     }
-  }, [publications, volumeId, volumePeriodicityActions])
+  }, [publications, volumeId, volumePeriodicityActions, setInitialState])
 
-  // TODO: filter actions
+  // TODO: filter actions based on volume state and user owner
   const actions = [
     {
       icon: <UpdateIcon />,
@@ -99,6 +105,11 @@ const VolumeManagement = () => {
       icon: <SaveIcon />,
       name: t('administration.save'),
       onClick: doCreate,
+    },
+    {
+      icon: <DeleteForeverIcon />,
+      name: t('administration.delete'),
+      onClick: doDelete,
     },
   ]
 
@@ -131,8 +142,7 @@ const VolumeManagement = () => {
   }
 
   if (!me) {
-    // TODO: translation
-    return <ShowInfoMessage message="Účet nenalezen" />
+    return <ShowInfoMessage message={t('volume_overview.account_required')} />
   }
 
   const canEdit =

@@ -38,8 +38,8 @@ export const initialState: TVariablesState = {
     barCode: '',
     dateFrom: '',
     dateTo: '',
-    firstNumber: undefined,
-    lastNumber: undefined,
+    firstNumber: '',
+    lastNumber: '',
     metaTitleId: null,
     mutationId: null,
     note: '',
@@ -48,7 +48,7 @@ export const initialState: TVariablesState = {
     publicationMark: '',
     showAttachmentsAtTheEnd: false,
     signature: '',
-    year: undefined,
+    year: '',
   },
   specimensState: [],
   periodicityGenerationUsed: false,
@@ -61,6 +61,7 @@ interface TVariablesState {
 }
 
 interface TState extends TVariablesState {
+  setInitialState: () => void
   volumeActions: {
     setVolumeState: (value: TEditableVolume) => void
     setMetaTitleId: (value: string | null) => void
@@ -95,6 +96,14 @@ interface TState extends TVariablesState {
 
 export const useVolumeManagementStore = create<TState>()((set) => ({
   ...initialState,
+  setInitialState: () =>
+    set(
+      produce((state: TState) => {
+        state.volumeState = initialState.volumeState
+        state.specimensState = initialState.specimensState
+        state.periodicityGenerationUsed = initialState.periodicityGenerationUsed
+      })
+    ),
   volumeActions: {
     setVolumeState: (value) =>
       set(() => ({

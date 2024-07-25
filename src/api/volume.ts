@@ -95,3 +95,10 @@ export const useUpdateRegeneratedVolumeWithSpecimensMutation = () =>
       })
     },
   })
+
+export const useDeleteVolumeWithSpecimensMutation = () =>
+  useMutation<void, unknown, string>({
+    mutationFn: (id) => {
+      return api().delete(`volume/${id}`).json<void>()
+    },
+  })

@@ -120,7 +120,10 @@
     "close": "Zavřít",
     "specimens_generated_successfully": "Exempláře byly úspěšně vygenerovány",
     "volume_created_successfully": "Svazek byl úspěšně vytvořen",
-    "volume_create_error": "Nastala chyba při vytváření svazku"
+    "volume_create_error": "Nastala chyba při vytváření svazku",
+    "volume_deleted_successfully": "Svazek byl úspěšně smazán",
+    "volume_deletion_error": "Nastala chyba při mazání svazku",
+    "account_required": "Stránka je dostupná po přihlášení"
   },
   "table": {
     "mutations": "Mutace",
@@ -200,7 +203,8 @@
     "meta_title_is_public": "Metatitul je veřejný",
     "cs_name": "Český název",
     "sk_name": "Slovenský název",
-    "en_name": "Anglický název"
+    "en_name": "Anglický název",
+    "delete": "Smazat"
   },
   "schema": {
     "name_min_length": "Vyplňte prosím pole `jméno`",
