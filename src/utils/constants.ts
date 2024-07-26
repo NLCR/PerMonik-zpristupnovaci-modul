@@ -5,6 +5,7 @@ import type { TSpecimenDamageTypes } from '../schema/specimen'
 // export const REFRESH_TOKEN = 'refresh_token'
 // export const REMEMBER_ME = 'remember_me'
 
+// eslint-disable-next-line import/prefer-default-export
 export const damageTypes: TSpecimenDamageTypes[] = [
   'OK',
   'ChCC',

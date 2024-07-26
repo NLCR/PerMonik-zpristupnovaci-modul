@@ -11,3 +11,9 @@ body {
     max-width: 1800px !important;
   }
 }
+
+@media (min-width: 2000px) {
+    .MuiContainer-maxWidthXl {
+        max-width: 2000px !important;
+    }
+}

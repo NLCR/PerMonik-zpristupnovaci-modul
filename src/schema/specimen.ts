@@ -46,7 +46,8 @@ export const SpecimenSchema = z.object({
   publicationMark: z.string(),
   publicationDate: z.string().min(1),
   publicationDateString: z.string().min(1),
-  number: z.string(),
+  number: z.string().nullable(),
+  attachmentNumber: z.string().nullable(),
   pagesCount: z.number(),
   isAttachment: z.boolean(),
 })
@@ -99,6 +100,7 @@ export const filterSpecimen = (input: TEditableSpecimen): TEditableSpecimen => {
     publicationDate: input.publicationDate,
     publicationDateString: input.publicationDateString,
     number: input.number,
+    attachmentNumber: input.attachmentNumber,
     pagesCount: input.pagesCount,
     isAttachment: input.isAttachment,
     duplicated: input.duplicated,
@@ -129,6 +131,7 @@ export const repairOrCreateSpecimen = (
     publicationDate: specimen.publicationDate ?? '',
     publicationDateString: specimen.publicationDateString ?? '',
     number: specimen.number ?? '',
+    attachmentNumber: specimen.attachmentNumber ?? '',
     pagesCount: specimen.pagesCount ?? 0,
     isAttachment: specimen.isAttachment ?? false,
   }
@@ -157,6 +160,7 @@ export const duplicateSpecimen = (
     publicationDate: input.publicationDate ?? '',
     publicationDateString: input.publicationDateString ?? '',
     number: input.number ?? '',
+    attachmentNumber: input.attachmentNumber ?? '',
     pagesCount: input.pagesCount ?? 0,
     isAttachment: input.isAttachment ?? false,
     duplicated: true,

@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useState } from 'react'
 import { Box, Button, Modal, TextField } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import { TEditableSpecimen } from '../../../schema/specimen'
-import { TEditableVolume } from '../../../schema/volume'
+import { TEditableSpecimen } from '../../../../schema/specimen'
+import { TEditableVolume } from '../../../../schema/volume'
 
 const marks = ['●', '○', '■', '□', '★', '☆', '△', '▲', '✶'] as const
 type TMarks = (typeof marks)[number]

@@ -1,18 +1,29 @@
 import React, { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Container, Box } from '@mui/material'
+import { Container, Box, Button } from '@mui/material'
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
 
 type TShowErrorProps = {
   error?: string
+  onRetry?: () => Promise<unknown>
 }
 
-const ShowError: FC<TShowErrorProps> = ({ error = undefined }) => {
+const ShowError: FC<TShowErrorProps> = ({
+  error = undefined,
+  onRetry = undefined,
+}) => {
   const { t } = useTranslation()
 
   return (
     <Container
-      sx={{ marginTop: '50px', marginBottom: '50px', textAlign: 'center' }}
+      sx={{
+        marginTop: '50px',
+        marginBottom: '50px',
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
     >
       <ErrorOutlinedIcon
         fontSize="large"
@@ -21,6 +32,17 @@ const ShowError: FC<TShowErrorProps> = ({ error = undefined }) => {
       <Box component="span">
         {error || t('common.error_occurred_when_loading_data')}
       </Box>
+      {onRetry ? (
+        <Button
+          sx={{
+            marginTop: '30px',
+          }}
+          variant="contained"
+          onClick={() => onRetry()}
+        >
+          {t('common.retry_fetch')}
+        </Button>
+      ) : null}
     </Container>
   )
 }

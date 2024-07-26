@@ -22,7 +22,7 @@ import { TMutation } from '../../../schema/mutation'
 import { TOwner } from '../../../schema/owner'
 import { TPublication } from '../../../schema/publication'
 import { TMetaTitle } from '../../../schema/metaTitle'
-import PublicationMarkSelectorModal from '../../specimensOverview/components/PublicationMarkSelectorModal'
+import PublicationMarkSelectorModal from './editCells/PublicationMarkSelectorModal'
 import Periodicity from './Periodicity'
 
 interface InputDataProps {

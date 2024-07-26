@@ -16,7 +16,8 @@
     "yes": "Ano",
     "no": "Ne",
     "saved_successfully": "Úpspěšně uloženo",
-    "error_when_saving": "Při ukládání nastala chyba"
+    "error_when_saving": "Při ukládání nastala chyba",
+    "retry_fetch": "Znovu načíst"
   },
   "helmet": {
     "title": "Evidence periodik – badatelská aplikace"

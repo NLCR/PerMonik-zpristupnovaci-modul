@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import CheckIcon from '@mui/icons-material/Check'
 import { Box } from '@mui/material'
-import { TSpecimen } from '../../../schema/specimen'
+import { TEditableSpecimen, TSpecimen } from '../../../schema/specimen'
 import { TVolumeDetail } from '../../../schema/volume'
 import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useMutationListQuery } from '../../../api/mutation'
@@ -38,6 +38,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
   const { languageCode } = useLanguageCode()
   const { t } = useTranslation()
 
+  // TODO: update field display based on volume management
   const columns = useMemo<GridColDef<TSpecimen>[]>(() => {
     return [
       {
@@ -71,6 +72,14 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return row.numExists && !row.isAttachment ? row.number : null
+        },
+      },
+      {
+        field: 'attachmentNumber',
+        headerName: t('volume_overview.attachment_number'),
+        renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+          const { row } = params
+          return row.numExists && row.isAttachment ? row.attachmentNumber : null
         },
       },
       {
@@ -195,7 +204,6 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
   return (
     <DataGrid
       localeText={MuiTableLocale}
-      density="compact"
       rows={volume?.specimens}
       columns={columns}
       initialState={{
@@ -205,6 +213,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
             page: 0,
           },
         },
+        density: 'compact',
       }}
       pageSizeOptions={[100]}
       disableRowSelectionOnClick

@@ -1,4 +1,5 @@
-import React, { ChangeEvent, FC, useCallback, useEffect, useState } from 'react'
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
@@ -7,31 +8,23 @@ import {
   GridColDef,
   GridRenderCellParams,
 } from '@mui/x-data-grid'
-import { alpha, Box, Button, Checkbox, Modal, Typography } from '@mui/material'
+import { alpha, Box, Checkbox } from '@mui/material'
 import {
   GridCellParams,
   GridRenderEditCellParams,
 } from '@mui/x-data-grid/models/params/gridCellParams'
 import { clone } from 'lodash-es'
-import CheckIcon from '@mui/icons-material/Check'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { styled } from '@mui/material/styles'
-import {
-  duplicateSpecimen,
-  TEditableSpecimen,
-  TSpecimenDamageTypes,
-} from '../../../schema/specimen'
+import { duplicateSpecimen, TEditableSpecimen } from '../../../schema/specimen'
 import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { TMutation } from '../../../schema/mutation'
 import { TPublication } from '../../../schema/publication'
-import PublicationMarkSelectorModal from '../../specimensOverview/components/PublicationMarkSelectorModal'
-
-function createArrayOfNumbers(n: number): number[] {
-  // TODO: when changing pagesCount, watch for damaged and missing pages with number larger then pagesCount and delete them
-  return Array.from({ length: n }, (_, i) => i + 1)
-}
+import DamagedAndMissingPagesEditCell from './editCells/DamagedAndMissingPagesEditCell'
+import DamageTypesEditCell from './editCells/DamageTypesEditCell'
+import PublicationMarkSelectorModalContainer from './editCells/PublicationMarkSelectorModalContainer'
 
 const ODD_OPACITY = 0.2
 
@@ -77,264 +70,36 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }))
 
-const CenteredIcon = (show: boolean) => {
-  return show ? (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      <CheckIcon />
-    </Box>
-  ) : null
-}
-
-const EditModal = ({
-  field,
-  open,
-  onClose,
-  row,
-  onSave,
-}: {
-  field: TSpecimenDamageTypes
-  open: boolean
-  onClose: () => void
-  row: TEditableSpecimen
-  onSave: (data: TEditableSpecimen) => void
-}) => {
-  const { t } = useTranslation()
-  const [damageTypes, setDamageTypes] = useState(row.damageTypes || [])
-  const [damagedPages, setDamagedPages] = useState(row.damagedPages || [])
-  const [missingPages, setMissingPages] = useState(row.missingPages || [])
-
-  const handleDamageTypeChange = (
-    type: TSpecimenDamageTypes,
-    isChecked: boolean
-  ) => {
-    const newDamageTypes = isChecked
-      ? [...damageTypes, type]
-      : damageTypes.filter((dt) => dt !== type)
-    if (field === 'PP' && !isChecked) {
-      setDamagedPages([])
-    }
-    if (field === 'ChS' && !isChecked) {
-      setDamagedPages([])
-    }
-    setDamageTypes(newDamageTypes)
-  }
-
-  const handlePagesChange = (
-    page: number,
-    type: TSpecimenDamageTypes,
-    isChecked: boolean
-  ) => {
-    let arrayForEdit = type === 'PP' ? clone(damagedPages) : clone(missingPages)
-
-    if (isChecked) {
-      arrayForEdit.push(page)
-    } else {
-      arrayForEdit = arrayForEdit.filter((p) => p !== page)
-    }
-
-    if (type === 'PP') {
-      setDamagedPages(arrayForEdit)
-    } else {
-      setMissingPages(arrayForEdit)
-    }
-  }
-
-  const handleSave = () => {
-    onSave({ ...row, damageTypes, damagedPages, missingPages })
-    onClose()
-  }
-
-  return (
-    <Modal open={open} onClose={onClose}>
-      <Box
-        sx={{
-          p: 2,
-          backgroundColor: 'white',
-          borderRadius: 2,
-          maxWidth: 400,
-          mx: 'auto',
-          my: '20%',
-        }}
-      >
-        <Box>
-          {field === 'PP' ? (
-            <>
-              <Typography variant="h6">{t('facet_states.PP')}</Typography>
-              <Typography>
-                {t('common.yes')}
-                <Checkbox
-                  checked={damageTypes.includes('PP')}
-                  onChange={(event) =>
-                    handleDamageTypeChange('PP', event.target.checked)
-                  }
-                />
-              </Typography>
-              <Typography>{t('table.pages')}</Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {createArrayOfNumbers(row.pagesCount).map((page) => {
-                  return (
-                    <Typography key={`damaged-pages-${page}`}>
-                      {page}
-                      <Checkbox
-                        disabled={!damageTypes.some((dt) => dt === 'PP')}
-                        checked={damagedPages.some((dp) => dp === page)}
-                        onChange={(event) =>
-                          handlePagesChange(page, 'PP', event.target.checked)
-                        }
-                      />
-                    </Typography>
-                  )
-                })}
-              </Box>
-            </>
-          ) : null}
-          {field === 'ChS' ? (
-            <>
-              <Typography variant="h6">{t('facet_states.ChS')}</Typography>
-              <Typography>
-                {t('common.yes')}
-                <Checkbox
-                  checked={damageTypes.includes('ChS')}
-                  onChange={(event) =>
-                    handleDamageTypeChange('ChS', event.target.checked)
-                  }
-                />
-              </Typography>
-              <Typography>{t('table.pages')}</Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {createArrayOfNumbers(row.pagesCount).map((page) => {
-                  return (
-                    <Typography key={`missing-pages-${page}`}>
-                      {page}
-                      <Checkbox
-                        disabled={!damageTypes.some((dt) => dt === 'ChS')}
-                        checked={missingPages.some((dp) => dp === page)}
-                        onChange={(event) =>
-                          handlePagesChange(page, 'ChS', event.target.checked)
-                        }
-                      />
-                    </Typography>
-                  )
-                })}
-              </Box>
-            </>
-          ) : null}
-        </Box>
-        <Button onClick={handleSave}>{t('administration.save')}</Button>
-      </Box>
-    </Modal>
-  )
-}
-
-const DamageTypesEditCellWithModal = (
-  props: GridRenderEditCellParams<TEditableSpecimen>
+const renderCheckBox = (
+  checked: boolean,
+  show: boolean,
+  color: 'primary' | 'success' = 'primary'
 ) => {
-  const { field, row, api } = props
-  const { t } = useTranslation()
-  const [open, setOpen] = useState(false)
-
-  const handleSave = (updatedRow: TEditableSpecimen) => {
-    api.updateRows([updatedRow])
-  }
-
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>
-        {t('administration.update')}
-      </Button>
-      <EditModal
-        field={field as TSpecimenDamageTypes}
-        open={open}
-        onClose={() => setOpen(false)}
-        row={row}
-        onSave={handleSave}
-      />
-    </>
-  )
+  return show ? <Checkbox color={color} checked={checked} readOnly /> : null
 }
 
-const renderDamageTypesInputCellWithModal = (
+const renderValue = (
+  value: string | number | undefined | null,
+  show: boolean
+) => {
+  return show ? value : null
+}
+
+const renderDamagedAndMissingPagesEditCell = (
   params: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <DamageTypesEditCellWithModal {...params} />
+  return <DamagedAndMissingPagesEditCell {...params} />
 }
 
-const DamageTypesEditCell = (
-  props: GridRenderEditCellParams<TEditableSpecimen>
-) => {
-  const { field, row, api } = props
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const isChecked = event.target.checked
-    const currentDamageTypes = row.damageTypes || []
-
-    const newDamageTypes = isChecked
-      ? [...currentDamageTypes, field as TSpecimenDamageTypes]
-      : currentDamageTypes.filter((dt) => dt !== field)
-
-    const updatedRow = { ...row, damageTypes: newDamageTypes }
-    api.updateRows([updatedRow])
-  }
-
-  return (
-    <Checkbox
-      onChange={handleChange}
-      checked={row.damageTypes?.some((dt) => dt === field)}
-    />
-  )
-}
-
-const renderDamageTypesInputCell = (
+const renderDamageTypesEditCell = (
   params: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
-  // eslint-disable-next-line react/jsx-props-no-spreading
   return <DamageTypesEditCell {...params} />
 }
 
-const PublicationMarkSelectorModalContainer = (
-  props: GridRenderEditCellParams<TEditableSpecimen>
-) => {
-  const { row, api } = props
-  const [modalOpened, setModalOpened] = useState(false)
-  const { t } = useTranslation()
-
-  const handleSave = (updatedRow: TEditableSpecimen) => {
-    api.updateRows([updatedRow])
-    // setModalOpened(false)
-  }
-
-  useEffect(() => {
-    setModalOpened(true)
-  }, [])
-
-  return (
-    <>
-      <Button onClick={() => setModalOpened(true)}>
-        {t('administration.update')}
-      </Button>
-      <PublicationMarkSelectorModal
-        row={row}
-        open={modalOpened}
-        onClose={() => setModalOpened(false)}
-        onSave={(data) => handleSave(data as TEditableSpecimen)}
-      />
-    </>
-  )
-}
-
-const renderPublicationMarkInputCell = (
+const renderPublicationMarkEditCell = (
   params: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
-  // eslint-disable-next-line react/jsx-props-no-spreading
   return <PublicationMarkSelectorModalContainer {...params} />
 }
 
@@ -360,15 +125,17 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     (state) => state.specimensActions
   )
 
-  const sortedSpecimensState = clone(specimensState)
-
-  if (showAttachmentsAtTheEnd) {
-    sortedSpecimensState.sort((a, b) => {
-      if (a.isAttachment && !b.isAttachment) return 1
-      if (!a.isAttachment && b.isAttachment) return -1
-      return 0 // Keep the original order if both are attachments or both are not
-    })
-  }
+  const sortedSpecimensState = useMemo(() => {
+    const clonedSpecimens = clone(specimensState)
+    if (showAttachmentsAtTheEnd) {
+      clonedSpecimens.sort((a, b) => {
+        if (a.isAttachment && !b.isAttachment) return 1
+        if (!a.isAttachment && b.isAttachment) return -1
+        return 0 // Keep the original order if both are attachments or both are not
+      })
+    }
+    return clonedSpecimens
+  }, [specimensState, showAttachmentsAtTheEnd])
 
   const duplicateRow = useCallback(
     (row: TEditableSpecimen) => {
@@ -454,7 +221,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(canEdit && !row.numMissing && row.numExists)
+        return renderCheckBox(row.numExists, true)
       },
     },
     {
@@ -464,7 +231,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(canEdit && !row.numExists && row.numMissing)
+        return renderCheckBox(row.numMissing, true)
       },
     },
     {
@@ -474,24 +241,8 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return row.numExists && !row.isAttachment ? row.number : null
+        return renderValue(row.number, row.numExists && !row.isAttachment)
       },
-      // TODO: edit cell, call on editEnd
-      // renderEditCell: (params: GridRenderEditCellParams<TEditableSpecimen>) => {
-      //   const { row, api } = params
-      //
-      //   return (
-      //     <TextField
-      //       size="small"
-      //       value={row.number}
-      //       onChange={(event) => {
-      //         api.updateRows([
-      //           { ...row, number: event.target.value.replace(/\D/g, '') },
-      //         ])
-      //       }}
-      //     />
-      //   )
-      // },
     },
     {
       field: 'attachmentNumber',
@@ -500,31 +251,23 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return row.isAttachment ? row.number : null
+        return renderValue(
+          row.attachmentNumber,
+          row.numExists && row.isAttachment
+        )
       },
-      // TODO: edit cell, call on editEnd
-      // renderEditCell: (params: GridRenderEditCellParams<TEditableSpecimen>) => {
-      //   const { row, api } = params
-      //
-      //   return (
-      //     <TextField
-      //       size="small"
-      //       value={row.number}
-      //       onChange={(event) => {
-      //         api.updateRows([
-      //           { ...row, number: event.target.value.replace(/\D/g, '') },
-      //         ])
-      //       }}
-      //     />
-      //   )
-      // },
+      // renderEditCell: renderAttachmentNumberEditCell,
     },
     {
       field: 'mutationId',
       headerName: t('volume_overview.mutation'),
       editable: canEdit,
-      valueFormatter: (value) => {
-        return mutations.find((m) => m.id === value)?.name[languageCode]
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(
+          mutations.find((m) => m.id === row.mutationId)?.name[languageCode],
+          row.numExists
+        )
       },
       valueOptions: mutations.map((v) => ({
         value: v.id,
@@ -536,8 +279,14 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       field: 'publicationId',
       headerName: t('volume_overview.publication'),
       editable: canEdit,
-      valueFormatter: (value) => {
-        return publications.find((m) => m.id === value)?.name[languageCode]
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(
+          publications.find((m) => m.id === row.publicationId)?.name[
+            languageCode
+          ],
+          row.numExists
+        )
       },
       valueOptions: publications.map((v) => ({
         value: v.id,
@@ -549,18 +298,30 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       field: 'name',
       type: 'string',
       editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(row.name, row.numExists)
+      },
       headerName: t('volume_overview.name'),
     },
     {
       field: 'subName',
       type: 'string',
       editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(row.subName, row.numExists)
+      },
       headerName: t('volume_overview.sub_name'),
     },
     {
       field: 'pagesCount',
       type: 'number',
       editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(row.pagesCount, row.numExists)
+      },
       headerName: t('volume_overview.pages_count'),
     },
     {
@@ -571,9 +332,9 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return row.publicationMark
+        return renderValue(row.publicationMark, row.numExists)
       },
-      renderEditCell: renderPublicationMarkInputCell,
+      renderEditCell: renderPublicationMarkEditCell,
     },
     {
       field: 'OK',
@@ -582,9 +343,13 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(!!row.damageTypes?.includes('OK'))
+        return renderCheckBox(
+          !!row.damageTypes?.includes('OK'),
+          row.numExists,
+          'success'
+        )
       },
-      renderEditCell: renderDamageTypesInputCell,
+      renderEditCell: renderDamageTypesEditCell,
     },
     {
       field: 'PP',
@@ -593,9 +358,9 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(!!row.damageTypes?.includes('PP'))
+        return renderCheckBox(!!row.damageTypes?.includes('PP'), row.numExists)
       },
-      renderEditCell: renderDamageTypesInputCellWithModal,
+      renderEditCell: renderDamagedAndMissingPagesEditCell,
     },
     {
       field: 'Deg',
@@ -604,9 +369,9 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(!!row.damageTypes?.includes('Deg'))
+        return renderCheckBox(!!row.damageTypes?.includes('Deg'), row.numExists)
       },
-      renderEditCell: renderDamageTypesInputCell,
+      renderEditCell: renderDamageTypesEditCell,
     },
     {
       field: 'ChS',
@@ -615,9 +380,9 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(!!row.damageTypes?.includes('ChS'))
+        return renderCheckBox(!!row.damageTypes?.includes('ChS'), row.numExists)
       },
-      renderEditCell: renderDamageTypesInputCellWithModal,
+      renderEditCell: renderDamagedAndMissingPagesEditCell,
     },
     {
       field: 'ChPag',
@@ -626,9 +391,12 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(!!row.damageTypes?.includes('ChPag'))
+        return renderCheckBox(
+          !!row.damageTypes?.includes('ChPag'),
+          row.numExists
+        )
       },
-      renderEditCell: renderDamageTypesInputCell,
+      renderEditCell: renderDamageTypesEditCell,
     },
     {
       field: 'ChDatum',
@@ -637,9 +405,12 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(!!row.damageTypes?.includes('ChDatum'))
+        return renderCheckBox(
+          !!row.damageTypes?.includes('ChDatum'),
+          row.numExists
+        )
       },
-      renderEditCell: renderDamageTypesInputCell,
+      renderEditCell: renderDamageTypesEditCell,
     },
     {
       field: 'ChCis',
@@ -648,9 +419,12 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(!!row.damageTypes?.includes('ChCis'))
+        return renderCheckBox(
+          !!row.damageTypes?.includes('ChCis'),
+          row.numExists
+        )
       },
-      renderEditCell: renderDamageTypesInputCell,
+      renderEditCell: renderDamageTypesEditCell,
     },
     {
       field: 'ChSv',
@@ -659,9 +433,12 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(!!row.damageTypes?.includes('ChSv'))
+        return renderCheckBox(
+          !!row.damageTypes?.includes('ChSv'),
+          row.numExists
+        )
       },
-      renderEditCell: renderDamageTypesInputCell,
+      renderEditCell: renderDamageTypesEditCell,
     },
     {
       field: 'Cz',
@@ -670,21 +447,26 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return CenteredIcon(!!row.damageTypes?.includes('Cz'))
+        return renderCheckBox(!!row.damageTypes?.includes('Cz'), row.numExists)
       },
-      renderEditCell: renderDamageTypesInputCell,
+      renderEditCell: renderDamageTypesEditCell,
     },
     {
       field: 'note',
       type: 'string',
       flex: 1,
       minWidth: 180,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(row.note, row.numExists)
+      },
       headerName: t('volume_overview.note'),
       editable: canEdit,
     },
   ]
 
   const handleUpdate = (newRow: TEditableSpecimen) => {
+    // console.log(newRow)
     specimenActions.setSpecimen(newRow)
     return newRow
   }
@@ -731,6 +513,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
             page: 0,
           },
         },
+        density: 'compact',
       }}
       pageSizeOptions={[100]}
       disableRowSelectionOnClick

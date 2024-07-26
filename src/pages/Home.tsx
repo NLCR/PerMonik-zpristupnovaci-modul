@@ -9,7 +9,7 @@ import ShowInfoMessage from '../components/ShowInfoMessage'
 
 const Home = () => {
   const { t, i18n } = useTranslation()
-  const { data, isLoading, isError } = useMetaTitleOverviewListQuery()
+  const { data, isLoading, isError, refetch } = useMetaTitleOverviewListQuery()
 
   return (
     <Box sx={{ textAlign: 'center', marginTop: '50px', width: '100%' }}>
@@ -20,7 +20,7 @@ const Home = () => {
         {t('home.description')}
       </Typography>
       {isLoading ? <Loader /> : null}
-      {isError && !isLoading ? <ShowError /> : null}
+      {isError && !isLoading ? <ShowError onRetry={refetch} /> : null}
       {data ? (
         <Box
           sx={{

@@ -133,11 +133,12 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
               subName: p.subName,
               publicationId: p.publicationId,
               isAttachment,
-              number: isAttachment
+              number: !isAttachment ? number.toString() : null,
+              attachmentNumber: isAttachment
                 ? isPeriodicAttachment
                   ? periodicAttachmentNumber.toString()
                   : attachmentNumber.toString()
-                : number.toString(),
+                : null,
             },
             repairedVolume
           )

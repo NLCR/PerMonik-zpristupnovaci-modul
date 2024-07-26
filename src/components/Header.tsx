@@ -12,6 +12,7 @@ import {
   Typography,
   Divider,
   Avatar,
+  Container,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -125,121 +126,132 @@ const Header = () => {
 
   return (
     <HeaderContainer position="static">
-      <Toolbar
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Link to={`/${i18n.resolvedLanguage}/`}>
-          <img src={Logo} alt="Logo" />
-        </Link>
-        <Box>
-          <LinksContainer>
-            <NavLinkStyled to={`/${i18n.resolvedLanguage}/`}>
-              {t('header.home')}
-            </NavLinkStyled>
-            {me?.role === 'admin' && (
-              <NavLinkStyled
-                to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`}
-              >
-                {t('header.administration')}
+      <Container maxWidth="xl">
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Link to={`/${i18n.resolvedLanguage}/`}>
+            <img src={Logo} alt="Logo" />
+          </Link>
+          <Box>
+            <LinksContainer>
+              <NavLinkStyled to={`/${i18n.resolvedLanguage}/`}>
+                {t('header.home')}
               </NavLinkStyled>
-            )}
-            {!me && (
-              <NavLinkStyled to={`${i18n.resolvedLanguage}/${t('urls.login')}`}>
-                {t('header.login')}
-              </NavLinkStyled>
-            )}
-            {me && (
-              <>
-                <Divider
-                  orientation="vertical"
-                  flexItem
-                  sx={{ margin: '0 10px', borderColor: 'gray' }}
-                />
-                <Button
-                  variant="contained"
-                  onClick={handleLogout}
-                  sx={{
-                    backgroundColor: 'gray',
-                    color: 'white',
-                    '&:hover': { backgroundColor: 'darkgray' },
-                  }}
+              {me?.role === 'admin' && (
+                <NavLinkStyled
+                  to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`}
                 >
-                  {t('header.logout')}
-                </Button>
-                <Typography variant="body1" sx={{ marginLeft: 1 }}>
-                  {me.firstName} {me.lastName}
+                  {t('header.administration')}
+                </NavLinkStyled>
+              )}
+              {!me && (
+                <NavLinkStyled
+                  to={`${i18n.resolvedLanguage}/${t('urls.login')}`}
+                >
+                  {t('header.login')}
+                </NavLinkStyled>
+              )}
+              {me && (
+                <>
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    sx={{ margin: '0 10px', borderColor: 'gray' }}
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={handleLogout}
+                    sx={{
+                      backgroundColor: 'gray',
+                      color: 'white',
+                      '&:hover': { backgroundColor: 'darkgray' },
+                    }}
+                  >
+                    {t('header.logout')}
+                  </Button>
+                  <Typography variant="body1" sx={{ marginLeft: 1 }}>
+                    {me.firstName} {me.lastName}
+                  </Typography>
+                </>
+              )}
+              <LanguageButton onClick={handleLangMenuOpen}>
+                <Avatar
+                  src={
+                    data.find((l) => l.shorthand === i18n.resolvedLanguage)
+                      ?.image
+                  }
+                  alt={
+                    data.find((l) => l.shorthand === i18n.resolvedLanguage)
+                      ?.label
+                  }
+                  sx={{ width: 24, height: 24 }}
+                />
+                <Typography variant="body2">
+                  {
+                    data.find((l) => l.shorthand === i18n.resolvedLanguage)
+                      ?.label
+                  }
                 </Typography>
-              </>
-            )}
-            <LanguageButton onClick={handleLangMenuOpen}>
-              <Avatar
-                src={
-                  data.find((l) => l.shorthand === i18n.resolvedLanguage)?.image
-                }
-                alt={
-                  data.find((l) => l.shorthand === i18n.resolvedLanguage)?.label
-                }
-                sx={{ width: 24, height: 24 }}
-              />
-              <Typography variant="body2">
-                {data.find((l) => l.shorthand === i18n.resolvedLanguage)?.label}
-              </Typography>
-              <ExpandMoreIcon />
-            </LanguageButton>
-            <Menu
-              anchorEl={langAnchorEl}
-              open={Boolean(langAnchorEl)}
-              onClose={handleLangMenuClose}
+                <ExpandMoreIcon />
+              </LanguageButton>
+              <Menu
+                anchorEl={langAnchorEl}
+                open={Boolean(langAnchorEl)}
+                onClose={handleLangMenuClose}
+              >
+                {items}
+              </Menu>
+            </LinksContainer>
+            <BurgerContainer
+              edge="end"
+              color="inherit"
+              aria-label="menu"
+              onClick={handleMenuOpen}
             >
-              {items}
+              <MenuIcon />
+            </BurgerContainer>
+            <Menu
+              anchorEl={menuAnchorEl}
+              open={Boolean(menuAnchorEl)}
+              onClose={handleMenuClose}
+            >
+              <MenuItem component={NavLink} to={`/${i18n.resolvedLanguage}/`}>
+                {t('header.home')}
+              </MenuItem>
+              {me?.role === 'admin' && (
+                <MenuItem
+                  component={NavLink}
+                  to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`}
+                >
+                  {t('header.administration')}
+                </MenuItem>
+              )}
+              {!me && (
+                <MenuItem
+                  component={NavLink}
+                  to={`${i18n.resolvedLanguage}/${t('urls.login')}`}
+                >
+                  {t('header.login')}
+                </MenuItem>
+              )}
+              {me && (
+                <>
+                  <MenuItem onClick={handleLogout}>
+                    {t('header.logout')}
+                  </MenuItem>
+                  <Typography variant="body1" sx={{ marginLeft: 1 }}>
+                    {me.firstName} {me.lastName}
+                  </Typography>
+                </>
+              )}
             </Menu>
-          </LinksContainer>
-          <BurgerContainer
-            edge="end"
-            color="inherit"
-            aria-label="menu"
-            onClick={handleMenuOpen}
-          >
-            <MenuIcon />
-          </BurgerContainer>
-          <Menu
-            anchorEl={menuAnchorEl}
-            open={Boolean(menuAnchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem component={NavLink} to={`/${i18n.resolvedLanguage}/`}>
-              {t('header.home')}
-            </MenuItem>
-            {me?.role === 'admin' && (
-              <MenuItem
-                component={NavLink}
-                to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`}
-              >
-                {t('header.administration')}
-              </MenuItem>
-            )}
-            {!me && (
-              <MenuItem
-                component={NavLink}
-                to={`${i18n.resolvedLanguage}/${t('urls.login')}`}
-              >
-                {t('header.login')}
-              </MenuItem>
-            )}
-            {me && (
-              <>
-                <MenuItem onClick={handleLogout}>{t('header.logout')}</MenuItem>
-                <Typography variant="body1" sx={{ marginLeft: 1 }}>
-                  {me.firstName} {me.lastName}
-                </Typography>
-              </>
-            )}
-          </Menu>
-        </Box>
-      </Toolbar>
+          </Box>
+        </Toolbar>
+      </Container>
     </HeaderContainer>
   )
 }
