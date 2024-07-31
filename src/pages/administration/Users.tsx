@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Box,
-  Divider,
-  Switch,
-  Typography,
-  useTheme,
-  TextField,
-  FormControlLabel,
-  Select,
-  FormControl,
-  InputLabel,
-  MenuItem,
-} from '@mui/material'
+import { useTheme } from '@mui/material'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Select from '@mui/material/Select'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
 import { clsx } from 'clsx'
 import { toast } from 'react-toastify'
 import { styled } from '@mui/material/styles'
 import { LoadingButton } from '@mui/lab'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
-import { EditableUserSchema, TUser } from '../../schema/user'
+import { EditableUserSchema, TMe, TUser } from '../../schema/user'
 import { useOwnerListQuery } from '../../api/owner'
 import { useUpdateUserMutation, useUserListQuery } from '../../api/user'
 
-const Container = styled(Box)(({ theme }) => ({
+const Container = styled(Box)(() => ({
   position: 'relative',
 }))
 
@@ -59,7 +57,7 @@ const SaveButton = styled(LoadingButton)(() => ({
   width: 'fit-content',
 }))
 
-const Users = () => {
+const Users = ({ me }: { me: TMe }) => {
   const theme = useTheme()
   const { t } = useTranslation()
   const [user, setUser] = useState<TUser>({
@@ -85,7 +83,7 @@ const Users = () => {
   } = useOwnerListQuery()
 
   const { mutateAsync: doUpdate, isPending: savingUser } =
-    useUpdateUserMutation()
+    useUpdateUserMutation(me)
 
   useEffect(() => {
     if (users?.length) {
@@ -140,8 +138,13 @@ const Users = () => {
                   borderRadius: theme.shape.borderRadius,
                   padding: `${theme.spacing(0.625)} ${theme.spacing(1.25)}`,
                   cursor: 'pointer',
+                  '&:hover': {
+                    color: theme.palette.grey['50'],
+                    backgroundColor: theme.palette.grey['900'],
+                  },
                   '&.active': {
-                    backgroundColor: theme.palette.primary.light,
+                    color: theme.palette.grey['50'],
+                    backgroundColor: theme.palette.grey['900'],
                   },
                 }}
               >

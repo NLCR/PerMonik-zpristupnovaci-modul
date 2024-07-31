@@ -1,17 +1,14 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  Box,
-  Typography,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  useTheme,
-} from '@mui/material'
-import React from 'react'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Table from '@mui/material/Table'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import TableBody from '@mui/material/TableBody'
 import dayjs from 'dayjs'
+import { blue } from '@mui/material/colors'
 import { usePublicVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
@@ -23,7 +20,6 @@ import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
 
 const VolumeOverview = () => {
-  const theme = useTheme()
   const { volumeId } = useParams()
   const { t } = useTranslation()
   const {
@@ -76,10 +72,11 @@ const VolumeOverview = () => {
         }}
       >
         <Typography
-          variant="h5"
           sx={{
             marginBottom: '8px',
-            color: theme.palette.blue['900'],
+            color: blue['900'],
+            fontWeight: 'bold',
+            fontSize: '24px',
           }}
         >
           {t('volume_overview.volume_information')}
@@ -172,10 +169,11 @@ const VolumeOverview = () => {
         }}
       >
         <Typography
-          variant="h5"
           sx={{
             marginBottom: '8px',
-            color: theme.palette.blue['900'],
+            color: blue['900'],
+            fontWeight: 'bold',
+            fontSize: '24px',
           }}
         >
           {t('volume_overview.volume_description')}

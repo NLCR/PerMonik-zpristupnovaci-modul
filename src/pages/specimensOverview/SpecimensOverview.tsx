@@ -1,14 +1,12 @@
-import {
-  Box,
-  IconButton,
-  Typography,
-  Button,
-  Tabs,
-  Tab,
-  Modal,
-  Backdrop,
-  Fade,
-} from '@mui/material'
+import IconButton from '@mui/material/IconButton'
+import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
+import Typography from '@mui/material/Typography'
+import Modal from '@mui/material/Modal'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import Backdrop from '@mui/material/Backdrop'
+import Button from '@mui/material/Button'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import React, { Suspense, useEffect, useState } from 'react'
@@ -18,6 +16,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import TableRowsIcon from '@mui/icons-material/TableRows'
+import { blue } from '@mui/material/colors'
 import { useMetaTitleQuery } from '../../api/metaTitle'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
@@ -26,7 +25,8 @@ import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStor
 import SpecimenDayDetailExampleImage from '../../assets/images/specimen-day-detail-example.png'
 import Facets from './components/Facets'
 import Calendar from './components/Calendar'
-import Table from './components/Table'
+
+const Table = React.lazy(() => import('./components/Table'))
 
 const modalStyle = {
   position: 'absolute' as const,
@@ -38,6 +38,7 @@ const modalStyle = {
   width: '90vw',
   maxWidth: '600px',
   bgcolor: 'background.paper',
+  borderRadius: '4px',
   boxShadow: 24,
   p: 4,
 }
@@ -108,11 +109,12 @@ const SpecimensOverview = () => {
         <Fade in={modalOpened}>
           <Box sx={modalStyle}>
             <Typography
-              sx={(theme) => ({
-                color: theme.palette.blue['900'],
+              sx={{
+                color: blue['900'],
                 fontSize: '24px',
                 fontWeight: 'bold',
-              })}
+                marginBottom: '16px',
+              }}
             >
               {t('specimens_overview.help')}
             </Typography>
@@ -211,14 +213,14 @@ const SpecimensOverview = () => {
               />
             </Tabs>
             <Box
-              sx={(theme) => ({
+              sx={{
                 display: 'flex',
                 marginLeft: '20px',
                 fontSize: '14px',
-                color: theme.palette.blue['900'],
+                color: blue['900'],
                 fontWeight: 'bolder',
                 alignItems: 'center',
-              })}
+              }}
             >
               {showedDate && view === 'calendar' ? (
                 <>
@@ -296,7 +298,6 @@ const SpecimensOverview = () => {
           <Calendar metaTitle={metaTitle} />
         ) : (
           <Suspense>
-            {/* <Table metaTitle={metaTitle} /> */}
             <Table metaTitle={metaTitle} />
           </Suspense>
         )}

@@ -1,28 +1,27 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router-dom'
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Button,
-  Menu,
-  MenuItem,
-  Box,
-  Typography,
-  Divider,
-  Avatar,
-  Container,
-} from '@mui/material'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+// import IconButton from '@mui/material/IconButton'
+import Button from '@mui/material/Button'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+import Avatar from '@mui/material/Avatar'
+import Container from '@mui/material/Container'
 import { styled } from '@mui/material/styles'
-import MenuIcon from '@mui/icons-material/Menu'
+// import MenuIcon from '@mui/icons-material/Menu'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { blue } from '@mui/material/colors'
 import Logo from '../assets/logo.png'
 import Czech from '../assets/images/czech-republic.png'
 import Slovakia from '../assets/images/slovakia.png'
 import English from '../assets/images/united-states.png'
 import { changeLanguage, TSupportedLanguages } from '../i18next'
-import { useMeQuery } from '../api/user'
+import { useLogoutMutation, useMeQuery } from '../api/user'
 
 const HeaderContainer = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -37,30 +36,38 @@ const LinksContainer = styled(Box)(({ theme }) => ({
   flexGrow: 1,
 }))
 
-const BurgerContainer = styled(IconButton)(({ theme }) => ({
-  [theme.breakpoints.up('sm')]: {
-    display: 'none',
-  },
-}))
+// const BurgerContainer = styled(IconButton)(({ theme }) => ({
+//   [theme.breakpoints.up('sm')]: {
+//     display: 'none',
+//   },
+// }))
 
 const NavLinkStyled = styled(NavLink)(({ theme }) => ({
   display: 'block',
-  lineHeight: 1,
-  padding: theme.spacing(1.25, 2.25),
-  marginLeft: theme.spacing(0.5),
-  marginRight: theme.spacing(0.5),
+  // lineHeight: 1,
+  padding: theme.spacing(1.1, 2.25),
+  marginLeft: theme.spacing(1.25),
+  marginRight: theme.spacing(1.25),
   borderRadius: theme.shape.borderRadius,
   textDecoration: 'none',
-  color: theme.palette.text.primary,
+  color: theme.palette.grey['900'],
+  backgroundColor: theme.palette.grey['50'],
   fontSize: theme.typography.fontSize,
   fontWeight: theme.typography.fontWeightMedium,
   '&:hover': {
-    backgroundColor: theme.palette.action.hover,
+    color: theme.palette.grey['50'],
+    backgroundColor: theme.palette.grey['900'],
   },
   '&.active': {
-    backgroundColor: theme.palette.action.selected,
+    color: theme.palette.grey['50'],
+    backgroundColor: theme.palette.grey['900'],
   },
 }))
+
+// const MenuItemStyled = styled(MenuItem)(({ theme }) => ({
+//   color: theme.palette.grey['50'],
+//   backgroundColor: theme.palette.grey['900'],
+// }))
 
 const LanguageButton = styled(Button)(({ theme }) => ({
   marginLeft: theme.spacing(3.75),
@@ -76,7 +83,7 @@ const LanguageButton = styled(Button)(({ theme }) => ({
   }),
   backgroundColor: theme.palette.background.paper,
   '&:hover': {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: blue['50'],
   },
 }))
 
@@ -89,9 +96,10 @@ const data: { shorthand: TSupportedLanguages; label: string; image: string }[] =
 
 const Header = () => {
   const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null)
-  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null)
+  // const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null)
   const { t, i18n } = useTranslation()
   const { data: me } = useMeQuery()
+  const { mutateAsync: doLogout } = useLogoutMutation()
 
   const handleLangMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setLangAnchorEl(event.currentTarget)
@@ -101,16 +109,20 @@ const Header = () => {
     setLangAnchorEl(null)
   }
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMenuAnchorEl(event.currentTarget)
-  }
+  // const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  //   setMenuAnchorEl(event.currentTarget)
+  // }
+  //
+  // const handleMenuClose = () => {
+  //   setMenuAnchorEl(null)
+  // }
 
-  const handleMenuClose = () => {
-    setMenuAnchorEl(null)
-  }
-
-  const handleLogout = () => {
-    // Implement logout functionality
+  const handleLogout = async () => {
+    await doLogout()
+      .then(() => {
+        // navigate('/')
+      })
+      .catch(() => {})
   }
 
   const items = data.map((item) => (
@@ -138,43 +150,62 @@ const Header = () => {
           </Link>
           <Box>
             <LinksContainer>
-              <NavLinkStyled to={`/${i18n.resolvedLanguage}/`}>
+              <NavLinkStyled to={`/${i18n.resolvedLanguage}/`} end>
                 {t('header.home')}
               </NavLinkStyled>
-              {me?.role === 'admin' && (
+              {me?.role?.includes('admin') ? (
                 <NavLinkStyled
+                  sx={{
+                    marginRight: 0,
+                  }}
                   to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`}
                 >
                   {t('header.administration')}
                 </NavLinkStyled>
-              )}
+              ) : null}
               {!me && (
-                <NavLinkStyled
-                  to={`${i18n.resolvedLanguage}/${t('urls.login')}`}
+                <Button
+                  variant="contained"
+                  sx={(theme) => ({
+                    color: theme.palette.grey['900'],
+                    backgroundColor: theme.palette.grey['50'],
+                    '&:hover': {
+                      color: theme.palette.grey['50'],
+                      backgroundColor: theme.palette.grey['900'],
+                    },
+                  })}
+                  component={Link}
+                  to="/login/shibboleth"
                 >
                   {t('header.login')}
-                </NavLinkStyled>
+                </Button>
               )}
               {me && (
                 <>
                   <Divider
                     orientation="vertical"
                     flexItem
-                    sx={{ margin: '0 10px', borderColor: 'gray' }}
+                    sx={(theme) => ({
+                      margin: '0 20px',
+                      borderColor: theme.palette.grey['50'],
+                    })}
                   />
                   <Button
                     variant="contained"
                     onClick={handleLogout}
-                    sx={{
-                      backgroundColor: 'gray',
-                      color: 'white',
-                      '&:hover': { backgroundColor: 'darkgray' },
-                    }}
+                    sx={(theme) => ({
+                      color: theme.palette.grey['900'],
+                      backgroundColor: theme.palette.grey['50'],
+                      '&:hover': {
+                        color: theme.palette.grey['50'],
+                        backgroundColor: theme.palette.grey['900'],
+                      },
+                    })}
                   >
                     {t('header.logout')}
                   </Button>
-                  <Typography variant="body1" sx={{ marginLeft: 1 }}>
-                    {me.firstName} {me.lastName}
+                  <Typography variant="body1" sx={{ marginLeft: '20px' }}>
+                    {me.name}
                   </Typography>
                 </>
               )}
@@ -206,49 +237,42 @@ const Header = () => {
                 {items}
               </Menu>
             </LinksContainer>
-            <BurgerContainer
-              edge="end"
-              color="inherit"
-              aria-label="menu"
-              onClick={handleMenuOpen}
-            >
-              <MenuIcon />
-            </BurgerContainer>
-            <Menu
-              anchorEl={menuAnchorEl}
-              open={Boolean(menuAnchorEl)}
-              onClose={handleMenuClose}
-            >
-              <MenuItem component={NavLink} to={`/${i18n.resolvedLanguage}/`}>
-                {t('header.home')}
-              </MenuItem>
-              {me?.role === 'admin' && (
-                <MenuItem
-                  component={NavLink}
-                  to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`}
-                >
-                  {t('header.administration')}
-                </MenuItem>
-              )}
-              {!me && (
-                <MenuItem
-                  component={NavLink}
-                  to={`${i18n.resolvedLanguage}/${t('urls.login')}`}
-                >
-                  {t('header.login')}
-                </MenuItem>
-              )}
-              {me && (
-                <>
-                  <MenuItem onClick={handleLogout}>
-                    {t('header.logout')}
-                  </MenuItem>
-                  <Typography variant="body1" sx={{ marginLeft: 1 }}>
-                    {me.firstName} {me.lastName}
-                  </Typography>
-                </>
-              )}
-            </Menu>
+            {/* <BurgerContainer */}
+            {/*  edge="end" */}
+            {/*  color="inherit" */}
+            {/*  aria-label="menu" */}
+            {/*  onClick={handleMenuOpen} */}
+            {/* > */}
+            {/*  <MenuIcon /> */}
+            {/* </BurgerContainer> */}
+            {/* <Menu */}
+            {/*  anchorEl={menuAnchorEl} */}
+            {/*  open={Boolean(menuAnchorEl)} */}
+            {/*  onClose={handleMenuClose} */}
+            {/* > */}
+            {/*  <MenuItem component={NavLink} to={`/${i18n.resolvedLanguage}/`}> */}
+            {/*    {t('header.home')} */}
+            {/*  </MenuItem> */}
+            {/*  {me?.role === 'admin' && ( */}
+            {/*    <MenuItem */}
+            {/*      component={NavLink} */}
+            {/*      to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`} */}
+            {/*    > */}
+            {/*      {t('header.administration')} */}
+            {/*    </MenuItem> */}
+            {/*  )} */}
+            {/*  {!me && <a href="/login/shibboleth">{t('header.login')}</a>} */}
+            {/*  {me && ( */}
+            {/*    <> */}
+            {/*      <MenuItem onClick={handleLogout}> */}
+            {/*        {t('header.logout')} */}
+            {/*      </MenuItem> */}
+            {/*      <Typography variant="body1" sx={{ marginLeft: 1 }}> */}
+            {/*        {me.name} */}
+            {/*      </Typography> */}
+            {/*    </> */}
+            {/*  )} */}
+            {/* </Menu> */}
           </Box>
         </Toolbar>
       </Container>

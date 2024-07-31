@@ -1,13 +1,12 @@
 import React, { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
+import { GridColDef, GridRenderCellParams, DataGrid } from '@mui/x-data-grid'
 import dayjs from 'dayjs'
 import Tooltip from '@mui/material/Tooltip'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import Link from '@mui/material/Link'
 import { Link as RouterLink } from 'react-router-dom'
-import { green, grey, orange, red } from '@mui/material/colors'
+import { blue, green, grey, orange, red } from '@mui/material/colors'
 import { TFunction } from 'i18next'
 import { TMetaTitle } from '../../../schema/metaTitle'
 import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
@@ -111,15 +110,22 @@ const OwnersBarCodeCell: FC<{
       justifyContent="center"
       flexWrap="nowrap"
     >
-      <Grid item>
-        <Link
-          component={RouterLink}
-          to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
-            row.volumeId
-          }`}
-        >
-          {row.barCode}
-        </Link>
+      <Grid
+        item
+        sx={{
+          textDecoration: 'none',
+          color: blue['700'],
+          transition: 'color 0.1s',
+          ':hover': {
+            color: blue['900'],
+          },
+        }}
+        component={RouterLink}
+        to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
+          row.volumeId
+        }`}
+      >
+        {row.barCode}
       </Grid>
       <Grid item>{getSpecimenState(row, t)}</Grid>
     </Grid>
@@ -203,12 +209,18 @@ const Table: FC<Props> = ({ metaTitle }) => {
   return (
     <DataGrid
       localeText={MuiTableLocale}
-      density="compact"
-      rows={specimens?.specimens}
-      paginationModel={{
-        pageSize: pagination.pageSize,
-        page: pagination.pageIndex,
+      initialState={{
+        pagination: {
+          paginationModel: {
+            pageSize: pagination.pageSize,
+            page: pagination.pageIndex,
+          },
+        },
+        density: 'compact',
       }}
+      disableColumnFilter
+      disableColumnSorting
+      rows={specimens?.specimens}
       rowCount={specimens?.count}
       paginationMode="server"
       loading={specimensFetching}

@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter } from 'react-router-dom'
-import { Container } from '@mui/material'
+import Container from '@mui/material/Container'
 import { useTranslation } from 'react-i18next'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers'
@@ -30,8 +30,8 @@ const App: FC = () => {
           // flexDirection: 'column',
           paddingTop: '15px',
           paddingBottom: '10px',
-          maxHeight: `calc(100vh - 64px)`,
-          minHeight: `calc(100vh - 64px)`,
+          maxHeight: `1200px`,
+          height: `calc(100vh - 80px)`,
           width: '100%',
           // maxHeight: `700px`,
           // overflow: 'hidden',

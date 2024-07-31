@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import { keyframes } from '@emotion/react'
 
 const barsAnimation = keyframes`

@@ -1,6 +1,6 @@
 import { GridRenderEditCellParams } from '@mui/x-data-grid/models/params/gridCellParams'
 import React, { ChangeEvent } from 'react'
-import { Checkbox } from '@mui/material'
+import Checkbox from '@mui/material/Checkbox'
 import {
   TEditableSpecimen,
   TSpecimenDamageTypes,

@@ -1,12 +1,10 @@
 import { ChangeEvent, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Box,
-  FormControlLabel,
-  FormGroup,
-  Typography,
-  Checkbox,
-} from '@mui/material'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import FormGroup from '@mui/material/FormGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
 
 type TInput = {
   values: string[]
@@ -58,6 +56,14 @@ const FacetGroup: FC<TInput> = ({
               // justifyContent: 'space-between',
               // alignItems: 'start',
               // fontSize: '12px',
+              '& .MuiCheckbox-root': {
+                paddingTop: '6px',
+                paddingBottom: '6px',
+              },
+              '& .MuiFormControlLabel-label': {
+                display: 'block',
+                width: '100%',
+              },
             }}
             key={f.name}
             control={

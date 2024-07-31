@@ -1,17 +1,15 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  Box,
-  SpeedDial,
-  SpeedDialAction,
-  SpeedDialIcon,
-  Typography,
-  useTheme,
-} from '@mui/material'
-import React, { useEffect } from 'react'
+import Box from '@mui/material/Box'
+import SpeedDial from '@mui/material/SpeedDial'
+import SpeedDialAction from '@mui/material/SpeedDialAction'
+import SpeedDialIcon from '@mui/material/SpeedDialIcon'
+import Typography from '@mui/material/Typography'
+import React, { useEffect, useMemo } from 'react'
 import SaveIcon from '@mui/icons-material/Save'
 import UpdateIcon from '@mui/icons-material/Update'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import { blue } from '@mui/material/colors'
 import { useMangedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
@@ -26,8 +24,8 @@ import { useVolumeManagementStore } from '../../slices/useVolumeManagementStore'
 import InputData from './components/InputData'
 import { useVolumeManagementActions } from '../../hooks/useVolumeManagementActions'
 
+// TODO: add number and attachmentNumber renumbering
 const VolumeManagement = () => {
-  const theme = useTheme()
   const { volumeId } = useParams()
   const { data: me, isLoading: meLoading, isError: meError } = useMeQuery()
   const { t } = useTranslation()
@@ -41,6 +39,9 @@ const VolumeManagement = () => {
   )
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
+  )
+  const volumeRegenerated = useVolumeManagementStore(
+    (state) => state.periodicityGenerationUsed
   )
 
   const {
@@ -89,29 +90,60 @@ const VolumeManagement = () => {
     }
   }, [publications, volumeId, volumePeriodicityActions, setInitialState])
 
-  // TODO: filter actions based on volume state and user owner
-  const actions = [
-    {
-      icon: <UpdateIcon />,
-      name: t('administration.update'),
-      onClick: doUpdate,
-    },
-    {
-      icon: <UpdateIcon />,
-      name: t('administration.update'),
-      onClick: doRegeneratedUpdate,
-    },
-    {
-      icon: <SaveIcon />,
-      name: t('administration.save'),
-      onClick: doCreate,
-    },
-    {
-      icon: <DeleteForeverIcon />,
-      name: t('administration.delete'),
-      onClick: doDelete,
-    },
-  ]
+  const canEdit = useMemo(
+    () =>
+      me?.owners?.some((o) => o === volume?.volume.ownerId) ||
+      !volumeId?.length ||
+      me?.role === 'super_admin',
+    [me, volume?.volume.ownerId, volumeId?.length]
+  )
+
+  const actions = useMemo(() => {
+    const actionsArray: {
+      icon: JSX.Element
+      name: string
+      onClick: () => void
+    }[] = []
+
+    if (volumeId && volumeRegenerated) {
+      actionsArray.push({
+        icon: <UpdateIcon />,
+        name: t('administration.update'),
+        onClick: doRegeneratedUpdate,
+      })
+    }
+    if (volumeId && !volumeRegenerated) {
+      actionsArray.push({
+        icon: <UpdateIcon />,
+        name: t('administration.update'),
+        onClick: doUpdate,
+      })
+    }
+    if (volumeId) {
+      actionsArray.push({
+        icon: <DeleteForeverIcon />,
+        name: t('administration.delete'),
+        onClick: doDelete,
+      })
+    }
+    if (!volumeId) {
+      actionsArray.push({
+        icon: <SaveIcon />,
+        name: t('administration.save'),
+        onClick: doCreate,
+      })
+    }
+
+    return actionsArray
+  }, [
+    doCreate,
+    doDelete,
+    doRegeneratedUpdate,
+    doUpdate,
+    t,
+    volumeId,
+    volumeRegenerated,
+  ])
 
   if (
     volumeLoading ||
@@ -144,11 +176,6 @@ const VolumeManagement = () => {
   if (!me) {
     return <ShowInfoMessage message={t('volume_overview.account_required')} />
   }
-
-  const canEdit =
-    me.owners.some((o) => o === volume?.volume.ownerId) ||
-    !volumeId?.length ||
-    me.role === 'super_admin'
 
   return (
     <Box
@@ -189,10 +216,11 @@ const VolumeManagement = () => {
         }}
       >
         <Typography
-          variant="h5"
           sx={{
             marginBottom: '8px',
-            color: theme.palette.blue['900'],
+            color: blue['900'],
+            fontWeight: 'bold',
+            fontSize: '24px',
           }}
         >
           {t('volume_overview.volume_information')}
@@ -219,10 +247,11 @@ const VolumeManagement = () => {
         }}
       >
         <Typography
-          variant="h5"
           sx={{
             marginBottom: '8px',
-            color: theme.palette.blue['900'],
+            color: blue['900'],
+            fontWeight: 'bold',
+            fontSize: '24px',
           }}
         >
           {t('volume_overview.volume_description')}
@@ -233,20 +262,22 @@ const VolumeManagement = () => {
           publications={publications}
         />
       </Box>
-      <SpeedDial
-        ariaLabel=""
-        sx={{ position: 'absolute', bottom: 16, right: 16 }}
-        icon={<SpeedDialIcon />}
-      >
-        {actions.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            onClick={action.onClick}
-          />
-        ))}
-      </SpeedDial>
+      {canEdit ? (
+        <SpeedDial
+          ariaLabel=""
+          sx={{ position: 'absolute', bottom: 16, right: 16 }}
+          icon={<SpeedDialIcon />}
+        >
+          {actions.map((action) => (
+            <SpeedDialAction
+              key={action.name}
+              icon={action.icon}
+              tooltipTitle={action.name}
+              onClick={action.onClick}
+            />
+          ))}
+        </SpeedDial>
+      ) : null}
     </Box>
   )
 }

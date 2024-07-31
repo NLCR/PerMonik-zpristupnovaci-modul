@@ -1,10 +1,7 @@
 import ky from 'ky'
 import { QueryClient } from '@tanstack/react-query'
-// import { toast } from 'react-toastify'
-// import i18next from '../i18next'
-// import Store from '../utils/localstorage'
-// import { AUTH_TOKEN, GRANT_TOKEN, REFRESH_TOKEN } from '../utils/constants'
-// const { MODE } = import.meta.env
+import { toast } from 'react-toastify'
+import i18next from '../i18next'
 
 // Setup queryClient
 export const queryClient = new QueryClient({
@@ -53,7 +50,11 @@ const baseApi = ({ handledCodes, throwErrorFromKy = true }: BaseOptions) =>
 
           try {
             // const error = await response.json()
-            // toast.error(processError(response, error))
+            if (response.status === 403) {
+              toast.warn(i18next.t('common.session_expired'))
+              queryClient.invalidateQueries({ queryKey: ['me'] })
+            }
+            // toast.warn(processError(response, error))
           } catch (e: unknown) {
             /* empty */
           }
@@ -62,19 +63,8 @@ const baseApi = ({ handledCodes, throwErrorFromKy = true }: BaseOptions) =>
     },
   })
 
-type Options = {
-  useRefreshToken?: boolean
-  useGrantToken?: boolean
-  useGrantTokenAsAuth?: boolean
-} & BaseOptions
-
 // Used for fetching data with React Query
-export const api = ({
-  useGrantToken,
-  useRefreshToken,
-  useGrantTokenAsAuth,
-  ...base
-}: Options = {}) =>
+export const api = ({ ...base }: BaseOptions = {}) =>
   baseApi(base).extend({
     prefixUrl: '/api',
   })

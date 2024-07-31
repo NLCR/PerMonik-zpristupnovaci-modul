@@ -1,16 +1,16 @@
 import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
-import {
-  Typography,
-  Divider,
-  Box,
-  Slider,
-  TextField,
-  Button,
-} from '@mui/material'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Slider from '@mui/material/Slider'
+import Divider from '@mui/material/Divider'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 import { DateCalendar } from '@mui/x-date-pickers'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import { blue } from '@mui/material/colors'
+import { isArray } from 'lodash-es'
 import FacetGroup from './FacetGroup'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { useMutationListQuery } from '../../../api/mutation'
@@ -62,7 +62,6 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
   const datesMin = Number(specimens?.publicationDayMin?.substring(0, 4)) || 1900
   const datesMax = Number(specimens?.publicationDayMax?.substring(0, 4)) || 2023
 
-  // TODO: fix date
   const [date, setDate] = useState(calendarMinDate)
   const [range, setRange] = useState<[number, number]>([datesMin, datesMax])
 
@@ -84,9 +83,9 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
       <>
         <Typography
           variant="h6"
-          sx={(theme) => ({
-            color: theme.palette.blue['900'],
-          })}
+          sx={{
+            color: blue['900'],
+          }}
         >
           {metaTitle.name}
         </Typography>
@@ -99,10 +98,10 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
     <>
       <Typography
         variant="h6"
-        sx={(theme) => ({
-          color: theme.palette.blue['900'],
+        sx={{
+          color: blue['900'],
           fontWeight: '600',
-        })}
+        }}
       >
         {metaTitle.name}
       </Typography>
@@ -125,6 +124,10 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
           <DateCalendar
             views={['month', 'year']}
             openTo="month"
+            sx={{
+              height: 'auto',
+            }}
+            defaultValue={dayjs(date)}
             value={dayjs(calendarDate)}
             minDate={dayjs(datesMin.toString())}
             maxDate={dayjs(datesMax.toString())}
@@ -148,20 +151,33 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
           step={1}
           // defaultValue={date}
           // minRange={0}
+          sx={{
+            width: '95%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            marginBottom: '30px',
+          }}
+          valueLabelDisplay="auto"
           marks={[
             { value: datesMin, label: `${datesMin}` },
             { value: datesMax, label: `${datesMax}` },
           ]}
           value={range}
-          onChange={(event, value) => setRange(value)}
+          onChange={(event, value) => {
+            if (isArray(value)) {
+              setRange([value[0], value[1]])
+            }
+          }}
           onChangeCommitted={(event, value) => {
-            setCalendarDate(dayjs(value[0].toString()).toDate())
-            setDate(dayjs(value[0].toString()).toDate())
-            setParams({
-              ...params,
-              dateStart: value[0],
-              dateEnd: value[1],
-            })
+            if (isArray(value)) {
+              setCalendarDate(dayjs(value[0].toString()).toDate())
+              setDate(dayjs(value[0].toString()).toDate())
+              setParams({
+                ...params,
+                dateStart: value[0],
+                dateEnd: value[1],
+              })
+            }
           }}
           min={datesMin}
           max={datesMax}

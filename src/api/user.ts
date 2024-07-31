@@ -1,36 +1,46 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { clone } from 'lodash-es'
 import { api, queryClient } from './index'
-import { TUser } from '../schema/user'
+import { TMe, TUser } from '../schema/user'
 
 export const useMeQuery = () => {
-  const useMock = true
+  const useMock = false
 
   return useQuery({
     queryKey: ['me'],
-    queryFn: (): Promise<TUser> => {
+    queryFn: (): Promise<TMe> => {
       return useMock
         ? new Promise((res) => {
             res({
-              id: '098f6bcd4621d373cade4e832627b4f6',
-              active: true,
-              email: 'stastny@inqool.cz',
-              firstName: 'Petr',
-              lastName: 'Šťastný',
-              owners: [
-                'cd2449f8-4c74-46fd-9557-ed0a9162407c',
-                'fc1c2ff3-7e86-475e-83dd-3190cae113f2',
-              ],
+              id: '407a3bc0-db76-4cce-aebc-4291ca5af0d3',
+              name: 'Admin 1',
+              email: 'kretek@inqool.cz',
+              authorities: [],
+              owners: null,
+              enabled: true,
+              username: 'admin',
               role: 'super_admin',
-              userName: 'stastny',
+              accountNonExpired: true,
+              accountNonLocked: true,
+              credentialsNonExpired: true,
             })
           })
-        : api().get(`user/me`).json<TUser>()
+        : api().get(`me`).json<TMe>()
     },
   })
 }
 
-export const useUpdateUserMutation = () =>
+export const useLogoutMutation = () =>
+  useMutation({
+    mutationFn: () => {
+      return api().post(`auth/logout`).json<void>()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['me'] })
+    },
+  })
+
+export const useUpdateUserMutation = (me: TMe) =>
   useMutation({
     mutationFn: (user: TUser) => {
       const userClone = clone(user)
@@ -41,8 +51,11 @@ export const useUpdateUserMutation = () =>
 
       return api().put(`user/${userClone.id}`, { json: userClone }).json<void>()
     },
-    onSuccess: () => {
+    onSuccess: (_, editArgs) => {
       queryClient.invalidateQueries({ queryKey: ['user'] })
+      if (editArgs.id === me.id) {
+        queryClient.invalidateQueries({ queryKey: ['me'] })
+      }
     },
   })
 

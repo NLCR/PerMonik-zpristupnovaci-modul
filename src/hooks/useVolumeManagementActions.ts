@@ -77,6 +77,7 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
         toast.error(t('volume_overview.volume_update_error'))
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e)
     }
   }
@@ -95,6 +96,7 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
         toast.error(t('volume_overview.volume_update_error'))
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e)
     }
   }
@@ -114,6 +116,7 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
         toast.error(t('volume_overview.volume_create_error'))
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e)
     }
   }
@@ -130,6 +133,7 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
         toast.error(t('volume_overview.volume_deletion_error'))
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e)
     }
   }

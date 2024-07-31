@@ -1,7 +1,9 @@
-import { Box, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { Link as ReactLink } from 'react-router-dom'
 import dayjs from 'dayjs'
+import { blue } from '@mui/material/colors'
 import { useMetaTitleOverviewListQuery } from '../api/metaTitle'
 import Loader from '../components/Loader'
 import ShowError from '../components/ShowError'
@@ -13,7 +15,12 @@ const Home = () => {
 
   return (
     <Box sx={{ textAlign: 'center', marginTop: '50px', width: '100%' }}>
-      <Typography variant="h3" color="blue.900">
+      <Typography
+        variant="h3"
+        sx={{
+          color: blue['900'],
+        }}
+      >
         {t('home.title')}
       </Typography>
       <Typography variant="body1" gutterBottom>
@@ -86,9 +93,9 @@ const Home = () => {
                 }}
               >
                 <Typography
-                  sx={(theme) => ({
-                    color: theme.palette.blue['800'],
-                  })}
+                  sx={{
+                    color: blue['700'],
+                  }}
                 >
                   {t('home.specimens')}: {mt.specimens.matchedSpecimens}
                 </Typography>

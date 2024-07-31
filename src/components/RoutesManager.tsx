@@ -1,18 +1,25 @@
 import React, { Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Route, Routes, Navigate } from 'react-router-dom'
-import { Container } from '@mui/material'
+import Container from '@mui/material/Container'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
 import Loader from './Loader'
 import SpecimensOverview from '../pages/specimensOverview/SpecimensOverview'
 import { useMeQuery } from '../api/user'
-import Administration from '../pages/administration/Administration'
-import Users from '../pages/administration/Users'
-import Owners from '../pages/administration/Owners'
-import MetaTitles from '../pages/administration/MetaTitles'
-import Publications from '../pages/administration/Publications'
-import Mutations from '../pages/administration/Mutations'
+
+const Administration = React.lazy(
+  () => import('../pages/administration/Administration')
+)
+const Users = React.lazy(() => import('../pages/administration/Users'))
+const Owners = React.lazy(() => import('../pages/administration/Owners'))
+const MetaTitles = React.lazy(
+  () => import('../pages/administration/MetaTitles')
+)
+const Publications = React.lazy(
+  () => import('../pages/administration/Publications')
+)
+const Mutations = React.lazy(() => import('../pages/administration/Mutations'))
 
 const VolumeOverview = React.lazy(
   () => import('../pages/volumeOverview/VolumeOverview')
@@ -63,13 +70,13 @@ const RoutesManager = () => {
             element={<VolumeOverview />}
           />
         )}
-        {me?.role === 'admin' ? (
+        {me?.role?.includes('admin') ? (
           <Route
             path={`/:lang/${t('administration')}`}
             element={<Administration />}
           >
             <Route index element={<Navigate to={t('users')} />} />
-            <Route path={t('users')} element={<Users />} />
+            <Route path={t('users')} element={<Users me={me} />} />
             <Route path={t('owners')} element={<Owners />} />
             <Route path={t('meta_titles')} element={<MetaTitles />} />
             <Route path={t('publications')} element={<Publications />} />

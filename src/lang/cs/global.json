@@ -17,7 +17,8 @@
     "no": "Ne",
     "saved_successfully": "Úpspěšně uloženo",
     "error_when_saving": "Při ukládání nastala chyba",
-    "retry_fetch": "Znovu načíst"
+    "retry_fetch": "Znovu načíst",
+    "session_expired": "Relace vypršela"
   },
   "helmet": {
     "title": "Evidence periodik – badatelská aplikace"
@@ -124,7 +125,8 @@
     "volume_create_error": "Nastala chyba při vytváření svazku",
     "volume_deleted_successfully": "Svazek byl úspěšně smazán",
     "volume_deletion_error": "Nastala chyba při mazání svazku",
-    "account_required": "Stránka je dostupná po přihlášení"
+    "account_required": "Stránka je dostupná po přihlášení",
+    "new_row": "Duplikovat řádek"
   },
   "table": {
     "mutations": "Mutace",

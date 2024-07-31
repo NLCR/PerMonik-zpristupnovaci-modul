@@ -1,7 +1,8 @@
 import React, { FC } from 'react'
 
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
-import { Container, Box } from '@mui/material'
+import Container from '@mui/material/Container'
+import Box from '@mui/material/Box'
 
 type TShowErrorProps = {
   message: string

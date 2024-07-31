@@ -3,12 +3,14 @@ import React, { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
-  DataGrid,
   gridClasses,
   GridColDef,
   GridRenderCellParams,
+  DataGrid,
 } from '@mui/x-data-grid'
-import { alpha, Box, Checkbox } from '@mui/material'
+import Box from '@mui/material/Box'
+import { alpha, styled } from '@mui/material/styles'
+import Checkbox from '@mui/material/Checkbox'
 import {
   GridCellParams,
   GridRenderEditCellParams,
@@ -16,7 +18,8 @@ import {
 import { clone } from 'lodash-es'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import { blue } from '@mui/material/colors'
 import { duplicateSpecimen, TEditableSpecimen } from '../../../schema/specimen'
 import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
@@ -59,8 +62,7 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
       },
     },
   },
-  [`& .${gridClasses.row}.attachment`]: {
-    backgroundColor: theme.palette.blue[100],
+  [`& .${gridClasses.row}`]: {
     '&:hover': {
       backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
       '@media (hover: none)': {
@@ -68,21 +70,45 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
       },
     },
   },
-}))
+  [`& .${gridClasses.row}.attachment`]: {
+    backgroundColor: blue[100],
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
+      '@media (hover: none)': {
+        backgroundColor: 'transparent',
+      },
+    },
+  },
+})) as typeof DataGrid
 
 const renderCheckBox = (
   checked: boolean,
   show: boolean,
+  canEdit: boolean,
   color: 'primary' | 'success' = 'primary'
 ) => {
-  return show ? <Checkbox color={color} checked={checked} readOnly /> : null
+  return show ? (
+    <Checkbox color={color} checked={checked} readOnly disabled={!canEdit} />
+  ) : null
 }
 
 const renderValue = (
   value: string | number | undefined | null,
-  show: boolean
+  show: boolean,
+  canEdit: boolean
 ) => {
-  return show ? value : null
+  return show ? (
+    <Typography
+      sx={(theme) => ({
+        fontSize: '14px',
+        width: 'auto',
+        lineHeight: '2.5',
+        color: canEdit ? theme.palette.grey[900] : theme.palette.grey[600],
+      })}
+    >
+      {value}
+    </Typography>
+  ) : null
 }
 
 const renderDamagedAndMissingPagesEditCell = (
@@ -172,9 +198,306 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
 
   const columns: GridColDef<TEditableSpecimen>[] = [
     {
-      field: 'newRow',
-      headerName: '',
+      field: 'publicationDate',
+      headerName: t('table.publication_date'),
       flex: 1,
+      minWidth: 120,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(
+          dayjs(row.publicationDate).format('dd DD.MM.YYYY'),
+          true,
+          canEdit
+        )
+      },
+    },
+    {
+      field: 'numExists',
+      headerName: t('volume_overview.is_in_volume'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(row.numExists, true, canEdit)
+      },
+    },
+    {
+      field: 'numMissing',
+      headerName: t('volume_overview.missing_number'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(row.numMissing, true, canEdit)
+      },
+    },
+    {
+      field: 'number',
+      headerName: t('volume_overview.number'),
+      type: 'number',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(
+          row.number,
+          row.numExists && !row.isAttachment,
+          canEdit
+        )
+      },
+    },
+    {
+      field: 'attachmentNumber',
+      headerName: t('volume_overview.attachment_number'),
+      type: 'number',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(
+          row.attachmentNumber,
+          row.numExists && row.isAttachment,
+          canEdit
+        )
+      },
+      // renderEditCell: renderAttachmentNumberEditCell,
+    },
+    {
+      field: 'mutationId',
+      headerName: t('volume_overview.mutation'),
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(
+          mutations.find((m) => m.id === row.mutationId)?.name[languageCode],
+          row.numExists,
+          canEdit
+        )
+      },
+      valueOptions: mutations.map((v) => ({
+        value: v.id,
+        label: v.name[languageCode],
+      })),
+      type: 'singleSelect',
+    },
+    {
+      field: 'publicationId',
+      headerName: t('volume_overview.publication'),
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(
+          publications.find((m) => m.id === row.publicationId)?.name[
+            languageCode
+          ],
+          row.numExists,
+          canEdit
+        )
+      },
+      valueOptions: publications.map((v) => ({
+        value: v.id,
+        label: v.name[languageCode],
+      })),
+      type: 'singleSelect',
+    },
+    {
+      field: 'name',
+      type: 'string',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(row.name, row.numExists, canEdit)
+      },
+      headerName: t('volume_overview.name'),
+    },
+    {
+      field: 'subName',
+      type: 'string',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(row.subName, row.numExists, canEdit)
+      },
+      headerName: t('volume_overview.sub_name'),
+    },
+    {
+      field: 'pagesCount',
+      type: 'number',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(row.pagesCount, row.numExists, canEdit)
+      },
+      headerName: t('volume_overview.pages_count'),
+    },
+    {
+      /* bug fix, with the right name it hasn't updated value */
+      field: 'publicationMark2',
+      type: 'string',
+      headerName: t('volume_overview.publication_mark'),
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(row.publicationMark, row.numExists, canEdit)
+      },
+      renderEditCell: renderPublicationMarkEditCell,
+    },
+    {
+      field: 'OK',
+      headerName: t('facet_states.OK'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('OK'),
+          row.numExists,
+          canEdit,
+          'success'
+        )
+      },
+      renderEditCell: renderDamageTypesEditCell,
+    },
+    {
+      field: 'PP',
+      headerName: t('facet_states.PP'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('PP'),
+          row.numExists,
+          canEdit
+        )
+      },
+      renderEditCell: renderDamagedAndMissingPagesEditCell,
+    },
+    {
+      field: 'Deg',
+      headerName: t('facet_states.Deg'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('Deg'),
+          row.numExists,
+          canEdit
+        )
+      },
+      renderEditCell: renderDamageTypesEditCell,
+    },
+    {
+      field: 'ChS',
+      headerName: t('facet_states.ChS'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('ChS'),
+          row.numExists,
+          canEdit
+        )
+      },
+      renderEditCell: renderDamagedAndMissingPagesEditCell,
+    },
+    {
+      field: 'ChPag',
+      headerName: t('facet_states.ChPag'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('ChPag'),
+          row.numExists,
+          canEdit
+        )
+      },
+      renderEditCell: renderDamageTypesEditCell,
+    },
+    {
+      field: 'ChDatum',
+      headerName: t('facet_states.ChDatum'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('ChDatum'),
+          row.numExists,
+          canEdit
+        )
+      },
+      renderEditCell: renderDamageTypesEditCell,
+    },
+    {
+      field: 'ChCis',
+      headerName: t('facet_states.ChCis'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('ChCis'),
+          row.numExists,
+          canEdit
+        )
+      },
+      renderEditCell: renderDamageTypesEditCell,
+    },
+    {
+      field: 'ChSv',
+      headerName: t('facet_states.ChSv'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('ChSv'),
+          row.numExists,
+          canEdit
+        )
+      },
+      renderEditCell: renderDamageTypesEditCell,
+    },
+    {
+      field: 'Cz',
+      headerName: t('facet_states.Cz'),
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('Cz'),
+          row.numExists,
+          canEdit
+        )
+      },
+      renderEditCell: renderDamageTypesEditCell,
+    },
+    {
+      field: 'note',
+      type: 'string',
+      flex: 1,
+      minWidth: 180,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderValue(row.note, row.numExists, canEdit)
+      },
+      headerName: t('volume_overview.note'),
+      editable: canEdit,
+    },
+  ]
+
+  if (canEdit) {
+    columns.unshift({
+      field: 'newRow',
+      headerName: t('volume_overview.new_row'),
+      flex: 1,
+      hideable: false,
+      sortable: false,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return canEdit ? (
@@ -204,266 +527,8 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
           </Box>
         ) : null
       },
-    },
-    {
-      field: 'publicationDate',
-      headerName: t('table.publication_date'),
-      flex: 1,
-      minWidth: 120,
-      valueFormatter: (value) => {
-        return dayjs(value).format('dd DD.MM.YYYY')
-      },
-    },
-    {
-      field: 'numExists',
-      headerName: t('volume_overview.is_in_volume'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(row.numExists, true)
-      },
-    },
-    {
-      field: 'numMissing',
-      headerName: t('volume_overview.missing_number'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(row.numMissing, true)
-      },
-    },
-    {
-      field: 'number',
-      headerName: t('volume_overview.number'),
-      type: 'number',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderValue(row.number, row.numExists && !row.isAttachment)
-      },
-    },
-    {
-      field: 'attachmentNumber',
-      headerName: t('volume_overview.attachment_number'),
-      type: 'number',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderValue(
-          row.attachmentNumber,
-          row.numExists && row.isAttachment
-        )
-      },
-      // renderEditCell: renderAttachmentNumberEditCell,
-    },
-    {
-      field: 'mutationId',
-      headerName: t('volume_overview.mutation'),
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderValue(
-          mutations.find((m) => m.id === row.mutationId)?.name[languageCode],
-          row.numExists
-        )
-      },
-      valueOptions: mutations.map((v) => ({
-        value: v.id,
-        label: v.name[languageCode],
-      })),
-      type: 'singleSelect',
-    },
-    {
-      field: 'publicationId',
-      headerName: t('volume_overview.publication'),
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderValue(
-          publications.find((m) => m.id === row.publicationId)?.name[
-            languageCode
-          ],
-          row.numExists
-        )
-      },
-      valueOptions: publications.map((v) => ({
-        value: v.id,
-        label: v.name[languageCode],
-      })),
-      type: 'singleSelect',
-    },
-    {
-      field: 'name',
-      type: 'string',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderValue(row.name, row.numExists)
-      },
-      headerName: t('volume_overview.name'),
-    },
-    {
-      field: 'subName',
-      type: 'string',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderValue(row.subName, row.numExists)
-      },
-      headerName: t('volume_overview.sub_name'),
-    },
-    {
-      field: 'pagesCount',
-      type: 'number',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderValue(row.pagesCount, row.numExists)
-      },
-      headerName: t('volume_overview.pages_count'),
-    },
-    {
-      /* bug fix, with the right name it hasn't updated value */
-      field: 'publicationMark2',
-      type: 'string',
-      headerName: t('volume_overview.publication_mark'),
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderValue(row.publicationMark, row.numExists)
-      },
-      renderEditCell: renderPublicationMarkEditCell,
-    },
-    {
-      field: 'OK',
-      headerName: t('facet_states.OK'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(
-          !!row.damageTypes?.includes('OK'),
-          row.numExists,
-          'success'
-        )
-      },
-      renderEditCell: renderDamageTypesEditCell,
-    },
-    {
-      field: 'PP',
-      headerName: t('facet_states.PP'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(!!row.damageTypes?.includes('PP'), row.numExists)
-      },
-      renderEditCell: renderDamagedAndMissingPagesEditCell,
-    },
-    {
-      field: 'Deg',
-      headerName: t('facet_states.Deg'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(!!row.damageTypes?.includes('Deg'), row.numExists)
-      },
-      renderEditCell: renderDamageTypesEditCell,
-    },
-    {
-      field: 'ChS',
-      headerName: t('facet_states.ChS'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(!!row.damageTypes?.includes('ChS'), row.numExists)
-      },
-      renderEditCell: renderDamagedAndMissingPagesEditCell,
-    },
-    {
-      field: 'ChPag',
-      headerName: t('facet_states.ChPag'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(
-          !!row.damageTypes?.includes('ChPag'),
-          row.numExists
-        )
-      },
-      renderEditCell: renderDamageTypesEditCell,
-    },
-    {
-      field: 'ChDatum',
-      headerName: t('facet_states.ChDatum'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(
-          !!row.damageTypes?.includes('ChDatum'),
-          row.numExists
-        )
-      },
-      renderEditCell: renderDamageTypesEditCell,
-    },
-    {
-      field: 'ChCis',
-      headerName: t('facet_states.ChCis'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(
-          !!row.damageTypes?.includes('ChCis'),
-          row.numExists
-        )
-      },
-      renderEditCell: renderDamageTypesEditCell,
-    },
-    {
-      field: 'ChSv',
-      headerName: t('facet_states.ChSv'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(
-          !!row.damageTypes?.includes('ChSv'),
-          row.numExists
-        )
-      },
-      renderEditCell: renderDamageTypesEditCell,
-    },
-    {
-      field: 'Cz',
-      headerName: t('facet_states.Cz'),
-      type: 'boolean',
-      editable: canEdit,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderCheckBox(!!row.damageTypes?.includes('Cz'), row.numExists)
-      },
-      renderEditCell: renderDamageTypesEditCell,
-    },
-    {
-      field: 'note',
-      type: 'string',
-      flex: 1,
-      minWidth: 180,
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return renderValue(row.note, row.numExists)
-      },
-      headerName: t('volume_overview.note'),
-      editable: canEdit,
-    },
-  ]
+    })
+  }
 
   const handleUpdate = (newRow: TEditableSpecimen) => {
     // console.log(newRow)
@@ -495,7 +560,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
   return (
     <StripedDataGrid
       localeText={MuiTableLocale}
-      density="compact"
       getRowClassName={(params) => {
         let classes =
           params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'

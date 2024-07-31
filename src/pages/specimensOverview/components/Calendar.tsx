@@ -1,15 +1,13 @@
-import {
-  Backdrop,
-  Box,
-  Fade,
-  Typography,
-  Modal,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-} from '@mui/material'
+import Backdrop from '@mui/material/Backdrop'
+import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
+import Typography from '@mui/material/Typography'
+import Modal from '@mui/material/Modal'
+import Table from '@mui/material/Table'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import TableBody from '@mui/material/TableBody'
 import React, { FC, useEffect, useState } from 'react'
 import { flow, groupBy, map, sortBy } from 'lodash-es'
 import dayjs from 'dayjs'
@@ -17,6 +15,7 @@ import { useTranslation } from 'react-i18next'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import DriveFileMoveOutlinedIcon from '@mui/icons-material/DriveFileMoveOutlined'
 import { Link as ReactLink } from 'react-router-dom'
+import { blue } from '@mui/material/colors'
 import { TSpecimen } from '../../../schema/specimen'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { TMetaTitle } from '../../../schema/metaTitle'
@@ -35,7 +34,7 @@ import { usePublicationListQuery } from '../../../api/publication'
 import { useOwnerListQuery } from '../../../api/owner'
 
 const mainModalStyle = {
-  overflowY: 'scroll',
+  overflowY: 'auto',
   position: 'absolute' as const,
   maxHeight: '600px',
   height: '80vh',
@@ -45,12 +44,13 @@ const mainModalStyle = {
   width: '90vw',
   maxWidth: '1200px',
   bgcolor: 'background.paper',
+  borderRadius: '4px',
   boxShadow: 24,
   p: 4,
 }
 
 const subModalStyle = {
-  overflowY: 'scroll',
+  overflowY: 'auto',
   position: 'absolute' as const,
   maxHeight: '800px',
   height: '80vh',
@@ -60,6 +60,7 @@ const subModalStyle = {
   width: '90vw',
   maxWidth: '1000px',
   bgcolor: 'background.paper',
+  borderRadius: '4px',
   boxShadow: 24,
   p: 4,
 }
@@ -211,11 +212,12 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         <Fade in={mainModalOpened}>
           <Box sx={mainModalStyle}>
             <Typography
-              sx={(theme) => ({
-                color: theme.palette.blue['900'],
+              sx={{
+                color: blue['900'],
                 fontSize: '24px',
                 fontWeight: 'bold',
-              })}
+                marginBottom: '16px',
+              }}
             >
               {metaTitle.name}
             </Typography>
@@ -298,18 +300,18 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                           href={`https://www.knihovny.cz/Search/Results?lookfor=${s.barCode}&type=AllFields&limit=20`}
                           target="_blank"
                           rel="noreferrer"
-                          sx={(theme) => ({
+                          sx={{
                             cursor: 'pointer',
                             textDecoration: 'none',
                             display: 'flex',
                             justifyContent: 'flex-start',
                             alignItems: 'center',
-                            color: theme.palette.blue['500'],
+                            color: blue['700'],
                             transition: 'color 0.1s',
                             ':hover': {
-                              color: theme.palette.blue['900'],
+                              color: blue['900'],
                             },
-                          })}
+                          }}
                         >
                           {owners?.find((o) => o.id === s.ownerId)?.name}{' '}
                           <OpenInNewIcon
@@ -322,18 +324,18 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                       <TableCell />
                       <TableCell>
                         <Typography
-                          sx={(theme) => ({
+                          sx={{
                             cursor: 'pointer',
                             textDecoration: 'none',
                             display: 'flex',
                             justifyContent: 'flex-start',
                             alignItems: 'center',
-                            color: theme.palette.blue['500'],
+                            color: blue['700'],
                             transition: 'color 0.1s',
                             ':hover': {
-                              color: theme.palette.blue['900'],
+                              color: blue['900'],
                             },
-                          })}
+                          }}
                           onClick={() => {
                             setSubModalOpened(true)
                             setSubModalData(s)
@@ -350,18 +352,18 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                       <TableCell>
                         <Typography
                           component={ReactLink}
-                          sx={(theme) => ({
+                          sx={{
                             cursor: 'pointer',
                             textDecoration: 'none',
                             display: 'flex',
                             justifyContent: 'flex-start',
                             alignItems: 'center',
-                            color: theme.palette.blue['500'],
+                            color: blue['700'],
                             transition: 'color 0.1s',
                             ':hover': {
-                              color: theme.palette.blue['900'],
+                              color: blue['900'],
                             },
-                          })}
+                          }}
                           to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
                             s.volumeId
                           }`}
@@ -401,11 +403,12 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         <Fade in={subModalOpened}>
           <Box sx={subModalStyle}>
             <Typography
-              sx={(theme) => ({
-                color: theme.palette.blue['900'],
+              sx={{
+                color: blue['900'],
                 fontSize: '24px',
                 fontWeight: 'bold',
-              })}
+                marginBottom: '16px',
+              }}
             >
               {t('specimens_overview.volume_overview_modal_link')}{' '}
               {subModalData?.barCode}
@@ -431,10 +434,10 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         >
           <Typography variant="body2">
             <Typography
-              sx={(theme) => ({
-                color: theme.palette.blue['900'],
+              sx={{
+                color: blue['900'],
                 marginBottom: '4px',
-              })}
+              }}
             >
               {dayjs(day.day).format('dd DD')}
             </Typography>

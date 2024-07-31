@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Box, Divider } from '@mui/material'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import { styled } from '@mui/material/styles'
+import Loader from '../../components/Loader'
 
 const Container = styled(Box)(({ theme }) => ({
   backgroundColor: 'white',
@@ -28,14 +30,16 @@ const Link = styled(NavLink)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   textDecoration: 'none',
   color: theme.palette.text.primary,
-  fontSize: theme.typography.pxToRem(16),
-  fontWeight: 500,
-  backgroundColor: theme.palette.primary.main,
+  backgroundColor: theme.palette.grey['200'],
+  fontSize: theme.typography.fontSize,
+  fontWeight: theme.typography.fontWeightMedium,
   '&:hover': {
-    backgroundColor: theme.palette.primary.light,
+    color: theme.palette.grey['50'],
+    backgroundColor: theme.palette.grey['900'],
   },
-  '&.active, &.active:hover': {
-    backgroundColor: theme.palette.primary.light,
+  '&.active': {
+    color: theme.palette.grey['50'],
+    backgroundColor: theme.palette.grey['900'],
   },
 }))
 
@@ -78,7 +82,9 @@ const Administration = () => {
         </Link>
       </Menu>
       <StyledDivider />
-      <Outlet />
+      <Suspense fallback={<Loader />}>
+        <Outlet />
+      </Suspense>
     </Container>
   )
 }

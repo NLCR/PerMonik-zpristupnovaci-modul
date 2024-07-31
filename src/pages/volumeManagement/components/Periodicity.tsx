@@ -1,28 +1,25 @@
 /* eslint-disable no-nested-ternary */
-
 import React, { FC, useState } from 'react'
-import {
-  Backdrop,
-  Box,
-  Button,
-  Checkbox,
-  Fade,
-  MenuItem,
-  Modal,
-  Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TextField,
-  Typography,
-  useTheme,
-} from '@mui/material'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Box from '@mui/material/Box'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import TextField from '@mui/material/TextField'
+import Checkbox from '@mui/material/Checkbox'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import Modal from '@mui/material/Modal'
+import Backdrop from '@mui/material/Backdrop'
+import Fade from '@mui/material/Fade'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import { clone } from 'lodash-es'
 import dayjs from 'dayjs'
+import { blue } from '@mui/material/colors'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { useLanguageCode } from '../../../utils/helperHooks'
 import { TPublication } from '../../../schema/publication'
@@ -72,7 +69,6 @@ interface PeriodicityProps {
 
 const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
   const [periodicityModalVisible, setPeriodicityModalVisible] = useState(false)
-  const theme = useTheme()
   const { t, i18n } = useTranslation()
   const { languageCode } = useLanguageCode()
 
@@ -214,7 +210,7 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
                 variant="h5"
                 sx={{
                   marginBottom: '8px',
-                  color: theme.palette.blue['900'],
+                  color: blue['900'],
                 }}
               >
                 {t('volume_overview.periodicity')}

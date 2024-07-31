@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Box, Divider, Typography, useTheme, TextField } from '@mui/material'
+import { useTheme } from '@mui/material'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
 import { clsx } from 'clsx'
 import { toast } from 'react-toastify'
 import { styled } from '@mui/material/styles'
@@ -14,7 +18,7 @@ import {
   useUpdateOwnerMutation,
 } from '../../api/owner'
 
-const Container = styled(Box)(({ theme }) => ({
+const Container = styled(Box)(() => ({
   position: 'relative',
 }))
 
@@ -114,8 +118,13 @@ const Owners = () => {
                 borderRadius: theme.shape.borderRadius,
                 padding: `${theme.spacing(0.625)} ${theme.spacing(1.25)}`,
                 cursor: 'pointer',
+                '&:hover': {
+                  color: theme.palette.grey['50'],
+                  backgroundColor: theme.palette.grey['900'],
+                },
                 '&.active': {
-                  backgroundColor: theme.palette.primary.light,
+                  color: theme.palette.grey['50'],
+                  backgroundColor: theme.palette.grey['900'],
                 },
               }}
             >
@@ -133,8 +142,13 @@ const Owners = () => {
                   borderRadius: theme.shape.borderRadius,
                   padding: `${theme.spacing(0.625)} ${theme.spacing(1.25)}`,
                   cursor: 'pointer',
+                  '&:hover': {
+                    color: theme.palette.grey['50'],
+                    backgroundColor: theme.palette.grey['900'],
+                  },
                   '&.active': {
-                    backgroundColor: theme.palette.primary.light,
+                    color: theme.palette.grey['50'],
+                    backgroundColor: theme.palette.grey['900'],
                   },
                 }}
               >

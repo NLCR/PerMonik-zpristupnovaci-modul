@@ -1,23 +1,21 @@
 import { useTranslation } from 'react-i18next'
 import React, { FC, useState } from 'react'
 import dayjs from 'dayjs'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Box,
-  MenuItem,
-  Select,
-  TextField,
-  Checkbox,
-  FormControlLabel,
-} from '@mui/material'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Box from '@mui/material/Box'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import TextField from '@mui/material/TextField'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useLanguageCode } from '../../../utils/helperHooks'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
-import { TUser } from '../../../schema/user'
+import { TMe } from '../../../schema/user'
 import { TMutation } from '../../../schema/mutation'
 import { TOwner } from '../../../schema/owner'
 import { TPublication } from '../../../schema/publication'
@@ -27,7 +25,7 @@ import Periodicity from './Periodicity'
 
 interface InputDataProps {
   canEdit: boolean
-  me: TUser
+  me: TMe
   mutations: TMutation[]
   owners: TOwner[]
   publications: TPublication[]
@@ -235,7 +233,7 @@ const InputData: FC<InputDataProps> = ({
                       </MenuItem>
                     ))
                   : owners
-                      .filter((o) => me.owners.includes(o.id))
+                      .filter((o) => me.owners?.includes(o.id))
                       .map((o) => (
                         <MenuItem key={o.id} value={o.id}>
                           {o.name}

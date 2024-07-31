@@ -1,7 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import React, { useState } from 'react'
 import { clone } from 'lodash-es'
-import { Box, Button, Checkbox, Modal, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Modal from '@mui/material/Modal'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
 import { GridRenderEditCellParams } from '@mui/x-data-grid/models/params/gridCellParams'
 import {
   TEditableSpecimen,

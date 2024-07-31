@@ -2,9 +2,9 @@
 import React, { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
+import { GridColDef, GridRenderCellParams, DataGrid } from '@mui/x-data-grid'
 import CheckIcon from '@mui/icons-material/Check'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import { TEditableSpecimen, TSpecimen } from '../../../schema/specimen'
 import { TVolumeDetail } from '../../../schema/volume'
 import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
@@ -31,6 +31,13 @@ const CenteredIcon = (show: boolean) => {
   ) : null
 }
 
+const renderValue = (
+  value: string | number | undefined | null,
+  show: boolean
+) => {
+  return show ? value : null
+}
+
 const Table: FC<TProps> = ({ volume = undefined }) => {
   const { MuiTableLocale } = useMuiTableLang()
   const { data: mutations } = useMutationListQuery()
@@ -38,7 +45,6 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
   const { languageCode } = useLanguageCode()
   const { t } = useTranslation()
 
-  // TODO: update field display based on volume management
   const columns = useMemo<GridColDef<TSpecimen>[]>(() => {
     return [
       {
@@ -71,7 +77,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('volume_overview.number'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return row.numExists && !row.isAttachment ? row.number : null
+          return renderValue(row.number, row.numExists && !row.isAttachment)
         },
       },
       {
@@ -79,46 +85,67 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('volume_overview.attachment_number'),
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
-          return row.numExists && row.isAttachment ? row.attachmentNumber : null
-        },
-      },
-      {
-        field: 'attachment_number',
-        headerName: t('volume_overview.attachment_number'),
-        renderCell: (params: GridRenderCellParams<TSpecimen>) => {
-          const { row } = params
-          return row.isAttachment ? row.number : null
+          return renderValue(
+            row.attachmentNumber,
+            row.numExists && row.isAttachment
+          )
         },
       },
       {
         field: 'mutationId',
         headerName: t('volume_overview.mutation'),
-        valueFormatter: (value) => {
-          return mutations?.find((m) => m.id === value)?.name[languageCode]
+        renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+          const { row } = params
+          return renderValue(
+            mutations?.find((m) => m.id === row.mutationId)?.name[languageCode],
+            row.numExists
+          )
         },
       },
       {
         field: 'publicationId',
         headerName: t('volume_overview.publication'),
-        valueFormatter: (value) => {
-          return publications?.find((m) => m.id === value)?.name[languageCode]
+        renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+          const { row } = params
+          return renderValue(
+            publications?.find((m) => m.id === row.publicationId)?.name[
+              languageCode
+            ],
+            row.numExists
+          )
         },
       },
       {
         field: 'name',
         headerName: t('volume_overview.name'),
+        renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+          const { row } = params
+          return renderValue(row.name, row.numExists)
+        },
       },
       {
         field: 'subName',
         headerName: t('volume_overview.sub_name'),
+        renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+          const { row } = params
+          return renderValue(row.subName, row.numExists)
+        },
       },
       {
         field: 'pagesCount',
         headerName: t('volume_overview.pages_count'),
+        renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+          const { row } = params
+          return renderValue(row.pagesCount, row.numExists)
+        },
       },
       {
         field: 'publicationMark',
         headerName: t('volume_overview.publication_mark'),
+        renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+          const { row } = params
+          return renderValue(row.publicationMark, row.numExists)
+        },
       },
       {
         field: 'damageTypes-reviewed',
@@ -197,6 +224,10 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         flex: 1,
         minWidth: 180,
         headerName: t('volume_overview.note'),
+        renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+          const { row } = params
+          return renderValue(row.note, row.numExists)
+        },
       },
     ]
   }, [languageCode, mutations, publications, t])
