@@ -174,8 +174,9 @@ const Header = () => {
                       backgroundColor: theme.palette.grey['900'],
                     },
                   })}
-                  component={Link}
-                  to="/login/shibboleth"
+                  onClick={() => {
+                    window.location.href = '/login/shibboleth'
+                  }}
                 >
                   {t('header.login')}
                 </Button>
