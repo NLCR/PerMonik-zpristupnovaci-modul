@@ -13,7 +13,7 @@ body {
 }
 
 @media (min-width: 2000px) {
-    .MuiContainer-maxWidthXl {
-        max-width: 2000px !important;
-    }
+  .MuiContainer-maxWidthXl {
+    max-width: 2000px !important;
+  }
 }

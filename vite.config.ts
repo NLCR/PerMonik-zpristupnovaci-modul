@@ -42,7 +42,6 @@ export default defineConfig(({ mode }) => {
         brotliSize: true,
         filename: 'analyse.html', // will be saved in project's root
       }),
-      // splitVendorChunkPlugin(),
     ],
     // optimizeDeps: {
     //   include: [

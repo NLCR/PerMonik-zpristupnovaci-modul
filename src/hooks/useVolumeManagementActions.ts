@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { clone } from 'lodash-es'
+import clone from 'lodash/clone'
 import { useTranslation } from 'react-i18next'
 import { useVolumeManagementStore } from '../slices/useVolumeManagementStore'
 import { repairVolume, VolumeSchema } from '../schema/volume'

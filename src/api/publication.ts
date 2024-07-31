@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { clone } from 'lodash-es'
+import clone from 'lodash/clone'
 import { api, queryClient } from './index'
 import { TEditablePublication, TPublication } from '../schema/publication'
 

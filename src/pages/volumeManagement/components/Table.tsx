@@ -15,7 +15,7 @@ import {
   GridCellParams,
   GridRenderEditCellParams,
 } from '@mui/x-data-grid/models/params/gridCellParams'
-import { clone } from 'lodash-es'
+import clone from 'lodash/clone'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import Typography from '@mui/material/Typography'
