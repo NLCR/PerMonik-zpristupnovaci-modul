@@ -70,7 +70,7 @@ const InputData: FC<InputDataProps> = ({
                 value={volumeState.metaTitleId}
                 disabled={!canEdit}
                 onChange={(event) =>
-                  volumeActions.setMetaTitleId(event.target.value as string)
+                  volumeActions.setMetaTitleId(event.target.value)
                 }
               >
                 {metaTitles.map((o) => (
@@ -92,7 +92,7 @@ const InputData: FC<InputDataProps> = ({
                 value={volumeState.mutationId}
                 disabled={!canEdit}
                 onChange={(event) =>
-                  volumeActions.setMutationId(event.target.value as string)
+                  volumeActions.setMutationId(event.target.value)
                 }
               >
                 {mutations.map((o) => (
@@ -223,7 +223,7 @@ const InputData: FC<InputDataProps> = ({
                 value={volumeState.ownerId}
                 disabled={!canEdit}
                 onChange={(event) =>
-                  volumeActions.setOwnerId(event.target.value as string)
+                  volumeActions.setOwnerId(event.target.value)
                 }
               >
                 {me.role === 'super_admin'

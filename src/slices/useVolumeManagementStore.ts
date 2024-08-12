@@ -64,8 +64,8 @@ interface TState extends TVariablesState {
   setInitialState: () => void
   volumeActions: {
     setVolumeState: (value: TEditableVolume) => void
-    setMetaTitleId: (value: string | null) => void
-    setMutationId: (value: string | null) => void
+    setMetaTitleId: (value: string) => void
+    setMutationId: (value: string) => void
     setPublicationMark: (value: string) => void
     setBarCode: (value: string) => void
     setSignature: (value: string) => void
@@ -74,7 +74,7 @@ interface TState extends TVariablesState {
     setDateTo: (value: Dayjs | null) => void
     setFirstNumber: (value: string) => void
     setLastNumber: (value: string) => void
-    setOwnerId: (value: string | null) => void
+    setOwnerId: (value: string) => void
     setNote: (value: string) => void
     setShowAttachmentsAtTheEnd: (value: boolean) => void
   }
@@ -90,7 +90,6 @@ interface TState extends TVariablesState {
   specimensActions: {
     setSpecimensState: (value: TEditableSpecimen[]) => void
     setSpecimen: (value: TEditableSpecimen) => void
-    setNumExists: (value: boolean, id: string) => void
   }
 }
 
@@ -249,13 +248,6 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
       set(() => ({
         specimensState: value,
       })),
-    setNumExists: (value, id) =>
-      set(
-        produce((state: TState) => {
-          const index = state.specimensState.findIndex((s) => s.id === id)
-          if (index >= 0) state.specimensState[index].numExists = value
-        })
-      ),
     setSpecimen: (value) =>
       set(
         produce((state: TState) => {

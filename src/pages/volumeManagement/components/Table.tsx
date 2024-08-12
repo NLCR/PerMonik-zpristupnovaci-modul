@@ -23,6 +23,7 @@ import Typography from '@mui/material/Typography'
 import { blue } from '@mui/material/colors'
 import {
   duplicateSpecimen,
+  filterSpecimen,
   TEditableSpecimen,
   TSpecimenDamageTypes,
 } from '../../../schema/specimen'
@@ -264,7 +265,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     {
       field: 'number',
       headerName: t('volume_overview.number'),
-      type: 'number',
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
@@ -279,7 +279,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     {
       field: 'attachmentNumber',
       headerName: t('volume_overview.attachment_number'),
-      type: 'number',
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
@@ -351,7 +350,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     },
     {
       field: 'pagesCount',
-      type: 'number',
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
@@ -596,7 +594,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
   const handleUpdate = (newRow: TEditableSpecimen) => {
     // console.log(newRow)
     specimenActions.setSpecimen(newRow)
-    return newRow
+    return filterSpecimen(newRow)
   }
 
   const isCellEditable = (params: GridCellParams<TEditableSpecimen>) => {
