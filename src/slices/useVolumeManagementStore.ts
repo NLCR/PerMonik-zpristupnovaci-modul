@@ -34,16 +34,16 @@ const initialPeriodicity: TEditableVolumePeriodicity[] = [
 
 export const initialState: TVariablesState = {
   volumeState: {
-    id: null,
+    id: '',
     barCode: '',
     dateFrom: '',
     dateTo: '',
     firstNumber: '',
     lastNumber: '',
-    metaTitleId: null,
-    mutationId: null,
+    metaTitleId: '',
+    mutationId: '',
     note: '',
-    ownerId: null,
+    ownerId: '',
     periodicity: initialPeriodicity,
     publicationMark: '',
     showAttachmentsAtTheEnd: false,

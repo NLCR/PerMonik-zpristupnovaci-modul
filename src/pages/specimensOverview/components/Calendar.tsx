@@ -435,71 +435,69 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
             paddingBottom: '8px',
           })}
         >
-          <Typography variant="body2">
-            <Typography
-              sx={{
-                color: blue['900'],
-                marginBottom: '4px',
-              }}
-            >
-              {dayjs(day.day).format('dd DD')}
-            </Typography>
-            {/* specimens grouped by same values and displayed on one line (when clicked, individual specimens are shown) */}
-            {day.specimens.map((row) => {
-              const firstInRow = row.find(Boolean)
-              if (firstInRow) {
-                return (
+          <Typography
+            sx={{
+              color: blue['900'],
+              marginBottom: '4px',
+            }}
+          >
+            {dayjs(day.day).format('dd DD')}
+          </Typography>
+          {/* specimens grouped by same values and displayed on one line (when clicked, individual specimens are shown) */}
+          {day.specimens.map((row) => {
+            const firstInRow = row.find(Boolean)
+            if (firstInRow) {
+              return (
+                <Box
+                  key={firstInRow.id}
+                  sx={(theme) => ({
+                    display: 'flex',
+                    marginTop: '2px',
+                    marginBottom: '2px',
+                    padding: '2px 8px',
+                    backgroundColor: theme.palette.grey['800'],
+                    borderRadius: '4px',
+                    color: theme.palette.grey['100'],
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                  })}
+                  onClick={() => {
+                    setMainModalOpened(true)
+                    setMainModalData({ data: row, day: day.day })
+                  }}
+                >
+                  <Typography variant="body2">
+                    {firstInRow.number}{' '}
+                    {
+                      mutations?.find((m) => m.id === firstInRow.mutationId)
+                        ?.name[languageCode]
+                    }{' '}
+                    {firstInRow.publicationMark.length
+                      ? firstInRow.publicationMark
+                      : t('specimens_overview.without_mark')}
+                  </Typography>
                   <Box
-                    key={firstInRow.id}
                     sx={(theme) => ({
                       display: 'flex',
-                      marginTop: '2px',
-                      marginBottom: '2px',
-                      padding: '2px 8px',
-                      backgroundColor: theme.palette.grey['800'],
-                      borderRadius: '4px',
-                      color: theme.palette.grey['100'],
+                      backgroundColor: theme.palette.grey['100'],
+                      borderRadius: '50%',
+                      color: theme.palette.grey['900'],
+                      width: '16px',
+                      height: '16px',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
-                      fontSize: '13px',
-                      cursor: 'pointer',
+                      justifyContent: 'center',
+                      flexShrink: 0,
                     })}
-                    onClick={() => {
-                      setMainModalOpened(true)
-                      setMainModalData({ data: row, day: day.day })
-                    }}
                   >
-                    <Typography variant="body2">
-                      {firstInRow.number}{' '}
-                      {
-                        mutations?.find((m) => m.id === firstInRow.mutationId)
-                          ?.name[languageCode]
-                      }{' '}
-                      {firstInRow.publicationMark.length
-                        ? firstInRow.publicationMark
-                        : t('specimens_overview.without_mark')}
-                    </Typography>
-                    <Box
-                      sx={(theme) => ({
-                        display: 'flex',
-                        backgroundColor: theme.palette.grey['100'],
-                        borderRadius: '50%',
-                        color: theme.palette.grey['900'],
-                        width: '16px',
-                        height: '16px',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      })}
-                    >
-                      {row.length}
-                    </Box>
+                    {row.length}
                   </Box>
-                )
-              }
-              return null
-            })}
-          </Typography>
+                </Box>
+              )
+            }
+            return null
+          })}
         </Box>
       ))}
     </Box>

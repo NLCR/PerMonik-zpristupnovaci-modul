@@ -221,7 +221,7 @@ const Table: FC<Props> = ({ metaTitle }) => {
       disableColumnFilter
       disableColumnSorting
       rows={specimens?.specimens}
-      rowCount={specimens?.count}
+      rowCount={specimens?.count || 0}
       paginationMode="server"
       loading={specimensFetching}
       onPaginationModelChange={(model) =>

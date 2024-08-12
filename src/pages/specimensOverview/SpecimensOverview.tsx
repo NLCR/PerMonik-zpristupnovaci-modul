@@ -66,11 +66,6 @@ const SpecimensOverview = () => {
     resetAll()
   }, [resetAll])
 
-  let showedDate
-  if (calendarDate) {
-    showedDate = dayjs(calendarDate).format('MMMM YYYY')
-  }
-
   if (metaTitleLoading) {
     return <Loader />
   }
@@ -222,7 +217,7 @@ const SpecimensOverview = () => {
                 alignItems: 'center',
               }}
             >
-              {showedDate && view === 'calendar' ? (
+              {view === 'calendar' ? (
                 <>
                   <Typography
                     sx={{
@@ -265,7 +260,7 @@ const SpecimensOverview = () => {
                         marginRight: '10px',
                       }}
                     >
-                      {showedDate}
+                      {dayjs(calendarDate).format('MMMM YYYY')}
                     </Typography>
                     <IconButton
                       sx={{
