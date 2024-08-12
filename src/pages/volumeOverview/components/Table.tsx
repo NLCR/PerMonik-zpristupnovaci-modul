@@ -212,6 +212,14 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         },
       },
       {
+        field: 'damageTypes-unreadable_bound',
+        headerName: t('facet_states.NS'),
+        renderCell: (params: GridRenderCellParams<TSpecimen>) => {
+          const { row } = params
+          return CenteredIcon(!!row.damageTypes?.includes('NS'))
+        },
+      },
+      {
         field: 'damageTypes-cenzured',
         headerName: t('facet_states.Cz'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {

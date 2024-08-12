@@ -7,6 +7,7 @@ import {
   GridColDef,
   GridRenderCellParams,
   DataGrid,
+  GridColumnHeaderParams,
 } from '@mui/x-data-grid'
 import Box from '@mui/material/Box'
 import { alpha, styled } from '@mui/material/styles'
@@ -20,7 +21,11 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import Typography from '@mui/material/Typography'
 import { blue } from '@mui/material/colors'
-import { duplicateSpecimen, TEditableSpecimen } from '../../../schema/specimen'
+import {
+  duplicateSpecimen,
+  TEditableSpecimen,
+  TSpecimenDamageTypes,
+} from '../../../schema/specimen'
 import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { TMutation } from '../../../schema/mutation'
@@ -28,6 +33,8 @@ import { TPublication } from '../../../schema/publication'
 import DamagedAndMissingPagesEditCell from './editCells/DamagedAndMissingPagesEditCell'
 import DamageTypesEditCell from './editCells/DamageTypesEditCell'
 import PublicationMarkSelectorModalContainer from './editCells/PublicationMarkSelectorModalContainer'
+import RenumberableValueCell from './editCells/RenumberableValueCell'
+import HeaderWithColumnAction from './editCells/HeaderWithColumnAction'
 
 const ODD_OPACITY = 0.2
 
@@ -109,6 +116,29 @@ const renderValue = (
       {value}
     </Typography>
   ) : null
+}
+
+const renderRenumberableValue = (
+  row: TEditableSpecimen,
+  show: boolean,
+  canEdit: boolean,
+  type: 'number' | 'attachmentNumber'
+) => {
+  return (
+    <RenumberableValueCell
+      row={row}
+      show={show}
+      canEdit={canEdit}
+      type={type}
+    />
+  )
+}
+
+const renderHeaderWithColumnAction = (
+  field: TSpecimenDamageTypes,
+  canEdit: boolean
+) => {
+  return <HeaderWithColumnAction field={field} canEdit={canEdit} />
 }
 
 const renderDamagedAndMissingPagesEditCell = (
@@ -238,10 +268,11 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return renderValue(
-          row.number,
+        return renderRenumberableValue(
+          row,
           row.numExists && !row.isAttachment,
-          canEdit
+          canEdit,
+          'number'
         )
       },
     },
@@ -342,7 +373,13 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     },
     {
       field: 'OK',
-      headerName: t('facet_states.OK'),
+      renderHeader: (params: GridColumnHeaderParams<TEditableSpecimen>) => {
+        const { field } = params
+        return renderHeaderWithColumnAction(
+          field as TSpecimenDamageTypes,
+          canEdit
+        )
+      },
       type: 'boolean',
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
@@ -373,7 +410,13 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     },
     {
       field: 'Deg',
-      headerName: t('facet_states.Deg'),
+      renderHeader: (params: GridColumnHeaderParams<TEditableSpecimen>) => {
+        const { field } = params
+        return renderHeaderWithColumnAction(
+          field as TSpecimenDamageTypes,
+          canEdit
+        )
+      },
       type: 'boolean',
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
@@ -462,6 +505,27 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       renderEditCell: renderDamageTypesEditCell,
     },
     {
+      field: 'NS',
+      renderHeader: (params: GridColumnHeaderParams<TEditableSpecimen>) => {
+        const { field } = params
+        return renderHeaderWithColumnAction(
+          field as TSpecimenDamageTypes,
+          canEdit
+        )
+      },
+      type: 'boolean',
+      editable: canEdit,
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderCheckBox(
+          !!row.damageTypes?.includes('NS'),
+          row.numExists,
+          canEdit
+        )
+      },
+      renderEditCell: renderDamageTypesEditCell,
+    },
+    {
       field: 'Cz',
       headerName: t('facet_states.Cz'),
       type: 'boolean',
@@ -479,7 +543,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     {
       field: 'note',
       type: 'string',
-      flex: 1,
       minWidth: 180,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
@@ -581,6 +644,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       }}
       pageSizeOptions={[100]}
       disableRowSelectionOnClick
+      disableColumnSorting
       isCellEditable={isCellEditable}
       processRowUpdate={handleUpdate}
     />

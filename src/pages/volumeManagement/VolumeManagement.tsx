@@ -7,7 +7,7 @@ import SpeedDialIcon from '@mui/material/SpeedDialIcon'
 import Typography from '@mui/material/Typography'
 import React, { useEffect, useMemo } from 'react'
 import SaveIcon from '@mui/icons-material/Save'
-import UpdateIcon from '@mui/icons-material/Update'
+import SaveAsIcon from '@mui/icons-material/SaveAs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { blue } from '@mui/material/colors'
 import { useMangedVolumeDetailQuery } from '../../api/volume'
@@ -24,7 +24,6 @@ import { useVolumeManagementStore } from '../../slices/useVolumeManagementStore'
 import InputData from './components/InputData'
 import { useVolumeManagementActions } from '../../hooks/useVolumeManagementActions'
 
-// TODO: add number and attachmentNumber renumbering
 const VolumeManagement = () => {
   const { volumeId } = useParams()
   const { data: me, isLoading: meLoading, isError: meError } = useMeQuery()
@@ -107,15 +106,17 @@ const VolumeManagement = () => {
 
     if (volumeId && volumeRegenerated) {
       actionsArray.push({
-        icon: <UpdateIcon />,
-        name: t('administration.update'),
+        icon: <SaveAsIcon />,
+        // name: t('administration.update'),
+        name: t('administration.save'),
         onClick: doRegeneratedUpdate,
       })
     }
     if (volumeId && !volumeRegenerated) {
       actionsArray.push({
-        icon: <UpdateIcon />,
-        name: t('administration.update'),
+        icon: <SaveAsIcon />,
+        // name: t('administration.update'),
+        name: t('administration.save'),
         onClick: doUpdate,
       })
     }
