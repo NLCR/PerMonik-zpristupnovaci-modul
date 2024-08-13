@@ -99,9 +99,9 @@ export const filterSpecimen = (input: TEditableSpecimen): TEditableSpecimen => {
     publicationMark: input.publicationMark.trim(),
     publicationDate: input.publicationDate,
     publicationDateString: input.publicationDateString,
-    number: input.number ? input.number.replace(/\D/g, '').trim() : null,
+    number: input.number ? input.number.trim() : null,
     attachmentNumber: input.attachmentNumber
-      ? input.attachmentNumber.replace(/\D/g, '').trim()
+      ? input.attachmentNumber.trim()
       : null,
     pagesCount: Number(input.pagesCount.toString().replace(/\D/g, '').trim()),
     isAttachment: input.isAttachment,

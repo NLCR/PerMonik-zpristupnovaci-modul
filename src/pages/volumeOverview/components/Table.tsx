@@ -256,6 +256,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       }}
       pageSizeOptions={[100]}
       disableRowSelectionOnClick
+      disableColumnSorting
     />
   )
 }
