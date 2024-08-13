@@ -197,7 +197,7 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
       <TextField
         size="small"
         value={barCodeInput}
-        disabled={fetching}
+        // disabled={fetching}
         onChange={(event) => setBarCodeInput(event.target.value)}
       />
       <Divider

@@ -22,7 +22,7 @@ interface TSpecimensFacets {
 
 export const useSpecimenFacetsQuery = (metaTitleId?: string) => {
   const { params, barCodeInput } = useSpecimensOverviewStore()
-  const [debouncedBarCodeInput] = useDebounce(barCodeInput, 400)
+  const [debouncedBarCodeInput] = useDebounce(barCodeInput, 800)
 
   return useQuery({
     queryKey: [
@@ -61,7 +61,7 @@ export interface TSpecimenList extends TSpecimensPublicationDays {
 export const useSpecimenListQuery = (metaTitleId?: string) => {
   const { params, pagination, barCodeInput, view, calendarDate } =
     useSpecimensOverviewStore()
-  const [debouncedBarCodeInput] = useDebounce(barCodeInput, 400)
+  const [debouncedBarCodeInput] = useDebounce(barCodeInput, 800)
 
   return useQuery({
     queryKey: [
