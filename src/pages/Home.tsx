@@ -59,7 +59,6 @@ const Home = () => {
                   cursor: 'pointer',
                 },
               })}
-              // onClick={() => resetAll()}
             >
               <Typography
                 variant="h6"

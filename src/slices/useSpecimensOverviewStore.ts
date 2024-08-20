@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { Dayjs } from 'dayjs'
 
 export type TParams = {
   dateStart: number
@@ -29,8 +30,10 @@ interface TVariablesState {
   pagination: { pageIndex: number; pageSize: number }
   barCodeInput: string
   view: 'calendar' | 'table'
-  calendarDate: Date | null
-  calendarMinDate: Date | undefined
+  calendarDate: Dayjs | null
+  calendarMinDate: Dayjs | null
+  lastViewedMetaTitleId: string
+  sliderRange: [number, number] | null
 }
 
 interface TState extends TVariablesState {
@@ -39,8 +42,10 @@ interface TState extends TVariablesState {
   setPagination: (value: { pageIndex: number; pageSize: number }) => void
   resetAll: () => void
   setView: (value: 'calendar' | 'table') => void
-  setCalendarDate: (value: Date | null) => void
-  setCalendarMinDate: (value: Date) => void
+  setCalendarDate: (value: Dayjs) => void
+  setCalendarMinDate: (value: Dayjs) => void
+  setLastViewedMetaTitleId: (value: string) => void
+  setSliderRange: (value: [number, number]) => void
 }
 
 export const useSpecimensOverviewStore = create<TState>()((set) => ({
@@ -49,7 +54,9 @@ export const useSpecimensOverviewStore = create<TState>()((set) => ({
   barCodeInput: '',
   view: 'calendar',
   calendarDate: null,
-  calendarMinDate: undefined,
+  calendarMinDate: null,
+  lastViewedMetaTitleId: '',
+  sliderRange: null,
   setParams: (values) =>
     set((state) => ({
       params: values,
@@ -66,10 +73,11 @@ export const useSpecimensOverviewStore = create<TState>()((set) => ({
       barCodeInput: '',
       params: initialParams,
       pagination: { ...state.pagination, pageIndex: 0 },
-      calendarDate: undefined,
-      calendarMinDate: undefined,
     })),
   setView: (value) => set(() => ({ view: value })),
   setCalendarDate: (value) => set(() => ({ calendarDate: value })),
   setCalendarMinDate: (value) => set(() => ({ calendarMinDate: value })),
+  setLastViewedMetaTitleId: (value) =>
+    set(() => ({ lastViewedMetaTitleId: value })),
+  setSliderRange: (value) => set(() => ({ sliderRange: value })),
 }))

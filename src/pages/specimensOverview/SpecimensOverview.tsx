@@ -1,4 +1,3 @@
-import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
@@ -9,10 +8,7 @@ import Backdrop from '@mui/material/Backdrop'
 import Button from '@mui/material/Button'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import React, { Suspense, useEffect, useState } from 'react'
-import dayjs from 'dayjs'
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import React, { Suspense, useState } from 'react'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import TableRowsIcon from '@mui/icons-material/TableRows'
@@ -25,6 +21,7 @@ import { useSpecimensOverviewStore } from '../../slices/useSpecimensOverviewStor
 import SpecimenDayDetailExampleImage from '../../assets/images/specimen-day-detail-example.png'
 import Facets from './components/Facets'
 import Calendar from './components/Calendar'
+import CalendarToolbar from './components/CalendarToolbar'
 
 const Table = React.lazy(() => import('./components/Table'))
 
@@ -47,24 +44,14 @@ const SpecimensOverview = () => {
   const { metaTitleId } = useParams()
   const [modalOpened, setModalOpened] = useState(false)
   const { t } = useTranslation()
-  const {
-    resetAll,
-    calendarMinDate,
-    setCalendarDate,
-    calendarDate,
-    view,
-    setView,
-  } = useSpecimensOverviewStore()
+  const view = useSpecimensOverviewStore((state) => state.view)
+  const setView = useSpecimensOverviewStore((state) => state.setView)
 
   const {
     data: metaTitle,
     isLoading: metaTitleLoading,
     isError: metaTitleError,
   } = useMetaTitleQuery(metaTitleId)
-
-  useEffect(() => {
-    resetAll()
-  }, [resetAll])
 
   if (metaTitleLoading) {
     return <Loader />
@@ -218,64 +205,7 @@ const SpecimensOverview = () => {
               }}
             >
               {view === 'calendar' ? (
-                <>
-                  <Typography
-                    sx={{
-                      fontWeight: '600',
-                      marginRight: '20px',
-                    }}
-                  >
-                    {t('specimens_overview.showed_month')}:{' '}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      width: '220px',
-                    }}
-                  >
-                    <IconButton
-                      sx={{
-                        marginTop: '2px',
-                      }}
-                      disabled={
-                        dayjs(calendarDate).diff(
-                          dayjs(calendarMinDate),
-                          'month'
-                        ) <= 0
-                      }
-                      onClick={() => {
-                        setCalendarDate(
-                          dayjs(calendarDate).subtract(1, 'month').toDate()
-                        )
-                      }}
-                    >
-                      <KeyboardArrowLeftIcon />
-                    </IconButton>{' '}
-                    <Typography
-                      sx={{
-                        fontWeight: '600',
-                        marginLeft: '10px',
-                        marginRight: '10px',
-                      }}
-                    >
-                      {dayjs(calendarDate).format('MMMM YYYY')}
-                    </Typography>
-                    <IconButton
-                      sx={{
-                        marginTop: '2px',
-                      }}
-                      onClick={() => {
-                        setCalendarDate(
-                          dayjs(calendarDate).add(1, 'month').toDate()
-                        )
-                      }}
-                    >
-                      <KeyboardArrowRightIcon />
-                    </IconButton>
-                  </Box>
-                </>
+                <CalendarToolbar metaTitle={metaTitle} />
               ) : null}
             </Box>
           </Box>

@@ -1,5 +1,4 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { useDebounce } from 'use-debounce'
 import dayjs from 'dayjs'
 import { api } from './index'
 import {
@@ -21,26 +20,22 @@ interface TSpecimensFacets {
 }
 
 export const useSpecimenFacetsQuery = (metaTitleId?: string) => {
-  const { params, barCodeInput } = useSpecimensOverviewStore()
-  const [debouncedBarCodeInput] = useDebounce(barCodeInput, 800)
+  const params = useSpecimensOverviewStore((state) => state.params)
+  const barCodeInput = useSpecimensOverviewStore((state) => state.barCodeInput)
+  const view = useSpecimensOverviewStore((state) => state.view)
 
   return useQuery({
-    queryKey: [
-      'specimen',
-      'facets',
-      metaTitleId,
-      params,
-      debouncedBarCodeInput,
-    ],
+    queryKey: ['specimen', 'facets', metaTitleId, params, barCodeInput, view],
     queryFn: () => {
       const formData = new FormData()
       formData.set(
         'facets',
         JSON.stringify({
           ...params,
-          barCode: debouncedBarCodeInput.trim().replaceAll(' ', ''),
+          barCode: barCodeInput,
         })
       )
+      formData.set('view', view)
 
       return api()
         .post(`specimen/${metaTitleId}/list/facets`, {
@@ -59,9 +54,15 @@ export interface TSpecimenList extends TSpecimensPublicationDays {
 }
 
 export const useSpecimenListQuery = (metaTitleId?: string) => {
-  const { params, pagination, barCodeInput, view, calendarDate } =
-    useSpecimensOverviewStore()
-  const [debouncedBarCodeInput] = useDebounce(barCodeInput, 800)
+  const params = useSpecimensOverviewStore((state) => state.params)
+  const pagination = useSpecimensOverviewStore((state) => state.pagination)
+  const barCodeInput = useSpecimensOverviewStore((state) => state.barCodeInput)
+  const calendarDate = useSpecimensOverviewStore((state) => state.calendarDate)
+  const view = useSpecimensOverviewStore((state) => state.view)
+
+  const dayJsDate = dayjs(calendarDate)
+  const startOfMonth = dayJsDate.startOf('month')
+  const endOfMonth = dayJsDate.endOf('month')
 
   return useQuery({
     queryKey: [
@@ -73,13 +74,9 @@ export const useSpecimenListQuery = (metaTitleId?: string) => {
       pagination.pageSize,
       params,
       calendarDate,
-      debouncedBarCodeInput,
+      barCodeInput,
     ],
     queryFn: () => {
-      const dayJsDate = dayjs(calendarDate)
-      const startOfMonth = dayJsDate.startOf('month')
-      const endOfMonth = dayJsDate.endOf('month')
-
       const formData = new FormData()
       if (view === 'table') {
         formData.set(
@@ -98,7 +95,7 @@ export const useSpecimenListQuery = (metaTitleId?: string) => {
         'facets',
         JSON.stringify({
           ...params,
-          barCode: debouncedBarCodeInput.trim().replaceAll(' ', ''),
+          barCode: barCodeInput,
           calendarDateStart: startOfMonth,
           calendarDateEnd: endOfMonth,
         })
@@ -112,9 +109,6 @@ export const useSpecimenListQuery = (metaTitleId?: string) => {
         .json<TSpecimenList>()
     },
     placeholderData: keepPreviousData,
-    // enabled:
-    //   enabled &&
-    //   (view === 'table' || (view === 'calendar' && calendarDate !== undefined)),
     enabled: !!metaTitleId,
   })
 }

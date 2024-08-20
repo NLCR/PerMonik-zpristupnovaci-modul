@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import TableCell from '@mui/material/TableCell'
 import TableBody from '@mui/material/TableBody'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useState } from 'react'
 import flow from 'lodash/flow'
 import groupBy from 'lodash/groupBy'
 import map from 'lodash/map'
@@ -27,10 +27,7 @@ import ShowInfoMessage from '../../../components/ShowInfoMessage'
 import { useMutationListQuery } from '../../../api/mutation'
 import { useLanguageCode } from '../../../utils/helperHooks'
 import Loader from '../../../components/Loader'
-import {
-  useSpecimenListQuery,
-  useSpecimensStartDateForCalendar,
-} from '../../../api/specimen'
+import { useSpecimenListQuery } from '../../../api/specimen'
 import ShowError from '../../../components/ShowError'
 import VolumeOverviewStatsModal from './VolumeOverviewStatsModal'
 import { usePublicationListQuery } from '../../../api/publication'
@@ -80,8 +77,7 @@ type TSpecimensDay = {
 
 const Calendar: FC<TProps> = ({ metaTitle }) => {
   const { t, i18n } = useTranslation()
-  const { calendarDate, setCalendarDate, calendarMinDate, setCalendarMinDate } =
-    useSpecimensOverviewStore()
+  const calendarDate = useSpecimensOverviewStore((state) => state.calendarDate)
   const { data: mutations } = useMutationListQuery()
   const { data: publications } = usePublicationListQuery()
   const { data: owners } = useOwnerListQuery()
@@ -95,37 +91,20 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
   const [subModalData, setSubModalData] = useState<TSpecimen | null>(null)
 
   const {
-    data: calendarDateFromQuery,
-    isFetching: calendarStartDateFetcing,
-    isError: calendarStartDateError,
-  } = useSpecimensStartDateForCalendar(metaTitle.id)
-  const {
     data: specimens,
     isFetching: specimensFetching,
     isError: specimensError,
   } = useSpecimenListQuery(metaTitle.id)
 
-  useEffect(() => {
-    if (calendarDateFromQuery && !calendarMinDate) {
-      setCalendarMinDate(dayjs(calendarDateFromQuery.toString()).toDate())
-      setCalendarDate(dayjs(calendarDateFromQuery.toString()).toDate())
-    }
-  }, [
-    calendarDateFromQuery,
-    setCalendarMinDate,
-    calendarMinDate,
-    setCalendarDate,
-  ])
-
-  if (calendarStartDateFetcing || specimensFetching) {
+  if (specimensFetching) {
     return <Loader />
   }
 
-  if (calendarStartDateError || specimensError) {
+  if (specimensError) {
     return <ShowError />
   }
 
-  const monday = getFirstMondayOfMonth(calendarDate)
+  const monday = getFirstMondayOfMonth(dayjs(calendarDate).toDate())
   const dayJs = dayjs(calendarDate)
   const daysInMonth = dayJs.daysInMonth()
   const daysArray: string[] = []

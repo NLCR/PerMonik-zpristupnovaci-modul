@@ -1,16 +1,13 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import Slider from '@mui/material/Slider'
 import Divider from '@mui/material/Divider'
-import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import { DateCalendar } from '@mui/x-date-pickers'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import { blue } from '@mui/material/colors'
-import isArray from 'lodash/isArray'
 import FacetGroup from './FacetGroup'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { useMutationListQuery } from '../../../api/mutation'
@@ -20,10 +17,14 @@ import { useOwnerListQuery } from '../../../api/owner'
 import {
   useSpecimenFacetsQuery,
   useSpecimenListQuery,
+  useSpecimensStartDateForCalendar,
 } from '../../../api/specimen'
 import { TMetaTitle } from '../../../schema/metaTitle'
 import ShowError from '../../../components/ShowError'
 import { TSpecimenDamageTypes } from '../../../schema/specimen'
+import Loader from '../../../components/Loader'
+import ControlledSlider from './ControlledSlider'
+import ControlledBarCodeInput from './ControlledBarCodeInput'
 
 type TProps = {
   metaTitle: TMetaTitle
@@ -35,17 +36,27 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
   const { data: publications } = usePublicationListQuery()
   const { data: owners } = useOwnerListQuery()
   const { languageCode } = useLanguageCode()
-  const {
-    barCodeInput,
-    params,
-    view,
-    calendarDate,
-    calendarMinDate,
-    setBarCodeInput,
-    setParams,
-    setCalendarDate,
-    resetAll,
-  } = useSpecimensOverviewStore()
+  const [metaTitleIdChanged, setMetaTitleIdChanged] = useState(false)
+  const [calendarDateInitialized, setCalendarDateInitialized] = useState(false)
+  const [sliderRangeInitialized, setSliderRangeInitialized] = useState(false)
+
+  const params = useSpecimensOverviewStore((state) => state.params)
+  const view = useSpecimensOverviewStore((state) => state.view)
+  const calendarDate = useSpecimensOverviewStore((state) => state.calendarDate)
+  const setParams = useSpecimensOverviewStore((state) => state.setParams)
+  const setCalendarDate = useSpecimensOverviewStore(
+    (state) => state.setCalendarDate
+  )
+  const resetAll = useSpecimensOverviewStore((state) => state.resetAll)
+  const setSliderRange = useSpecimensOverviewStore(
+    (state) => state.setSliderRange
+  )
+  const setLastViewedMetaTitleId = useSpecimensOverviewStore(
+    (state) => state.setLastViewedMetaTitleId
+  )
+  const lastViewedMetaTitleId = useSpecimensOverviewStore(
+    (state) => state.lastViewedMetaTitleId
+  )
 
   const {
     data: facets,
@@ -59,26 +70,71 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
     isFetching: specimensFetching,
   } = useSpecimenListQuery(metaTitle.id)
 
-  const datesMin = Number(specimens?.publicationDayMin?.substring(0, 4)) || 1900
-  const datesMax = Number(specimens?.publicationDayMax?.substring(0, 4)) || 2023
+  const {
+    data: calendarDateFromQuery,
+    isFetching: calendarStartDateFetching,
+    isError: calendarStartDateError,
+  } = useSpecimensStartDateForCalendar(metaTitle.id)
 
-  const [date, setDate] = useState(calendarMinDate)
-  const [range, setRange] = useState<[number, number]>([datesMin, datesMax])
-
-  useSpecimensOverviewStore.subscribe((state, prevState) => {
-    if (
-      state.view === 'calendar' &&
-      prevState.view === 'table' &&
-      specimens?.specimens.length
-    ) {
-      setCalendarDate(dayjs(specimens.specimens[0].publicationDate).toDate())
-      setDate(dayjs(specimens.specimens[0].publicationDate).toDate())
+  // track if metaTitle changed
+  useEffect(() => {
+    if (lastViewedMetaTitleId !== metaTitle.id) {
+      resetAll()
+      setLastViewedMetaTitleId(metaTitle.id)
+      setMetaTitleIdChanged(true)
     }
-  })
+  }, [lastViewedMetaTitleId, metaTitle, resetAll, setLastViewedMetaTitleId])
 
-  const fetching = facetsFetching || specimensFetching
+  // Initialize calendar date
+  useEffect(() => {
+    if (
+      calendarDateFromQuery &&
+      metaTitleIdChanged &&
+      !calendarDateInitialized
+    ) {
+      setCalendarDate(dayjs(calendarDateFromQuery.toString()))
+      setCalendarDateInitialized(true)
+    }
+  }, [
+    calendarDateFromQuery,
+    calendarDateInitialized,
+    metaTitleIdChanged,
+    setCalendarDate,
+  ])
 
-  if (facetsError || specimensError) {
+  // Initialize date range slider
+  useEffect(() => {
+    if (specimens && metaTitleIdChanged && !sliderRangeInitialized) {
+      setSliderRange([
+        Number(specimens.publicationDayMin?.substring(0, 4)),
+        Number(specimens.publicationDayMax?.substring(0, 4)),
+      ])
+      setSliderRangeInitialized(true)
+    }
+  }, [metaTitleIdChanged, setSliderRange, sliderRangeInitialized, specimens])
+
+  // Reset initialization indicators after initialization is done
+  useEffect(() => {
+    if (
+      sliderRangeInitialized &&
+      calendarDateInitialized &&
+      metaTitleIdChanged
+    ) {
+      setMetaTitleIdChanged(false)
+      setCalendarDateInitialized(false)
+      setSliderRangeInitialized(false)
+    }
+  }, [calendarDateInitialized, metaTitleIdChanged, sliderRangeInitialized])
+
+  const pubDaysMin =
+    Number(specimens?.publicationDayMin?.substring(0, 4)) || 1900
+  const pubDaysMax =
+    Number(specimens?.publicationDayMax?.substring(0, 4)) || 2023
+
+  const fetching =
+    facetsFetching || specimensFetching || calendarStartDateFetching
+
+  if (facetsError || specimensError || calendarStartDateError) {
     return (
       <>
         <Typography
@@ -121,67 +177,29 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
       </Typography>
       {view === 'calendar' ? (
         <Box>
-          <DateCalendar
-            views={['month', 'year']}
-            openTo="month"
-            sx={{
-              height: 'auto',
-            }}
-            defaultValue={dayjs(date)}
-            value={dayjs(calendarDate)}
-            minDate={dayjs(datesMin.toString())}
-            maxDate={dayjs(datesMax.toString())}
-            onChange={(value: Dayjs) => {
-              setCalendarDate(value.toDate())
-              setRange((prevState) => [
-                Number(value.format('YYYY')),
-                prevState[1],
-              ])
-              setParams({
-                ...params,
-                dateStart: Number(value.format('YYYY')),
-                dateEnd: range[1],
-              })
-            }}
-          />
+          {dayjs(calendarDate).isValid() ? (
+            <DateCalendar
+              views={['month', 'year']}
+              openTo="month"
+              sx={{
+                height: 'auto',
+              }}
+              value={dayjs(calendarDate)}
+              minDate={dayjs(specimens?.publicationDayMin)}
+              maxDate={dayjs(specimens?.publicationDayMax)}
+              onChange={(value: Dayjs) => {
+                setCalendarDate(value)
+              }}
+            />
+          ) : (
+            <Loader />
+          )}
         </Box>
       ) : (
-        <Slider
-          disableSwap
-          step={1}
-          // defaultValue={date}
-          // minRange={0}
-          sx={{
-            width: '95%',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            marginBottom: '30px',
-          }}
-          valueLabelDisplay="auto"
-          marks={[
-            { value: datesMin, label: `${datesMin}` },
-            { value: datesMax, label: `${datesMax}` },
-          ]}
-          value={range}
-          onChange={(event, value) => {
-            if (isArray(value)) {
-              setRange([value[0], value[1]])
-            }
-          }}
-          onChangeCommitted={(event, value) => {
-            if (isArray(value)) {
-              setCalendarDate(dayjs(value[0].toString()).toDate())
-              setDate(dayjs(value[0].toString()).toDate())
-              setParams({
-                ...params,
-                dateStart: value[0],
-                dateEnd: value[1],
-              })
-            }
-          }}
-          min={datesMin}
-          max={datesMax}
-          disabled={fetching}
+        <ControlledSlider
+          fetching={fetching}
+          pubDaysMin={pubDaysMin}
+          pubDaysMax={pubDaysMax}
         />
       )}
       <Typography
@@ -194,12 +212,7 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
       >
         {t('specimens_overview.volume')}
       </Typography>
-      <TextField
-        size="small"
-        value={barCodeInput}
-        // disabled={fetching}
-        onChange={(event) => setBarCodeInput(event.target.value)}
-      />
+      <ControlledBarCodeInput />
       <Divider
         sx={{
           marginTop: '10px',
@@ -358,8 +371,8 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
         color="error"
         onClick={() => {
           resetAll()
-          setDate(dayjs(datesMin.toString()).toDate())
-          setRange([datesMin, datesMax])
+          setSliderRange([pubDaysMin, pubDaysMax])
+          setCalendarDate(dayjs(specimens?.publicationDayMin))
         }}
       >
         {t('specimens_overview.delete_filters')}
