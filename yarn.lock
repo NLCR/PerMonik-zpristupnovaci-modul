@@ -2617,13 +2617,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/store@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "@types/store@npm:2.0.5"
-  checksum: fd7fbc41805749d6b5180af335928b9b28ef0632fda8f240d4fb4f018a910a626bfa7f9f710e750adfd951ea1fc296b1f0527d1bfcebc0ee7dc136fb5c9e59c7
-  languageName: node
-  linkType: hard
-
 "@types/uuid@npm:^10.0.0":
   version: 10.0.0
   resolution: "@types/uuid@npm:10.0.0"
@@ -6208,13 +6201,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jwt-decode@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "jwt-decode@npm:4.0.0"
-  checksum: 87b569e4a9a0067fb0d592bcf3b2ac3e638e49beee28620eeb07bef1b4470f4077dea68c15d191dd68e076846c3af8394be3bcaecffedc6e97433b221fdbbcf3
-  languageName: node
-  linkType: hard
-
 "ky@npm:1.7.1":
   version: 1.7.1
   resolution: "ky@npm:1.7.1"
@@ -8274,13 +8260,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"store@npm:^2.0.12":
-  version: 2.0.12
-  resolution: "store@npm:2.0.12"
-  checksum: 2245bf29943fe59c2420fbe8ce19c8b86717353edcd6ec30a745cf2faee380b604777aa7f16344a15a8ff33ce689ce61dc95b4e6dc7c737101c00036c311ee7f
-  languageName: node
-  linkType: hard
-
 "string-argv@npm:~0.3.2":
   version: 0.3.2
   resolution: "string-argv@npm:0.3.2"
@@ -9510,7 +9489,6 @@ __metadata:
     "@types/react": "npm:^18.3.4"
     "@types/react-dom": "npm:^18.3.0"
     "@types/react-router-dom": "npm:^5.3.3"
-    "@types/store": "npm:^2.0.5"
     "@types/uuid": "npm:^10.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^7.18.0"
     "@typescript-eslint/parser": "npm:^7.18.0"
@@ -9531,7 +9509,6 @@ __metadata:
     i18next-browser-languagedetector: "npm:^8.0.0"
     immer: "npm:^10.1.1"
     jsdom: "npm:^25.0.0"
-    jwt-decode: "npm:^4.0.0"
     ky: "npm:1.7.1"
     lint-staged: "npm:^15.2.9"
     lodash-es: "npm:^4.17.21"
@@ -9544,7 +9521,6 @@ __metadata:
     react-toastify: "npm:^10.0.5"
     rimraf: "npm:^6.0.1"
     rollup-plugin-visualizer: "npm:^5.12.0"
-    store: "npm:^2.0.12"
     tslib: "npm:^2.7.0"
     typescript: "npm:^5.5.4"
     uuid: "npm:^10.0.0"
