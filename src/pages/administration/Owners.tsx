@@ -18,11 +18,11 @@ import {
   useUpdateOwnerMutation,
 } from '../../api/owner'
 
-const Container = styled(Box)(() => ({
+const Container = styled('div')(() => ({
   position: 'relative',
 }))
 
-const ScrollArea = styled(Box)(({ theme }) => ({
+const ScrollArea = styled('div')(({ theme }) => ({
   width: '30%',
   minWidth: theme.typography.pxToRem(200),
   maxWidth: theme.typography.pxToRem(300),
@@ -32,14 +32,14 @@ const ScrollArea = styled(Box)(({ theme }) => ({
   overflowY: 'auto',
 }))
 
-const InnerContainer = styled(Box)(({ theme }) => ({
+const InnerContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   marginTop: theme.spacing(1.25),
   justifyItems: 'stretch',
   gap: theme.spacing(2.5),
 }))
 
-const FieldsContainer = styled(Box)(({ theme }) => ({
+const FieldsContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   height: '55vh',
   flexDirection: 'column',

@@ -1,12 +1,11 @@
 import React, { Suspense } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import { styled } from '@mui/material/styles'
 import Loader from '../../components/Loader'
 
-const Container = styled(Box)(({ theme }) => ({
+const Container = styled('div')(({ theme }) => ({
   backgroundColor: 'white',
   padding: theme.spacing(4),
   borderRadius: theme.spacing(1),
@@ -18,7 +17,7 @@ const Container = styled(Box)(({ theme }) => ({
   // height: '80vh',
 }))
 
-const Menu = styled(Box)(({ theme }) => ({
+const Menu = styled('div')(({ theme }) => ({
   display: 'flex',
   gap: theme.spacing(1),
 }))

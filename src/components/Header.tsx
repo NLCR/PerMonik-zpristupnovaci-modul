@@ -28,7 +28,7 @@ const HeaderContainer = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
 }))
 
-const LinksContainer = styled(Box)(({ theme }) => ({
+const LinksContainer = styled('div')(({ theme }) => ({
   [theme.breakpoints.down('xs')]: {
     display: 'none',
   },
