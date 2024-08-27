@@ -1,273 +1,293 @@
-import {
-  Text,
-  createStyles,
-  Flex,
-  rem,
-  ScrollArea,
-  Title,
-  Box,
-  Divider,
-  Button,
-  TextInput,
-  Select,
-  MultiSelect,
-  Switch,
-  LoadingOverlay,
-} from '@mantine/core'
-import { useTranslation } from 'react-i18next'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useTheme } from '@mui/material'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Select from '@mui/material/Select'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
 import { clsx } from 'clsx'
 import { toast } from 'react-toastify'
-import useUsersQuery from '../../api/query/administration/useUsersQuery'
-import Loader from '../../components/reusableComponents/Loader'
-import ShowError from '../../components/reusableComponents/ShowError'
-import { TUser } from '../../@types/user'
-import { owners } from '../../utils/constants'
-import useSaveUserMutation from '../../api/query/administration/useSaveUserMutation'
+import { styled } from '@mui/material/styles'
+import { LoadingButton } from '@mui/lab'
+import Loader from '../../components/Loader'
+import ShowError from '../../components/ShowError'
+import { EditableUserSchema, TMe, TUser } from '../../schema/user'
+import { useOwnerListQuery } from '../../api/owner'
+import { useUpdateUserMutation, useUserListQuery } from '../../api/user'
 
-const useStyles = createStyles((theme) => ({
-  container: {
-    position: 'relative',
-  },
-  title: {
-    color: theme.colors.blue[9],
-  },
-  scrollArea: {
-    width: '30%',
-    minWidth: rem(200),
-    maxWidth: rem(300),
-    paddingLeft: rem(10),
-    height: '55vh',
-  },
-  scrollAreaUser: {
-    marginTop: rem(7),
-    marginBottom: rem(7),
-    borderRadius: theme.radius.sm,
-    padding: `${rem(5)} ${rem(10)}`,
-    cursor: 'pointer',
-    '&.active': {
-      backgroundColor: theme.colors.blue[0],
-    },
-  },
-  innerContainer: {
-    marginTop: rem(10),
-    justifyItems: 'stretch',
-    gap: rem(20),
-    // height: '100%',
-    // flexDirection: 'row',
-    // justifyContent: 'flex-start',
-  },
-  userContainer: {
-    height: '55vh',
-    flexDirection: 'column',
-    gap: rem(20),
-  },
-  divider: {
-    borderColor: theme.colors.gray[3],
-  },
-  saveButton: {
-    width: 'fit-content',
-  },
+const Container = styled('div')(() => ({
+  position: 'relative',
 }))
 
-const Users = () => {
-  const { classes } = useStyles()
+const ScrollArea = styled('div')(({ theme }) => ({
+  width: '30%',
+  minWidth: theme.typography.pxToRem(200),
+  maxWidth: theme.typography.pxToRem(300),
+  paddingLeft: theme.spacing(1.25),
+  paddingRight: theme.spacing(0.5),
+  height: '55vh',
+  overflowY: 'auto',
+}))
+
+const InnerContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  marginTop: theme.spacing(1.25),
+  justifyItems: 'stretch',
+  gap: theme.spacing(2.5),
+}))
+
+const FieldsContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  height: '55vh',
+  flexDirection: 'column',
+  gap: theme.spacing(2.5),
+}))
+
+const StyledDivider = styled(Divider)(({ theme }) => ({
+  borderColor: theme.palette.grey[300],
+}))
+
+const SaveButton = styled(LoadingButton)(() => ({
+  width: 'fit-content',
+}))
+
+const Users = ({ me }: { me: TMe }) => {
+  const theme = useTheme()
   const { t } = useTranslation()
-  const [selectedUser, setSelectedUser] = useState<TUser>({
+  const [user, setUser] = useState<TUser>({
     active: false,
     email: '',
     id: '',
-    name: '',
-    note: '',
-    owner: '',
+    firstName: '',
+    lastName: '',
+    owners: [],
     role: 'user',
     userName: '',
   })
-  const [overlayVisible, setOverlayVisible] = useState(false)
 
   const {
     data: users,
     isLoading: usersLoading,
     isError: usersError,
-  } = useUsersQuery()
-  const { mutateAsync: doSave, isPending: savingUser } = useSaveUserMutation()
+  } = useUserListQuery()
+  const {
+    data: owners,
+    isLoading: ownersLoading,
+    isError: ownersError,
+  } = useOwnerListQuery()
+
+  const { mutateAsync: doUpdate, isPending: savingUser } =
+    useUpdateUserMutation(me)
 
   useEffect(() => {
     if (users?.length) {
-      setSelectedUser(users[0])
+      setUser(users[0])
     }
   }, [users])
 
-  const handleSave = () => {
-    doSave(selectedUser)
-      .then((data) => {
-        if (data) {
-          toast.success(t('common.saved_successfully'))
-        }
-      })
-      .catch(() => {
-        toast.error(t('common.error_when_saving'))
-      })
+  const handleUpdate = async () => {
+    const validation = EditableUserSchema.safeParse(user)
+    if (!validation.success) {
+      validation.error.errors.map((e) => toast.error(e.message))
+      return
+    }
+
+    try {
+      await doUpdate(user)
+      toast.success(t('common.saved_successfully'))
+    } catch (e) {
+      toast.error(t('common.error_occurred_somewhere'))
+    }
   }
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout
-
-    if (savingUser) {
-      setOverlayVisible(true)
-    } else {
-      timer = setTimeout(() => {
-        setOverlayVisible(false)
-      }, 150)
-    }
-
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [savingUser])
-
   return (
-    <Box className={classes.container}>
-      <LoadingOverlay
-        visible={overlayVisible}
-        loader={<Loader />}
-        overlayBlur={1}
-        transitionDuration={100}
-      />
-      <Title order={3} className={classes.title}>
+    <Container>
+      <Typography
+        variant="h5"
+        sx={{ color: theme.palette.primary.main, fontWeight: '600' }}
+      >
         {t('administration.users')}
-      </Title>
-      {usersLoading ? <Loader /> : null}
-      {!usersLoading && usersError ? <ShowError /> : null}
-      {!usersLoading && !usersError && users ? (
-        <Flex className={classes.innerContainer}>
-          <ScrollArea className={classes.scrollArea}>
-            {users.map((u) => (
-              <Text
-                key={u.id}
-                className={clsx(classes.scrollAreaUser, {
-                  active: u.id === selectedUser?.id,
-                })}
-                onClick={() => (!savingUser ? setSelectedUser(u) : null)}
+      </Typography>
+      {usersLoading || ownersLoading ? <Loader /> : null}
+      {(!usersLoading && usersError) || (!ownersLoading && ownersError) ? (
+        <ShowError />
+      ) : null}
+      {!usersLoading &&
+      !usersError &&
+      users &&
+      !ownersLoading &&
+      !ownersError &&
+      owners ? (
+        <InnerContainer>
+          <ScrollArea>
+            {users?.map((m) => (
+              <Typography
+                key={m.id}
+                component="div"
+                className={clsx({ active: m.id === user?.id })}
+                onClick={() => (!savingUser ? setUser(m) : null)}
+                sx={{
+                  marginTop: theme.spacing(0.875),
+                  marginBottom: theme.spacing(0.875),
+                  borderRadius: theme.shape.borderRadius,
+                  padding: `${theme.spacing(0.625)} ${theme.spacing(1.25)}`,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    color: theme.palette.grey['50'],
+                    backgroundColor: theme.palette.grey['900'],
+                  },
+                  '&.active': {
+                    color: theme.palette.grey['50'],
+                    backgroundColor: theme.palette.grey['900'],
+                  },
+                }}
               >
-                {u.name}
-              </Text>
+                {m.firstName} {m.lastName}
+              </Typography>
             ))}
           </ScrollArea>
-          <Divider orientation="vertical" className={classes.divider} />
-          {selectedUser && users ? (
-            <Flex className={classes.userContainer}>
-              <Title order={4}>
-                {users.find((u) => u.id === selectedUser.id)?.name}
-              </Title>
-              <Flex gap={10}>
-                <TextInput
-                  label={t('administration.user_login_name')}
-                  value={selectedUser.userName}
+          <StyledDivider orientation="vertical" />
+          {user && users ? (
+            <FieldsContainer>
+              <Typography variant="h5">
+                {users.find((u) => u.id === user.id)?.firstName}{' '}
+                {users.find((u) => u.id === user.id)?.lastName}
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                }}
+              >
+                <TextField
+                  size="small"
+                  label={t('administration.first_name')}
+                  value={user.firstName}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setSelectedUser((prevState) => ({
+                    setUser((prevState) => ({
                       ...prevState,
-                      userName: event.target.value,
+                      firstName: event.target.value,
                     }))
                   }
                 />
-                <TextInput
-                  label={t('administration.user_name')}
-                  value={selectedUser.name}
+                <TextField
+                  size="small"
+                  label={t('administration.last_name')}
+                  value={user.lastName}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setSelectedUser((prevState) => ({
+                    setUser((prevState) => ({
                       ...prevState,
-                      name: event.target.value,
+                      lastName: event.target.value,
                     }))
                   }
                 />
-                <TextInput
+                <TextField
+                  size="small"
                   label={t('administration.email')}
-                  value={selectedUser.email}
+                  value={user.email}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setSelectedUser((prevState) => ({
+                    setUser((prevState) => ({
                       ...prevState,
                       email: event.target.value,
                     }))
                   }
                 />
-              </Flex>
-              <Flex gap={10}>
-                <TextInput
-                  label={t('administration.note')}
-                  value={selectedUser.note ? selectedUser.note : ''}
-                  // disabled={savingUser}
-                  onChange={(event) =>
-                    setSelectedUser((prevState) => ({
-                      ...prevState,
-                      note: event.target.value,
-                    }))
-                  }
-                />
-                <MultiSelect
-                  sx={{
-                    minWidth: rem(218),
-                  }}
-                  label={t('administration.owners')}
-                  value={
-                    selectedUser.owner ? selectedUser.owner.split(',') : []
-                  }
-                  // disabled={savingUser}
-                  data={owners.map((o) => ({
-                    value: o.id.toString(),
-                    label: o.name,
-                  }))}
-                  onChange={(value) =>
-                    setSelectedUser((prevState) => ({
-                      ...prevState,
-                      owner: value.join(','),
-                    }))
-                  }
-                />
-                <Select
-                  label={t('administration.role')}
-                  value={selectedUser.role}
-                  // disabled={savingUser}
-                  data={[
-                    { value: 'user', label: t('administration.user') },
-                    { value: 'admin', label: t('administration.admin') },
-                  ]}
-                  onChange={(value) => {
-                    if (value) {
-                      setSelectedUser((prevState) => ({
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                }}
+              >
+                <FormControl>
+                  <InputLabel id="user-owner-select-label">
+                    {t('administration.owners')}
+                  </InputLabel>
+                  <Select
+                    variant="outlined"
+                    labelId="user-owner-select-label"
+                    multiple
+                    size="small"
+                    sx={{
+                      minWidth: '218px',
+                    }}
+                    value={user.owners ? user.owners : []}
+                    // disabled={savingUser}
+                    onChange={(event) =>
+                      setUser((prevState) => ({
                         ...prevState,
-                        role: value as 'user' | 'admin',
+                        owners: event.target.value as string[],
                       }))
                     }
-                  }}
-                />
-              </Flex>
-              <Switch
-                label={t('administration.user_active')}
-                checked={selectedUser.active}
-                // disabled={savingUser}
-                onChange={(event) =>
-                  setSelectedUser((prevState) => ({
-                    ...prevState,
-                    active: event.target.checked,
-                  }))
+                  >
+                    {owners.map((o) => (
+                      <MenuItem key={o.id} value={o.id}>
+                        {o.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <InputLabel id="user-role-select-label">
+                    {t('administration.role')}
+                  </InputLabel>
+                  <Select
+                    variant="outlined"
+                    labelId="user-role-select-label"
+                    size="small"
+                    value={user.role}
+                    // disabled={savingUser}
+                    onChange={(event) => {
+                      if (event) {
+                        setUser((prevState) => ({
+                          ...prevState,
+                          role: event.target.value as 'user' | 'admin',
+                        }))
+                      }
+                    }}
+                  >
+                    <MenuItem value="user">{t('administration.user')}</MenuItem>
+                    <MenuItem value="admin">
+                      {t('administration.admin')}
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={user.active}
+                    onChange={(event) =>
+                      setUser((prevState) => ({
+                        ...prevState,
+                        active: event.target.checked,
+                      }))
+                    }
+                  />
                 }
+                label={t('administration.user_active')}
               />
-              <Button
-                className={classes.saveButton}
-                onClick={() => handleSave()}
-                // disabled={savingUser}
+              <SaveButton
+                variant="contained"
+                onClick={() => handleUpdate()}
+                loading={savingUser}
               >
-                {t('administration.save')}
-              </Button>
-            </Flex>
+                {t('administration.update')}
+              </SaveButton>
+            </FieldsContainer>
           ) : null}
-        </Flex>
+        </InnerContainer>
       ) : null}
-    </Box>
+    </Container>
   )
 }
 

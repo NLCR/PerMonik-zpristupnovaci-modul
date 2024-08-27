@@ -1,131 +1,90 @@
-import {
-  createStyles,
-  Header as MHeader,
-  Container,
-  Group,
-  Burger,
-  rem,
-  Menu,
-  Image,
-  UnstyledButton,
-  // Button,
-  // Text,
-  // Divider,
-} from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router-dom'
-import { useState } from 'react'
-import { IconChevronDown } from '@tabler/icons-react'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+// import IconButton from '@mui/material/IconButton'
+import Button from '@mui/material/Button'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+import Avatar from '@mui/material/Avatar'
+import Container from '@mui/material/Container'
+import { styled } from '@mui/material/styles'
+// import MenuIcon from '@mui/icons-material/Menu'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { blue } from '@mui/material/colors'
 import Logo from '../assets/logo.png'
 import Czech from '../assets/images/czech-republic.png'
 import Slovakia from '../assets/images/slovakia.png'
 import English from '../assets/images/united-states.png'
 import { changeLanguage, TSupportedLanguages } from '../i18next'
-// import useMeQuery from '../api/query/administration/useMeQuery'
+import { useLogoutMutation, useMeQuery } from '../api/user'
+import { queryClient } from '../api'
 
-const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '100%',
-  },
-  headerContainer: {
-    backgroundColor: theme.colors.blue,
-  },
-  links: {
-    [theme.fn.smallerThan('xs')]: {
-      display: 'none',
-    },
-  },
+const HeaderContainer = styled(AppBar)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+}))
 
-  burger: {
-    [theme.fn.largerThan('xs')]: {
-      display: 'none',
-    },
+const LinksContainer = styled('div')(({ theme }) => ({
+  [theme.breakpoints.down('xs')]: {
+    display: 'none',
   },
-  link: {
-    display: 'block',
-    lineHeight: 1,
-    padding: `${rem(10)} ${rem(18)}`,
-    borderRadius: theme.radius.sm,
-    textDecoration: 'none',
-    color:
-      theme.colorScheme === 'dark'
-        ? theme.colors.dark[0]
-        : theme.colors.dark[9],
-    fontSize: theme.fontSizes.md,
-    fontWeight: 500,
-    backgroundColor: theme.colors.blue[8],
-    '&:hover': {
-      backgroundColor:
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[6]
-          : theme.colors.gray[0],
-    },
-    '&.active, &.active:hover': {
-      backgroundColor: theme.fn.variant({
-        variant: 'light',
-        color: theme.primaryColor,
-      }).background,
-      // color: theme.fn.variant({ variant: 'light', color: theme.primaryColor })
-      //   .color,
-    },
-  },
-  languageControl: {
-    marginLeft: rem(30),
-    width: rem(200),
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
-    borderRadius: theme.radius.md,
-    border: `${rem(1)} solid ${
-      theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[2]
-    }`,
-    transition: 'background-color 150ms ease',
-    backgroundColor:
-      // eslint-disable-next-line no-nested-ternary
-      theme.colorScheme === 'dark'
-        ? theme.colors.dark[opened ? 5 : 6]
-        : opened
-          ? theme.colors.gray[0]
-          : theme.white,
+  display: 'flex',
+  alignItems: 'center',
+  flexGrow: 1,
+}))
 
-    '&:hover': {
-      backgroundColor:
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[5]
-          : theme.colors.gray[0],
-    },
+// const BurgerContainer = styled(IconButton)(({ theme }) => ({
+//   [theme.breakpoints.up('sm')]: {
+//     display: 'none',
+//   },
+// }))
+
+const NavLinkStyled = styled(NavLink)(({ theme }) => ({
+  display: 'block',
+  // lineHeight: 1,
+  padding: theme.spacing(1.1, 2.25),
+  marginLeft: theme.spacing(1.25),
+  marginRight: theme.spacing(1.25),
+  borderRadius: theme.shape.borderRadius,
+  textDecoration: 'none',
+  color: theme.palette.grey['900'],
+  backgroundColor: theme.palette.grey['50'],
+  fontSize: theme.typography.fontSize,
+  fontWeight: theme.typography.fontWeightMedium,
+  '&:hover': {
+    color: theme.palette.grey['50'],
+    backgroundColor: theme.palette.grey['900'],
   },
-  languageLabel: {
-    fontWeight: 500,
-    fontSize: theme.fontSizes.sm,
+  '&.active': {
+    color: theme.palette.grey['50'],
+    backgroundColor: theme.palette.grey['900'],
   },
-  languageIcon: {
-    transition: 'transform 150ms ease',
-    transform: opened ? 'rotate(180deg)' : 'rotate(0deg)',
-  },
-  logoutButton: {
-    backgroundColor: theme.colors.gray[9],
-    color: theme.colors.gray[0],
-    fontSize: theme.fontSizes.md,
-    fontWeight: 500,
-    ':hover': {
-      backgroundColor: theme.colors.gray[8],
-    },
-  },
-  divider: {
-    marginLeft: rem(10),
-    marginRight: rem(10),
-    borderColor: theme.colors.gray[8],
-  },
-  name: {
-    marginLeft: rem(5),
-    color: theme.colors.gray[0],
-    fontWeight: 600,
+}))
+
+// const MenuItemStyled = styled(MenuItem)(({ theme }) => ({
+//   color: theme.palette.grey['50'],
+//   backgroundColor: theme.palette.grey['900'],
+// }))
+
+const LanguageButton = styled(Button)(({ theme }) => ({
+  marginLeft: theme.spacing(3.75),
+  width: theme.spacing(25),
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: theme.spacing(0.75, 2),
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${theme.palette.divider}`,
+  transition: theme.transitions.create('background-color', {
+    duration: theme.transitions.duration.short,
+  }),
+  backgroundColor: theme.palette.background.paper,
+  '&:hover': {
+    backgroundColor: blue['50'],
   },
 }))
 
@@ -137,110 +96,190 @@ const data: { shorthand: TSupportedLanguages; label: string; image: string }[] =
   ]
 
 const Header = () => {
-  const [langOpened, setLangOpened] = useState(false)
-  const [opened, { toggle }] = useDisclosure(false)
+  const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null)
+  // const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null)
   const { t, i18n } = useTranslation()
-  const { classes } = useStyles({ opened: langOpened })
-  // const { data: me } = useMeQuery()
+  const { data: me } = useMeQuery()
+  const { mutateAsync: doLogout } = useLogoutMutation()
 
-  // const handleLogout = () => {}
+  const handleLangMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setLangAnchorEl(event.currentTarget)
+  }
+
+  const handleLangMenuClose = () => {
+    setLangAnchorEl(null)
+  }
+
+  // const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  //   setMenuAnchorEl(event.currentTarget)
+  // }
+  //
+  // const handleMenuClose = () => {
+  //   setMenuAnchorEl(null)
+  // }
+
+  const handleLogout = async () => {
+    try {
+      await doLogout()
+      queryClient.invalidateQueries({ queryKey: ['me'] })
+    } catch (e) {
+      /* empty */
+    }
+  }
 
   const items = data.map((item) => (
-    <Menu.Item
-      icon={<Image src={item.image} width={18} height={18} />}
-      onClick={() => changeLanguage(item.shorthand)}
-      key={item.label}
-    >
+    <MenuItem key={item.label} onClick={() => changeLanguage(item.shorthand)}>
+      <Avatar
+        src={item.image}
+        alt={item.label}
+        sx={{ width: 24, height: 24, marginRight: 1 }}
+      />
       {item.label}
-    </Menu.Item>
+    </MenuItem>
   ))
 
   return (
-    <MHeader height={60} className={classes.headerContainer}>
-      <Container className={classes.header} size="xxl">
-        <Link to={`/${i18n.resolvedLanguage}/`}>
-          <img src={Logo} alt="Logo" />
-        </Link>
-        <Group spacing={5} className={classes.links}>
-          <NavLink to={`/${i18n.resolvedLanguage}/`} className={classes.link}>
-            {t('header.home')}
-          </NavLink>
-          {/* {me?.role === 'admin' ? ( */}
-          {/*  <NavLink */}
-          {/*    to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`} */}
-          {/*    className={classes.link} */}
-          {/*  > */}
-          {/*    {t('header.administration')} */}
-          {/*  </NavLink> */}
-          {/* ) : null} */}
-          {/* {!me ? ( */}
-          {/*  <NavLink */}
-          {/*    to={`${i18n.resolvedLanguage}/${t('urls.login')}`} */}
-          {/*    className={classes.link} */}
-          {/*  > */}
-          {/*    {t('header.login')} */}
-          {/*  </NavLink> */}
-          {/* ) : null} */}
-          {/* {me ? ( */}
-          {/*  <> */}
-          {/*    <Divider */}
-          {/*      orientation="vertical" */}
-          {/*      size="sm" */}
-          {/*      className={classes.divider} */}
-          {/*    /> */}
-          {/*    <Button */}
-          {/*      size="sm" */}
-          {/*      className={classes.logoutButton} */}
-          {/*      onClick={() => handleLogout()} */}
-          {/*    > */}
-          {/*      {t('header.logout')} */}
-          {/*    </Button> */}
-          {/*    <Text className={classes.name}>{me.name}</Text> */}
-          {/*  </> */}
-          {/* ) : null} */}
-          <Menu
-            onOpen={() => setLangOpened(true)}
-            onClose={() => setLangOpened(false)}
-            radius="md"
-            width="target"
-            withinPortal
-          >
-            <Menu.Target>
-              <UnstyledButton className={classes.languageControl}>
-                <Group spacing="xs">
-                  <Image
-                    src={
-                      data.find((l) => l.shorthand === i18n.resolvedLanguage)
-                        ?.image
-                    }
-                    width={22}
-                    height={22}
+    <HeaderContainer position="static">
+      <Container maxWidth="xl">
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Link to={`/${i18n.resolvedLanguage}/`}>
+            <img src={Logo} alt="Logo" />
+          </Link>
+          <Box>
+            <LinksContainer>
+              <NavLinkStyled to={`/${i18n.resolvedLanguage}/`} end>
+                {t('header.home')}
+              </NavLinkStyled>
+              {me?.role?.includes('admin') ? (
+                <NavLinkStyled
+                  sx={{
+                    marginRight: 0,
+                  }}
+                  to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`}
+                >
+                  {t('header.administration')}
+                </NavLinkStyled>
+              ) : null}
+              {!me && (
+                <Button
+                  variant="contained"
+                  sx={(theme) => ({
+                    color: theme.palette.grey['900'],
+                    backgroundColor: theme.palette.grey['50'],
+                    '&:hover': {
+                      color: theme.palette.grey['50'],
+                      backgroundColor: theme.palette.grey['900'],
+                    },
+                  })}
+                  onClick={() => {
+                    window.location.href = '/login/shibboleth'
+                  }}
+                >
+                  {t('header.login')}
+                </Button>
+              )}
+              {me && (
+                <>
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    sx={(theme) => ({
+                      margin: '0 20px',
+                      borderColor: theme.palette.grey['50'],
+                    })}
                   />
-                  <span className={classes.languageLabel}>
-                    {
-                      data.find((l) => l.shorthand === i18n.resolvedLanguage)
-                        ?.label
-                    }
-                  </span>
-                </Group>
-                <IconChevronDown
-                  size="1rem"
-                  className={classes.languageIcon}
-                  stroke={1.5}
+                  <Button
+                    variant="contained"
+                    onClick={handleLogout}
+                    sx={(theme) => ({
+                      color: theme.palette.grey['900'],
+                      backgroundColor: theme.palette.grey['50'],
+                      '&:hover': {
+                        color: theme.palette.grey['50'],
+                        backgroundColor: theme.palette.grey['900'],
+                      },
+                    })}
+                  >
+                    {t('header.logout')}
+                  </Button>
+                  <Typography variant="body1" sx={{ marginLeft: '20px' }}>
+                    {me.name}
+                  </Typography>
+                </>
+              )}
+              <LanguageButton onClick={handleLangMenuOpen}>
+                <Avatar
+                  src={
+                    data.find((l) => l.shorthand === i18n.resolvedLanguage)
+                      ?.image
+                  }
+                  alt={
+                    data.find((l) => l.shorthand === i18n.resolvedLanguage)
+                      ?.label
+                  }
+                  sx={{ width: 24, height: 24 }}
                 />
-              </UnstyledButton>
-            </Menu.Target>
-            <Menu.Dropdown>{items}</Menu.Dropdown>
-          </Menu>
-        </Group>
-        <Burger
-          opened={opened}
-          onClick={toggle}
-          className={classes.burger}
-          size="sm"
-        />
+                <Typography variant="body2">
+                  {
+                    data.find((l) => l.shorthand === i18n.resolvedLanguage)
+                      ?.label
+                  }
+                </Typography>
+                <ExpandMoreIcon />
+              </LanguageButton>
+              <Menu
+                anchorEl={langAnchorEl}
+                open={Boolean(langAnchorEl)}
+                onClose={handleLangMenuClose}
+              >
+                {items}
+              </Menu>
+            </LinksContainer>
+            {/* <BurgerContainer */}
+            {/*  edge="end" */}
+            {/*  color="inherit" */}
+            {/*  aria-label="menu" */}
+            {/*  onClick={handleMenuOpen} */}
+            {/* > */}
+            {/*  <MenuIcon /> */}
+            {/* </BurgerContainer> */}
+            {/* <Menu */}
+            {/*  anchorEl={menuAnchorEl} */}
+            {/*  open={Boolean(menuAnchorEl)} */}
+            {/*  onClose={handleMenuClose} */}
+            {/* > */}
+            {/*  <MenuItem component={NavLink} to={`/${i18n.resolvedLanguage}/`}> */}
+            {/*    {t('header.home')} */}
+            {/*  </MenuItem> */}
+            {/*  {me?.role === 'admin' && ( */}
+            {/*    <MenuItem */}
+            {/*      component={NavLink} */}
+            {/*      to={`/${i18n.resolvedLanguage}/${t('urls.administration')}`} */}
+            {/*    > */}
+            {/*      {t('header.administration')} */}
+            {/*    </MenuItem> */}
+            {/*  )} */}
+            {/*  {!me && <a href="/login/shibboleth">{t('header.login')}</a>} */}
+            {/*  {me && ( */}
+            {/*    <> */}
+            {/*      <MenuItem onClick={handleLogout}> */}
+            {/*        {t('header.logout')} */}
+            {/*      </MenuItem> */}
+            {/*      <Typography variant="body1" sx={{ marginLeft: 1 }}> */}
+            {/*        {me.name} */}
+            {/*      </Typography> */}
+            {/*    </> */}
+            {/*  )} */}
+            {/* </Menu> */}
+          </Box>
+        </Toolbar>
       </Container>
-    </MHeader>
+    </HeaderContainer>
   )
 }
 

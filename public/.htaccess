@@ -4,6 +4,8 @@ RewriteEngine On
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+# this cond is for shibboleth -> FE was blocking access to url /Shibboleth.sso, therefore eduid cannot be used to login to the application
+RewriteCond %{REQUEST_FILENAME} !Shibboleth.sso
 RewriteRule !\.(html|js|css|jpg|png|ttf|woff|eot|map|pdf|ico|gif|zip|tar\.gz)$ index.html [L]
 
 <filesMatch "\.(html|htm|js|css)$">

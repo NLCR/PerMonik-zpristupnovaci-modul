@@ -1,47 +1,27 @@
 import { useTranslation } from 'react-i18next'
-import { MRT_Localization_CS } from 'mantine-react-table/locales/cs'
-import { MRT_Localization_SK } from 'mantine-react-table/locales/sk'
-import { MRT_Localization_EN } from 'mantine-react-table/locales/en'
+import { csCZ, skSK, enUS } from '@mui/x-data-grid/locales'
+import { TSupportedLanguages } from '../i18next'
 
-export const useTranslatedConstants = () => {
-  const { t } = useTranslation()
-
-  const publications = [
-    { id: 0, name: t('publications.0') },
-    { id: 1, name: t('publications.1') },
-    { id: 2, name: t('publications.2') },
-    { id: 3, name: t('publications.3') },
-    { id: 4, name: t('publications.4') },
-    { id: 5, name: t('publications.5') },
-    { id: 7, name: t('publications.7') },
-    { id: 6, name: t('publications.6') },
-  ]
-
-  const mutations = [
-    { id: 0, name: t('facet_states.empty') },
-    { id: 1, name: 'Brno' },
-    { id: 2, name: 'Praha' },
-    { id: 3, name: 'Ostrava' },
-  ]
-
-  return { publications, mutations }
+export const useLanguageCode = () => {
+  const { i18n } = useTranslation()
+  return { languageCode: i18n.resolvedLanguage as TSupportedLanguages }
 }
 
-export const useMantineTableLang = () => {
+export const useMuiTableLang = () => {
   const { i18n } = useTranslation()
 
   const getLocale = () => {
     switch (i18n.resolvedLanguage) {
       case 'cs':
-        return MRT_Localization_CS
+        return csCZ.components.MuiDataGrid.defaultProps.localeText
       case 'sk':
-        return MRT_Localization_SK
+        return skSK.components.MuiDataGrid.defaultProps.localeText
       case 'en':
-        return MRT_Localization_EN
+        return enUS.components.MuiDataGrid.defaultProps.localeText
       default:
-        return MRT_Localization_CS
+        return csCZ.components.MuiDataGrid.defaultProps.localeText
     }
   }
 
-  return { mantineTableLocale: getLocale() }
+  return { MuiTableLocale: getLocale() }
 }

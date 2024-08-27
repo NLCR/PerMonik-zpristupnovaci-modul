@@ -5,7 +5,10 @@
     "volume_overview": "volume",
     "administration": "administration",
     "users": "users",
-    "owners": "owners"
+    "owners": "owners",
+    "meta_titles": "meta-titles",
+    "publications": "publications",
+    "mutations": "mutations"
   },
   "common": {
     "error_occurred_when_loading_data": "Nastala chyba při načítání dat",
@@ -13,7 +16,9 @@
     "yes": "Ano",
     "no": "Ne",
     "saved_successfully": "Úpspěšně uloženo",
-    "error_when_saving": "Při ukládání nastala chyba"
+    "error_when_saving": "Při ukládání nastala chyba",
+    "retry_fetch": "Znovu načíst",
+    "session_expired": "Relace vypršela"
   },
   "helmet": {
     "title": "Evidence periodik – badatelská aplikace"
@@ -25,7 +30,8 @@
     "records": "Záznamy",
     "specimens": "Exempláře",
     "mutations": "Mutace",
-    "owners": "Vlastníci"
+    "owners": "Vlastníci",
+    "no_meta_titles_found": "Nebyly nalezeny žádné metatituly"
   },
   "specimens_overview": {
     "meta_title_not_found": "Tento metatitul nebyl nalezen",
@@ -103,7 +109,28 @@
     "physical_condition": "Fyzický stav",
     "damaged_numbers": "Poškozená čísla",
     "notes": "Poznámky",
-    "volume_information": "Údaje o svazku"
+    "volume_information": "Údaje o svazku",
+    "periodicity": "Periodicita",
+    "edit_periodicity": "Upravit periodicitu",
+    "show_attachments_at_the_end": "Zobrazit přílohy na konci svazku",
+    "volume_input_data_validation_error": "Vstupní data svazku jsou nesprávná (chyba validace)",
+    "specimens_validation_error": "Exempáře obsahují neplatná data (chyba validace)",
+    "volume_updated_successfully": "Svazek byl úspěšně upraven",
+    "volume_update_error": "Nastala chyba při úpravě svazku",
+    "generate_volume": "Vygenerovat svazek",
+    "changes_are_saved_automatically": "* Změny se ukládají automaticky",
+    "close": "Zavřít",
+    "specimens_generated_successfully": "Exempláře byly úspěšně vygenerovány",
+    "volume_created_successfully": "Svazek byl úspěšně vytvořen",
+    "volume_create_error": "Nastala chyba při vytváření svazku",
+    "volume_deleted_successfully": "Svazek byl úspěšně smazán",
+    "volume_deletion_error": "Nastala chyba při mazání svazku",
+    "account_required": "Stránka je dostupná po přihlášení",
+    "new_row": "Duplikovat řádek",
+    "renumber_header": "Potvrdit přečíslování",
+    "renumber_text": "Čísel k přečíslování: {{value}}. Opravdu chcete provést změny?",
+    "renumbered_correctly": "Přečíslováno {{willBeRenumbered}} čísel v rozsahu od {{firstNumber}} po {{lastNumber}}",
+    "do_renumber": "Přečíslovat"
   },
   "table": {
     "mutations": "Mutace",
@@ -113,17 +140,8 @@
     "number": "Číslo",
     "pages_count": "Poč. stran",
     "owners": "Vlastníci",
-    "basic_info": "Základní údaje"
-  },
-  "publications": {
-    "0": "Bez označení",
-    "1": "Ranní",
-    "2": "Polední",
-    "3": "Odpolední",
-    "4": "Večerní",
-    "5": "Jiné",
-    "6": "Jiná příloha",
-    "7": "Pravidelná příloha"
+    "basic_info": "Základní údaje",
+    "pages": "Strany"
   },
   "tooltip_states": {
     "uncontrolled": "Nekontrolováno",
@@ -167,15 +185,42 @@
   "administration": {
     "users": "Uživatelé",
     "owners": "Vlastníci",
+    "meta_titles": "Metatituly",
+    "publications": "Publikace",
+    "mutations": "Mutace",
     "new_user_button": "Přidat uživatele",
     "user_login_name": "Přihlašovací jméno",
-    "user_name": "Jméno uživatele",
+    "first_name": "Jméno",
+    "last_name": "Příjmení",
     "email": "Email",
     "note": "Poznámka",
     "role": "Role",
     "user": "Uživatel",
     "admin": "Administrátor",
     "save": "Uložit",
-    "user_active": "Uživatel je aktivní"
+    "user_active": "Uživatel je aktivní",
+    "create": "Vytvořit",
+    "update": "Upravit",
+    "name": "Jméno",
+    "sigla": "Sigla",
+    "create_owner": "Vytvořit nového vlastníka",
+    "create_meta_title": "Vytvořit nový metatitul",
+    "create_publication": "Vytvořit novou publikaci",
+    "create_mutation": "Vytvořit novou mutaci",
+    "meta_title_is_public": "Metatitul je veřejný",
+    "cs_name": "Český název",
+    "sk_name": "Slovenský název",
+    "en_name": "Anglický název",
+    "delete": "Smazat"
+  },
+  "schema": {
+    "name_min_length": "Vyplňte prosím pole `jméno`",
+    "sigla_min_length": "Vyplňte prosím pole `sigla`",
+    "first_name_min_length": "Vyplňte prosím pole `jméno`",
+    "last_name_min_length": "Vyplňte prosím pole `příjmení`",
+    "email": "Vyplňte prosím správně pole `email`",
+    "cs_name_min_length": "Vyplňte prosím pole `Český název`",
+    "sk_name_min_length": "Vyplňte prosím pole `Slovenský název`",
+    "en_name_min_length": "Vyplňte prosím pole `Anglický název`"
   }
 }

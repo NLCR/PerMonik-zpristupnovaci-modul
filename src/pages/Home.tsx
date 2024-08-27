@@ -1,80 +1,116 @@
-import { Box, createStyles, SimpleGrid, Text, Title } from '@mantine/core'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link as ReactLink } from 'react-router-dom'
 import dayjs from 'dayjs'
-import useMetaTitlesWithStatsQuery from '../api/query/useMetaTitlesWithStatsQuery'
-import Loader from '../components/reusableComponents/Loader'
-import ShowError from '../components/reusableComponents/ShowError'
-
-const useStyles = createStyles((theme) => ({
-  card: {
-    color: theme.colors.dark[9],
-    textDecoration: 'none',
-    padding: theme.spacing.md,
-    backgroundColor: 'white',
-    textAlign: 'left',
-    borderRadius: theme.spacing.xs,
-    boxShadow: theme.shadows.xs,
-    transition: 'all 0.2s',
-    ':hover': {
-      boxShadow: theme.shadows.sm,
-      cursor: 'pointer',
-    },
-  },
-}))
+import { blue } from '@mui/material/colors'
+import { useMetaTitleOverviewListQuery } from '../api/metaTitle'
+import Loader from '../components/Loader'
+import ShowError from '../components/ShowError'
+import ShowInfoMessage from '../components/ShowInfoMessage'
 
 const Home = () => {
-  const { classes } = useStyles()
   const { t, i18n } = useTranslation()
-  const { data, isLoading, isError } = useMetaTitlesWithStatsQuery()
+  const { data, isLoading, isError, refetch } = useMetaTitleOverviewListQuery()
 
   return (
-    <Box sx={{ textAlign: 'center' }}>
-      <Title order={1} color="blue.9">
+    <Box sx={{ textAlign: 'center', marginTop: '50px', width: '100%' }}>
+      <Typography
+        variant="h3"
+        sx={{
+          color: blue['900'],
+        }}
+      >
         {t('home.title')}
-      </Title>
-      <Text>{t('home.description')}</Text>
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        {t('home.description')}
+      </Typography>
       {isLoading ? <Loader /> : null}
-      {isError && !isLoading ? <ShowError /> : null}
+      {isError && !isLoading ? <ShowError onRetry={refetch} /> : null}
       {data ? (
-        <SimpleGrid mt={50} cols={4}>
+        <Box
+          sx={{
+            marginTop: 10,
+            justifyContent: 'center',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, minmax(0px, 1fr))',
+            gap: '1rem',
+          }}
+        >
           {data.map((mt) => (
-            <Link
+            <Box
+              component={ReactLink}
               to={`/${i18n.resolvedLanguage}/${t('urls.specimens_overview')}/${
                 mt.id
               }`}
               key={mt.id}
-              className={classes.card}
-              // onClick={() => resetAll()}
+              sx={(theme) => ({
+                color: theme.palette.grey['900'],
+                textDecoration: 'none',
+                padding: theme.spacing(2),
+                backgroundColor: 'white',
+                textAlign: 'left',
+                borderRadius: theme.spacing(2),
+                boxShadow: theme.shadows[1],
+                transition: 'all 0.2s',
+                ':hover': {
+                  boxShadow: theme.shadows[3],
+                  cursor: 'pointer',
+                },
+              })}
             >
-              <Title order={5}>{mt.name}</Title>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
+                {mt.name}
+              </Typography>
               {mt.specimens.publicationDayMin &&
               mt.specimens.publicationDayMax ? (
-                <Text fz="xs" color="dimmed">
+                <Typography
+                  sx={(theme) => ({
+                    fontSize: '12px',
+                    color: theme.palette.grey['600'],
+                  })}
+                >
                   {`${dayjs(mt.specimens.publicationDayMin).format(
                     'DD. MMMM YYYY'
                   )} - ${dayjs(mt.specimens.publicationDayMax).format(
                     'DD. MMMM YYYY'
                   )}`}
-                </Text>
+                </Typography>
               ) : null}
-              <SimpleGrid cols={2} mt={20}>
-                {/* <Text fz="sm" color="blue.9"> */}
-                {/*  {t('home.records')}: {mt.specimens.groupedSpecimens} */}
-                {/* </Text> */}
-                <Text fz="sm" color="blue.9">
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))',
+                  gap: '1rem',
+                  marginTop: '1.25rem',
+                }}
+              >
+                <Typography
+                  sx={{
+                    color: blue['700'],
+                  }}
+                >
                   {t('home.specimens')}: {mt.specimens.matchedSpecimens}
-                </Text>
-                <Text fz="sm">
+                </Typography>
+                <Typography>
                   {t('home.mutations')}: {mt.specimens.mutationsCount}
-                </Text>
-                <Text fz="sm">
+                </Typography>
+                <Typography>
                   {t('home.owners')}: {mt.specimens.ownersCount}
-                </Text>
-              </SimpleGrid>
-            </Link>
+                </Typography>
+              </Box>
+            </Box>
           ))}
-        </SimpleGrid>
+        </Box>
+      ) : null}
+      {!isLoading && !isError && !data ? (
+        <ShowInfoMessage message={t('home.no_meta_titles_found')} />
       ) : null}
     </Box>
   )

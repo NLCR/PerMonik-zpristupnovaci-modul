@@ -1,17 +1,16 @@
 import { create } from 'zustand'
-import { MRT_PaginationState } from 'mantine-react-table'
-import { PaginationState } from '@tanstack/table-core/src/features/Pagination'
+import { Dayjs } from 'dayjs'
 
 export type TParams = {
   dateStart: number
   dateEnd: number
   names: string[]
   subNames: string[]
-  mutations: string[]
-  publications: string[]
+  mutationIds: string[]
+  publicationIds: string[]
   publicationMarks: string[]
-  owners: string[]
-  states: string[]
+  ownerIds: string[]
+  damageTypes: string[]
 }
 
 export const initialParams: TParams = {
@@ -19,51 +18,66 @@ export const initialParams: TParams = {
   dateEnd: 0,
   names: [],
   subNames: [],
-  mutations: [],
-  publications: [],
+  mutationIds: [],
+  publicationIds: [],
   publicationMarks: [],
-  owners: [],
-  states: [],
+  ownerIds: [],
+  damageTypes: [],
 }
 
 interface TVariablesState {
   params: typeof initialParams
-  pagination: MRT_PaginationState
-  volumeInput: string
+  pagination: { pageIndex: number; pageSize: number }
+  barCodeInput: string
   view: 'calendar' | 'table'
-  calendarDate: Date | null
-  calendarMinDate: Date | undefined
+  calendarDate: Dayjs | null
+  calendarMinDate: Dayjs | null
+  lastViewedMetaTitleId: string
+  sliderRange: [number, number] | null
 }
 
 interface TState extends TVariablesState {
   setParams: (values: typeof initialParams) => void
-  setVolumeInput: (value: string) => void
-  setPagination: (value: PaginationState) => void
+  setBarCodeInput: (value: string) => void
+  setPagination: (value: { pageIndex: number; pageSize: number }) => void
   resetAll: () => void
   setView: (value: 'calendar' | 'table') => void
-  setCalendarDate: (value: Date | null) => void
-  setCalendarMinDate: (value: Date) => void
+  setCalendarDate: (value: Dayjs) => void
+  setCalendarMinDate: (value: Dayjs) => void
+  setLastViewedMetaTitleId: (value: string) => void
+  setSliderRange: (value: [number, number]) => void
 }
 
 export const useSpecimensOverviewStore = create<TState>()((set) => ({
   params: initialParams,
-  pagination: { pageIndex: 0, pageSize: 25 },
-  volumeInput: '',
+  pagination: { pageIndex: 0, pageSize: 100 },
+  barCodeInput: '',
   view: 'calendar',
   calendarDate: null,
-  calendarMinDate: undefined,
-  setParams: (values) => set(() => ({ params: values })),
-  setVolumeInput: (value) => set(() => ({ volumeInput: value })),
+  calendarMinDate: null,
+  lastViewedMetaTitleId: '',
+  sliderRange: null,
+  setParams: (values) =>
+    set((state) => ({
+      params: values,
+      pagination: { ...state.pagination, pageIndex: 0 },
+    })),
+  setBarCodeInput: (value) =>
+    set((state) => ({
+      barCodeInput: value,
+      pagination: { ...state.pagination, pageIndex: 0 },
+    })),
   setPagination: (value) => set(() => ({ pagination: value })),
   resetAll: () =>
     set((state) => ({
-      volumeInput: '',
+      barCodeInput: '',
       params: initialParams,
       pagination: { ...state.pagination, pageIndex: 0 },
-      calendarDate: undefined,
-      calendarMinDate: undefined,
     })),
   setView: (value) => set(() => ({ view: value })),
   setCalendarDate: (value) => set(() => ({ calendarDate: value })),
   setCalendarMinDate: (value) => set(() => ({ calendarMinDate: value })),
+  setLastViewedMetaTitleId: (value) =>
+    set(() => ({ lastViewedMetaTitleId: value })),
+  setSliderRange: (value) => set(() => ({ sliderRange: value })),
 }))

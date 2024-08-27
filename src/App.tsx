@@ -1,45 +1,44 @@
 import { FC } from 'react'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter } from 'react-router-dom'
-import { Container, createStyles, rem } from '@mantine/core'
-import { DatesProvider } from '@mantine/dates'
+import Container from '@mui/material/Container'
 import { useTranslation } from 'react-i18next'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
-import { ModalsProvider } from '@mantine/modals'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+import weekday from 'dayjs/plugin/weekday'
 import RoutesManager from './components/RoutesManager'
 import ScrollToTop from './components/ScrollToTop'
 import Header from './components/Header'
 import 'dayjs/locale/cs'
 import 'dayjs/locale/sk'
 import 'dayjs/locale/en'
+// eslint-disable-next-line import/order
+import localeData from 'dayjs/plugin/localeData'
 // import Footer from './components/Footer'
-
-const useStyles = createStyles((theme) => ({
-  wrapper: {
-    minHeight: `calc(100vh - ${rem(60)})`,
-    paddingTop: rem(20),
-    backgroundColor: theme.colors.gray[0],
-  },
-}))
 
 // App without react-router, useful for testing
 const App: FC = () => {
-  const { classes } = useStyles()
-
   return (
     <>
       <Header />
-      <div className={classes.wrapper}>
-        <Container
-          size="xxl"
-          sx={(theme) => ({
-            paddingTop: theme.spacing.xl,
-            paddingBottom: rem(50),
-          })}
-        >
-          <RoutesManager />
-        </Container>
-      </div>
+      <Container
+        maxWidth="xl"
+        sx={{
+          display: 'flex',
+          // flexDirection: 'column',
+          paddingTop: '15px',
+          paddingBottom: '10px',
+          maxHeight: `1200px`,
+          height: `calc(100vh - 80px)`,
+          width: '100%',
+          // maxHeight: `700px`,
+          // overflow: 'hidden',
+        }}
+      >
+        <RoutesManager />
+      </Container>
       {/* <Footer /> */}
     </>
   )
@@ -48,22 +47,26 @@ const App: FC = () => {
 export const WrappedApp = () => {
   const { t, i18n } = useTranslation()
 
+  dayjs.extend(localizedFormat)
+  dayjs.extend(weekday)
+  dayjs.extend(localeData)
   dayjs.locale(i18n.resolvedLanguage)
 
   return (
-    <BrowserRouter>
-      <ModalsProvider>
+    <LocalizationProvider
+      dateAdapter={AdapterDayjs}
+      adapterLocale={i18n.resolvedLanguage}
+    >
+      <BrowserRouter>
         <HelmetProvider>
-          <DatesProvider settings={{ locale: i18n.resolvedLanguage }}>
-            <Helmet>
-              <title>{t('helmet.title')}</title>
-            </Helmet>
-            <ScrollToTop />
-            <App />
-          </DatesProvider>
+          <Helmet>
+            <title>{t('helmet.title')}</title>
+          </Helmet>
+          <ScrollToTop />
+          <App />
         </HelmetProvider>
-      </ModalsProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </LocalizationProvider>
   )
 }
 

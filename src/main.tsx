@@ -3,13 +3,17 @@ import ReactDOM from 'react-dom/client'
 import { I18nextProvider } from 'react-i18next'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { init as SentryInit, BrowserTracing } from '@sentry/react'
-import { MantineProvider, rem } from '@mantine/core'
+import { init as SentryInit, browserTracingIntegration } from '@sentry/react'
 import { ToastContainer } from 'react-toastify'
+import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider } from '@mui/material/styles'
 import i18next from './i18next'
 import { queryClient } from './api'
 import { WrappedApp } from './App'
 import 'react-toastify/dist/ReactToastify.css'
+import theme from './theme'
+// eslint-disable-next-line import/order
+import './styles.css'
 
 const { MODE, VITE_SENTRY_DNS } = import.meta.env
 
@@ -18,11 +22,11 @@ SentryInit({
   dsn: VITE_SENTRY_DNS,
   tracePropagationTargets: [
     'localhost',
-    // 'permonik.cz',
-    // 'api.permonik.com',
+    'permonik.nkp.cz',
+    'permonik-test.nkp.cz',
     /^\//,
   ],
-  integrations: [new BrowserTracing()],
+  integrations: [browserTracingIntegration()],
   environment: MODE,
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
@@ -36,33 +40,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <I18nextProvider i18n={i18next}>
-        <MantineProvider
-          withGlobalStyles
-          withNormalizeCSS
-          theme={{
-            loader: 'bars',
-            fontFamily: 'Verdana, sans-serif',
-            colorScheme: 'light',
-            components: {
-              Container: {
-                defaultProps: {
-                  sizes: {
-                    xs: rem(540),
-                    sm: rem(720),
-                    md: rem(960),
-                    lg: rem(1140),
-                    xl: rem(1320),
-                    xxl: rem(1700),
-                  },
-                },
-              },
-            },
-          }}
-        >
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
           <WrappedApp />
-        </MantineProvider>
+        </ThemeProvider>
       </I18nextProvider>
-      <ReactQueryDevtools />
+      <ReactQueryDevtools buttonPosition="bottom-left" />
     </QueryClientProvider>
     <ToastContainer
       position="bottom-left"
