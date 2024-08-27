@@ -213,6 +213,7 @@ const Users = ({ me }: { me: TMe }) => {
                     {t('administration.owners')}
                   </InputLabel>
                   <Select
+                    variant="outlined"
                     labelId="user-owner-select-label"
                     multiple
                     size="small"
@@ -240,6 +241,7 @@ const Users = ({ me }: { me: TMe }) => {
                     {t('administration.role')}
                   </InputLabel>
                   <Select
+                    variant="outlined"
                     labelId="user-role-select-label"
                     size="small"
                     value={user.role}

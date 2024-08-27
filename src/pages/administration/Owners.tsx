@@ -128,7 +128,7 @@ const Owners = () => {
                 },
               }}
             >
-              {t('administration.create_meta_title')}
+              {t('administration.create_owner')}
             </Typography>
             {owners?.map((m) => (
               <Typography

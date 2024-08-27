@@ -142,7 +142,7 @@ const Publications = () => {
                 },
               }}
             >
-              {t('administration.create_meta_title')}
+              {t('administration.create_publication')}
             </Typography>
             {publications?.map((m) => (
               <Typography

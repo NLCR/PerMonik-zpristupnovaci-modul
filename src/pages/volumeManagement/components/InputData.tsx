@@ -63,6 +63,7 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.meta_title')}</TableCell>
             <TableCell>
               <Select
+                variant="outlined"
                 size="small"
                 sx={{
                   minWidth: '218px',
@@ -85,6 +86,7 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.mutation')}</TableCell>
             <TableCell>
               <Select
+                variant="outlined"
                 size="small"
                 sx={{
                   minWidth: '218px',
@@ -216,6 +218,7 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.owner')}</TableCell>
             <TableCell>
               <Select
+                variant="outlined"
                 size="small"
                 sx={{
                   minWidth: '218px',

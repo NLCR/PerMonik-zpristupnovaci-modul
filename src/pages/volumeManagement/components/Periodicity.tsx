@@ -254,6 +254,7 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
                         </TableCell>
                         <TableCell>
                           <Select
+                            variant="outlined"
                             size="small"
                             sx={{
                               minWidth: '218px',

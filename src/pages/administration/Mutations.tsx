@@ -138,7 +138,7 @@ const Mutations = () => {
                 },
               }}
             >
-              {t('administration.create_meta_title')}
+              {t('administration.create_mutation')}
             </Typography>
             {mutations?.map((m) => (
               <Typography
