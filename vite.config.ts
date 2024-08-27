@@ -1,11 +1,9 @@
 /// <reference types="vite/client" />
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import svgr from 'vite-plugin-svgr'
 import eslintPlugin from 'vite-plugin-eslint'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { visualizer } from 'rollup-plugin-visualizer'
-// import commonjs from '@rollup/plugin-commonjs'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -14,8 +12,6 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
-      // commonjs(),
-      svgr(),
       eslintPlugin(),
       sentryVitePlugin({
         url: env.VITE_SENTRY_URL,
@@ -43,15 +39,6 @@ export default defineConfig(({ mode }) => {
         filename: 'analyse.html', // will be saved in project's root
       }),
     ],
-    // optimizeDeps: {
-    //   include: [
-    //     '@mui/icons-material',
-    //     '@mui/material',
-    //     '@mui/x-date-pickers',
-    //     '@emotion/react',
-    //     '@emotion/styled',
-    //   ],
-    // },
     build: {
       // required for sentry: tells vite to create source maps
       sourcemap: true,
@@ -64,7 +51,6 @@ export default defineConfig(({ mode }) => {
           target: 'http://localhost:8080/',
           changeOrigin: true,
           secure: false,
-          // rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
     },
