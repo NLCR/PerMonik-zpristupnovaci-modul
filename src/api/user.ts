@@ -33,10 +33,7 @@ export const useMeQuery = () => {
 export const useLogoutMutation = () =>
   useMutation({
     mutationFn: () => {
-      return api().post(`auth/logout`).json<void>()
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['me'] })
+      return api().post(`auth/logout`)
     },
   })
 

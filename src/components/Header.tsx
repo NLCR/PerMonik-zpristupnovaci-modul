@@ -22,6 +22,7 @@ import Slovakia from '../assets/images/slovakia.png'
 import English from '../assets/images/united-states.png'
 import { changeLanguage, TSupportedLanguages } from '../i18next'
 import { useLogoutMutation, useMeQuery } from '../api/user'
+import { queryClient } from '../api'
 
 const HeaderContainer = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -118,11 +119,12 @@ const Header = () => {
   // }
 
   const handleLogout = async () => {
-    await doLogout()
-      .then(() => {
-        // navigate('/')
-      })
-      .catch(() => {})
+    try {
+      await doLogout()
+      queryClient.invalidateQueries({ queryKey: ['me'] })
+    } catch (e) {
+      /* empty */
+    }
   }
 
   const items = data.map((item) => (
