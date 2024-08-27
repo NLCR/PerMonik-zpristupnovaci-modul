@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box'
+import Box from '@mui/material-pigment-css/Box'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { Link as ReactLink } from 'react-router-dom'

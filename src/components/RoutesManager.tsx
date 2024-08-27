@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Route, Routes, Navigate } from 'react-router-dom'
-import Container from '@mui/material/Container'
+import Container from '@mui/material-pigment-css/Container'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
 import Loader from './Loader'

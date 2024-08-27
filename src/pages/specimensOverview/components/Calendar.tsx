@@ -1,5 +1,5 @@
 import Backdrop from '@mui/material/Backdrop'
-import Box from '@mui/material/Box'
+import Box from '@mui/material-pigment-css/Box'
 import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
 import Modal from '@mui/material/Modal'

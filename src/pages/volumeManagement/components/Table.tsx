@@ -9,8 +9,9 @@ import {
   DataGrid,
   GridColumnHeaderParams,
 } from '@mui/x-data-grid'
-import Box from '@mui/material/Box'
-import { alpha, styled } from '@mui/material/styles'
+import Box from '@mui/material-pigment-css/Box'
+import { styled } from '@mui/material-pigment-css'
+import { alpha } from '@mui/material/styles'
 import Checkbox from '@mui/material/Checkbox'
 import {
   GridCellParams,
@@ -88,7 +89,6 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
     },
   },
 })) as typeof DataGrid
-
 const renderCheckBox = (
   checked: boolean,
   show: boolean,
@@ -99,7 +99,6 @@ const renderCheckBox = (
     <Checkbox color={color} checked={checked} readOnly disabled={!canEdit} />
   ) : null
 }
-
 const renderValue = (
   value: string | number | undefined | null,
   show: boolean,
@@ -118,7 +117,6 @@ const renderValue = (
     </Typography>
   ) : null
 }
-
 const renderRenumberableValue = (
   row: TEditableSpecimen,
   show: boolean,
@@ -134,54 +132,45 @@ const renderRenumberableValue = (
     />
   )
 }
-
 const renderHeaderWithColumnAction = (
   field: TSpecimenDamageTypes,
   canEdit: boolean
 ) => {
   return <HeaderWithColumnAction field={field} canEdit={canEdit} />
 }
-
 const renderDamagedAndMissingPagesEditCell = (
   params: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
   return <DamagedAndMissingPagesEditCell {...params} />
 }
-
 const renderDamageTypesEditCell = (
   params: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
   return <DamageTypesEditCell {...params} />
 }
-
 const renderPublicationMarkEditCell = (
   params: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
   return <PublicationMarkSelectorModalContainer {...params} />
 }
-
 interface TableProps {
   canEdit: boolean
   mutations: TMutation[]
   publications: TPublication[]
 }
-
 const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
   const { languageCode } = useLanguageCode()
   const { MuiTableLocale } = useMuiTableLang()
   const { t } = useTranslation()
-
   const showAttachmentsAtTheEnd = useVolumeManagementStore(
     (state) => state.volumeState.showAttachmentsAtTheEnd
   )
-
   const specimensState = useVolumeManagementStore(
     (state) => state.specimensState
   )
   const specimenActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
-
   const sortedSpecimensState = useMemo(() => {
     const clonedSpecimens = clone(specimensState)
     if (showAttachmentsAtTheEnd) {
@@ -193,7 +182,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     }
     return clonedSpecimens
   }, [specimensState, showAttachmentsAtTheEnd])
-
   const duplicateRow = useCallback(
     (row: TEditableSpecimen) => {
       const specimensStateClone = clone(specimensState)
@@ -201,7 +189,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       const originalSpecimenIndex = specimensState.findIndex(
         (s) => s.id === row.id
       )
-
       if (originalSpecimenIndex >= 0) {
         specimensStateClone.splice(
           originalSpecimenIndex + 1,
@@ -213,12 +200,10 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     },
     [specimenActions, specimensState]
   )
-
   const removeRow = useCallback(
     (id: string) => {
       const specimensStateClone = clone(specimensState)
       const specimenIndex = specimensState.findIndex((s) => s.id === id)
-
       if (specimenIndex >= 0) {
         specimensStateClone.splice(specimenIndex, 1)
         specimenActions.setSpecimensState(specimensStateClone)
@@ -226,7 +211,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     },
     [specimenActions, specimensState]
   )
-
   const columns: GridColDef<TEditableSpecimen>[] = [
     {
       field: 'publicationDate',
@@ -550,7 +534,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
     },
   ]
-
   if (canEdit) {
     columns.unshift({
       field: 'newRow',
@@ -590,13 +573,11 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       },
     })
   }
-
   const handleUpdate = (newRow: TEditableSpecimen) => {
     // console.log(newRow)
     specimenActions.setSpecimen(newRow)
     return filterSpecimen(newRow)
   }
-
   const isCellEditable = (params: GridCellParams<TEditableSpecimen>) => {
     const { row, field } = params
     if (field === 'numExists') {
@@ -648,5 +629,4 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     />
   )
 }
-
 export default Table

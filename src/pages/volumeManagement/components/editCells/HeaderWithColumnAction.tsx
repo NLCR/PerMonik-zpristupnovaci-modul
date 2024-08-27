@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box'
+import Box from '@mui/material-pigment-css/Box'
 import React, { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'

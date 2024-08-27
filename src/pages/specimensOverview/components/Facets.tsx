@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
-import Box from '@mui/material/Box'
+import Box from '@mui/material-pigment-css/Box'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'

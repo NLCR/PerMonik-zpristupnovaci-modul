@@ -7,12 +7,12 @@ import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import Box from '@mui/material/Box'
+import Box from '@mui/material-pigment-css/Box'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Avatar from '@mui/material/Avatar'
-import Container from '@mui/material/Container'
-import { styled } from '@mui/material/styles'
+import Container from '@mui/material-pigment-css/Container'
+import { styled } from '@mui/material-pigment-css'
 // import MenuIcon from '@mui/icons-material/Menu'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { blue } from '@mui/material/colors'
@@ -42,7 +42,6 @@ const LinksContainer = styled('div')(({ theme }) => ({
 //     display: 'none',
 //   },
 // }))
-
 const NavLinkStyled = styled(NavLink)(({ theme }) => ({
   display: 'block',
   // lineHeight: 1,
@@ -69,7 +68,6 @@ const NavLinkStyled = styled(NavLink)(({ theme }) => ({
 //   color: theme.palette.grey['50'],
 //   backgroundColor: theme.palette.grey['900'],
 // }))
-
 const LanguageButton = styled(Button)(({ theme }) => ({
   marginLeft: theme.spacing(3.75),
   width: theme.spacing(25),

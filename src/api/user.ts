@@ -4,7 +4,7 @@ import { api, queryClient } from './index'
 import { TMe, TUser } from '../schema/user'
 
 export const useMeQuery = () => {
-  const useMock = false
+  const useMock = true
 
   return useQuery({
     queryKey: ['me'],

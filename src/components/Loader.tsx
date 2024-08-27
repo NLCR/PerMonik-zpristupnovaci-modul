@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import Box from '@mui/material/Box'
+import Box from '@mui/material-pigment-css/Box'
 import { keyframes } from '@emotion/react'
 
 const barsAnimation = keyframes`
@@ -33,7 +33,10 @@ const Loader = () => {
             width: '6px',
             borderRadius: '4px',
             animation: `${barsAnimation} 1.2s infinite ease-in-out`,
-            animationDelay: `${-1.1 + index * 0.1}s`,
+            animationDelay: `-1.1 + var(--index) * 0.1s`,
+          }}
+          style={{
+            '--index': `${index}`,
           }}
         />
       ))}

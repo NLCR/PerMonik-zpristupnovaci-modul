@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import Container from '@mui/material/Container'
-import Box from '@mui/material/Box'
+import Container from '@mui/material-pigment-css/Container'
+import Box from '@mui/material-pigment-css/Box'
 import Button from '@mui/material/Button'
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
 

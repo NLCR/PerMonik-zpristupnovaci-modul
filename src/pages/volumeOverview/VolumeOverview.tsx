@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import Box from '@mui/material/Box'
+import Box from '@mui/material-pigment-css/Box'
 import Typography from '@mui/material/Typography'
 import Table from '@mui/material/Table'
 import TableHead from '@mui/material/TableHead'

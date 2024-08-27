@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import Box from '@mui/material/Box'
+import Box from '@mui/material-pigment-css/Box'
 import ShowInfoMessage from '../components/ShowInfoMessage'
 
 const NotFound = () => {

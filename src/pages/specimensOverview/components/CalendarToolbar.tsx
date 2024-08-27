@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
+import Box from '@mui/material-pigment-css/Box'
 import IconButton from '@mui/material/IconButton'
 import dayjs from 'dayjs'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'

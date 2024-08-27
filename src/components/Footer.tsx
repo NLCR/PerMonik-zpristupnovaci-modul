@@ -1,5 +1,5 @@
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
+import Box from '@mui/material-pigment-css/Box'
+import Container from '@mui/material-pigment-css/Container'
 import Typography from '@mui/material/Typography'
 
 const Footer = () => {

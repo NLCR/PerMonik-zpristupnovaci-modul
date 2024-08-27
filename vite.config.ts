@@ -1,11 +1,30 @@
 /// <reference types="vite/client" />
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import svgr from 'vite-plugin-svgr'
 import eslintPlugin from 'vite-plugin-eslint'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { visualizer } from 'rollup-plugin-visualizer'
-// import commonjs from '@rollup/plugin-commonjs'
+import { pigment } from '@pigment-css/vite-plugin'
+import { createTheme } from '@mui/material'
+import { blue, red } from '@mui/material/colors'
+
+/**
+/**
+ * @type {import('@pigment-css/vite-plugin').PigmentOptions}
+ */
+const pigmentConfig = {
+  transformLibraries: ['@mui/material'],
+  theme: createTheme({
+    palette: {
+      primary: {
+        main: blue['900'],
+      },
+      error: {
+        main: red.A400,
+      },
+    },
+  }),
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -13,9 +32,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
+      pigment(pigmentConfig),
       react(),
-      // commonjs(),
-      svgr(),
       eslintPlugin(),
       sentryVitePlugin({
         url: env.VITE_SENTRY_URL,
@@ -43,15 +61,6 @@ export default defineConfig(({ mode }) => {
         filename: 'analyse.html', // will be saved in project's root
       }),
     ],
-    // optimizeDeps: {
-    //   include: [
-    //     '@mui/icons-material',
-    //     '@mui/material',
-    //     '@mui/x-date-pickers',
-    //     '@emotion/react',
-    //     '@emotion/styled',
-    //   ],
-    // },
     build: {
       // required for sentry: tells vite to create source maps
       sourcemap: true,
@@ -64,7 +73,6 @@ export default defineConfig(({ mode }) => {
           target: 'http://localhost:8080/',
           changeOrigin: true,
           secure: false,
-          // rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
     },

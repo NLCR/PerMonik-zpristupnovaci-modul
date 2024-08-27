@@ -1,7 +1,8 @@
 import { FC } from 'react'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
+import { Theme } from '@mui/material/styles'
 import { BrowserRouter } from 'react-router-dom'
-import Container from '@mui/material/Container'
+import Container from '@mui/material-pigment-css/Container'
 import { useTranslation } from 'react-i18next'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers'
@@ -17,6 +18,12 @@ import 'dayjs/locale/en'
 // eslint-disable-next-line import/order
 import localeData from 'dayjs/plugin/localeData'
 // import Footer from './components/Footer'
+
+declare module '@mui/material-pigment-css' {
+  interface ThemeArgs {
+    theme: Theme
+  }
+}
 
 // App without react-router, useful for testing
 const App: FC = () => {
