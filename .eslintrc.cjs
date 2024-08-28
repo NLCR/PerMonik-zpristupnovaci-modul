@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 module.exports = {
   settings: {
     react: {
@@ -9,11 +10,13 @@ module.exports = {
     es2022: true,
   },
   extends: [
-    'airbnb',
-    'airbnb-typescript',
-    'airbnb/hooks',
-    'plugin:react/recommended',
+    'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:jsx-a11y/recommended',
     'plugin:prettier/recommended',
   ],
   overrides: [],
@@ -22,7 +25,6 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
     project: ['./tsconfig.json'],
-    tsconfigRootDir: __dirname,
   },
   ignorePatterns: ['vite.config.ts', 'vitest.config.ts'],
   plugins: ['react', '@typescript-eslint', 'prettier'],

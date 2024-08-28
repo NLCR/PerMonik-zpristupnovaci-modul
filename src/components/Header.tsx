@@ -20,7 +20,7 @@ import Logo from '../assets/logo.png'
 import Czech from '../assets/images/czech-republic.png'
 import Slovakia from '../assets/images/slovakia.png'
 import English from '../assets/images/united-states.png'
-import { changeLanguage, TSupportedLanguages } from '../i18next'
+import { changeAppLanguage, TSupportedLanguages } from '../i18next'
 import { useLogoutMutation, useMeQuery } from '../api/user'
 import { queryClient } from '../api'
 
@@ -124,13 +124,17 @@ const Header = () => {
       await doLogout()
       navigate('/')
       queryClient.invalidateQueries({ queryKey: ['me'] })
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       /* empty */
     }
   }
 
   const items = data.map((item) => (
-    <MenuItem key={item.label} onClick={() => changeLanguage(item.shorthand)}>
+    <MenuItem
+      key={item.label}
+      onClick={() => changeAppLanguage(item.shorthand)}
+    >
       <Avatar
         src={item.image}
         alt={item.label}
