@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -193,6 +192,15 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     }
     return clonedSpecimens
   }, [specimensState, showAttachmentsAtTheEnd])
+
+  // TODO: https://github.com/mui/mui-x/issues/7799 https://github.com/NLCR/evidence.periodik/issues/239
+  // useEffect(() => {
+  //   const allRows = gridPaginatedVisibleSortedGridRowEntriesSelector(apiRef)
+  //   const rowIndex = allRows.findIndex(
+  //     (row) => row.id === 'auto-generated-row-company/Paramount Pictures'
+  //   )
+  //   apiRef.current.scrollToIndexes({ rowIndex })
+  // }, [])
 
   const duplicateRow = useCallback(
     (row: TEditableSpecimen) => {

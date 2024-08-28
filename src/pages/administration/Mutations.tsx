@@ -98,6 +98,7 @@ const Mutations = () => {
         await doCreate(mutation)
       }
       toast.success(t('common.saved_successfully'))
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       toast.error(t('common.error_occurred_somewhere'))
     }

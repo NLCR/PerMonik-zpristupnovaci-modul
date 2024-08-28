@@ -126,9 +126,9 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
     }
   }, [calendarDateInitialized, metaTitleIdChanged, sliderRangeInitialized])
 
-  const pubDaysMin =
+  const publicationYearMin =
     Number(specimens?.publicationDayMin?.substring(0, 4)) || 1900
-  const pubDaysMax =
+  const publicationYearMax =
     Number(specimens?.publicationDayMax?.substring(0, 4)) || 2023
 
   const fetching =
@@ -190,6 +190,7 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
               onChange={(value: Dayjs) => {
                 setCalendarDate(value)
               }}
+              disabled={fetching}
             />
           ) : (
             <Loader />
@@ -198,8 +199,8 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
       ) : (
         <ControlledSlider
           fetching={fetching}
-          pubDaysMin={pubDaysMin}
-          pubDaysMax={pubDaysMax}
+          pubDaysMin={publicationYearMin}
+          pubDaysMax={publicationYearMax}
         />
       )}
       <Typography
@@ -371,7 +372,7 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
         color="error"
         onClick={() => {
           resetAll()
-          setSliderRange([pubDaysMin, pubDaysMax])
+          setSliderRange([publicationYearMin, publicationYearMax])
           setCalendarDate(dayjs(specimens?.publicationDayMin))
         }}
       >

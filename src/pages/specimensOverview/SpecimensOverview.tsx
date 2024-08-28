@@ -22,11 +22,14 @@ import SpecimenDayDetailExampleImage from '../../assets/images/specimen-day-deta
 import Facets from './components/Facets'
 import Calendar from './components/Calendar'
 import CalendarToolbar from './components/CalendarToolbar'
+import Switch from '@mui/material/Switch'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import useSynchronizeYearsBetweenViews from '../../hooks/useSynchronizeYearsBetweenViews'
 
 const Table = React.lazy(() => import('./components/Table'))
 
 const modalStyle = {
-  position: 'absolute' as const,
+  position: 'absolute',
   maxHeight: '250px',
   height: '80vh',
   top: '50%',
@@ -45,7 +48,15 @@ const SpecimensOverview = () => {
   const [modalOpened, setModalOpened] = useState(false)
   const { t } = useTranslation()
   const view = useSpecimensOverviewStore((state) => state.view)
+  const synchronizeYearsBetweenViews = useSpecimensOverviewStore(
+    (state) => state.synchronizeYearsBetweenViews
+  )
   const setView = useSpecimensOverviewStore((state) => state.setView)
+  const setSynchronizeYearsBetweenViews = useSpecimensOverviewStore(
+    (state) => state.setSynchronizeYearsBetweenViews
+  )
+
+  useSynchronizeYearsBetweenViews(metaTitleId)
 
   const {
     data: metaTitle,
@@ -198,6 +209,7 @@ const SpecimensOverview = () => {
               sx={{
                 display: 'flex',
                 marginLeft: '20px',
+                marginRight: '20px',
                 fontSize: '14px',
                 color: blue['900'],
                 fontWeight: 'bolder',
@@ -208,16 +220,35 @@ const SpecimensOverview = () => {
                 <CalendarToolbar metaTitle={metaTitle} />
               ) : null}
             </Box>
+            {view === 'calendar' ? (
+              <Button
+                variant="contained"
+                startIcon={<HelpOutlineIcon />}
+                onClick={() => setModalOpened(true)}
+              >
+                {t('specimens_overview.help')}
+              </Button>
+            ) : null}
           </Box>
-          {view === 'calendar' ? (
-            <Button
-              variant="contained"
-              startIcon={<HelpOutlineIcon />}
-              onClick={() => setModalOpened(true)}
-            >
-              {t('specimens_overview.help')}
-            </Button>
-          ) : null}
+          <FormControlLabel
+            control={
+              <Switch
+                checked={synchronizeYearsBetweenViews}
+                onChange={(event) => {
+                  setSynchronizeYearsBetweenViews(event.target.checked)
+                }}
+              />
+            }
+            label={
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: t(
+                    'specimens_overview.synchronize_years_between_views'
+                  ),
+                }}
+              />
+            }
+          />
         </Box>
         {view === 'calendar' ? (
           <Calendar metaTitle={metaTitle} />

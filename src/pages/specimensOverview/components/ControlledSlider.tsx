@@ -3,6 +3,18 @@ import Slider from '@mui/material/Slider'
 import { FC } from 'react'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import Loader from '../../../components/Loader'
+import { styled } from '@mui/material/styles'
+import { blue } from '@mui/material/colors'
+
+const StyledSlider = styled(Slider)(() => ({
+  '& .MuiSlider-valueLabel': {
+    fontSize: 12,
+    fontWeight: 'normal',
+    top: -6,
+    backgroundColor: 'unset',
+    color: blue['900'],
+  },
+}))
 
 type TProps = {
   fetching: boolean
@@ -19,16 +31,14 @@ const ControlledSlider: FC<TProps> = ({ fetching, pubDaysMin, pubDaysMax }) => {
   const sliderRange = useSpecimensOverviewStore((state) => state.sliderRange)
 
   return isArray(sliderRange) ? (
-    <Slider
+    <StyledSlider
       disableSwap
       step={1}
       sx={{
         width: '95%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        marginBottom: '30px',
+        margin: '40px auto 30px auto',
       }}
-      valueLabelDisplay="auto"
+      valueLabelDisplay="on"
       marks={[
         {
           value: pubDaysMin,

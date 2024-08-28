@@ -8,6 +8,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import weekday from 'dayjs/plugin/weekday'
+import localeData from 'dayjs/plugin/localeData'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 import RoutesManager from './components/RoutesManager'
 import ScrollToTop from './components/ScrollToTop'
 import Header from './components/Header'
@@ -15,7 +18,6 @@ import 'dayjs/locale/cs'
 import 'dayjs/locale/sk'
 import 'dayjs/locale/en'
 // eslint-disable-next-line import/order
-import localeData from 'dayjs/plugin/localeData'
 // import Footer from './components/Footer'
 
 // App without react-router, useful for testing
@@ -50,6 +52,9 @@ export const WrappedApp = () => {
   dayjs.extend(localizedFormat)
   dayjs.extend(weekday)
   dayjs.extend(localeData)
+  dayjs.extend(utc)
+  dayjs.extend(timezone)
+  dayjs.tz.setDefault('Europe/Prague')
   dayjs.locale(i18n.resolvedLanguage)
 
   return (

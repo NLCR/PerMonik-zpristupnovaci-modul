@@ -11,8 +11,11 @@ const ControlledBarCodeInput = () => {
   const [localInputState, setLocalInputState] = useState(barCodeInput)
 
   // used on filters reset
-  useSpecimensOverviewStore.subscribe((state) => {
-    if (state.barCodeInput === '') {
+  useSpecimensOverviewStore.subscribe((state, prevState) => {
+    if (
+      state.barCodeInput === '' &&
+      state.barCodeInput !== prevState.barCodeInput
+    ) {
       setLocalInputState(state.barCodeInput)
     }
   })
@@ -20,7 +23,7 @@ const ControlledBarCodeInput = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setBarCodeInput(localInputState.trim().replaceAll(' ', ''))
-    }, 750)
+    }, 600)
 
     return () => clearTimeout(timeout)
   }, [localInputState, setBarCodeInput])

@@ -60,7 +60,8 @@
     "help": "Help",
     "help_desc_1": "Each line on a day is described as follows",
     "help_desc_2": "issue number - mutation - mutation edition marks - number of specimens",
-    "help_desc_3": "The line may be colored green (all specimens are fine) or orange (some of the specimens have a defect)"
+    "help_desc_3": "The line may be colored green (all specimens are fine) or orange (some of the specimens have a defect)",
+    "synchronize_years_between_views": "Synchronize calendar<br />and table dates"
   },
   "volume_overview": {
     "not_found": "This volume was not found",

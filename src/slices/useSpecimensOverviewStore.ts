@@ -30,6 +30,7 @@ interface TVariablesState {
   pagination: { pageIndex: number; pageSize: number }
   barCodeInput: string
   view: 'calendar' | 'table'
+  synchronizeYearsBetweenViews: boolean
   calendarDate: Dayjs | null
   calendarMinDate: Dayjs | null
   lastViewedMetaTitleId: string
@@ -42,6 +43,7 @@ interface TState extends TVariablesState {
   setPagination: (value: { pageIndex: number; pageSize: number }) => void
   resetAll: () => void
   setView: (value: 'calendar' | 'table') => void
+  setSynchronizeYearsBetweenViews: (value: boolean) => void
   setCalendarDate: (value: Dayjs) => void
   setCalendarMinDate: (value: Dayjs) => void
   setLastViewedMetaTitleId: (value: string) => void
@@ -53,6 +55,7 @@ export const useSpecimensOverviewStore = create<TState>()((set) => ({
   pagination: { pageIndex: 0, pageSize: 100 },
   barCodeInput: '',
   view: 'calendar',
+  synchronizeYearsBetweenViews: true,
   calendarDate: null,
   calendarMinDate: null,
   lastViewedMetaTitleId: '',
@@ -75,6 +78,8 @@ export const useSpecimensOverviewStore = create<TState>()((set) => ({
       pagination: { ...state.pagination, pageIndex: 0 },
     })),
   setView: (value) => set(() => ({ view: value })),
+  setSynchronizeYearsBetweenViews: (value) =>
+    set(() => ({ synchronizeYearsBetweenViews: value })),
   setCalendarDate: (value) => set(() => ({ calendarDate: value })),
   setCalendarMinDate: (value) => set(() => ({ calendarMinDate: value })),
   setLastViewedMetaTitleId: (value) =>

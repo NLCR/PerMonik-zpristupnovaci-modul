@@ -82,11 +82,13 @@ export const EditableVolumeSchema = z.object({
 // for final check before sending request to BE
 export const CreatableVolumeSchema = VolumeSchema.partial({ id: true })
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const VolumeDetailSchema = z.object({
   volume: VolumeSchema,
   specimens: SpecimenSchema.array(),
 })
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const VolumeOverviewStatsSchema = z.object({
   metaTitleName: z.string(),
   ownerId: z.string(),
