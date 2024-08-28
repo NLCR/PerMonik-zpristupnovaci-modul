@@ -61,8 +61,12 @@ export const useSpecimenListQuery = (metaTitleId?: string) => {
   const view = useSpecimensOverviewStore((state) => state.view)
 
   const dayJsDate = dayjs(calendarDate)
+
   const startOfMonth = dayJsDate.startOf('month')
   const endOfMonth = dayJsDate.endOf('month')
+
+  const startOfMonthUTC = `${startOfMonth.year()}-${String(startOfMonth.month() + 1).padStart(2, '0')}-01T00:00:00.000Z`
+  const endOfMonthUTC = `${endOfMonth.year()}-${String(endOfMonth.month() + 1).padStart(2, '0')}-${String(endOfMonth.date()).padStart(2, '0')}T23:59:59.999Z`
 
   return useQuery({
     queryKey: [
@@ -96,8 +100,8 @@ export const useSpecimenListQuery = (metaTitleId?: string) => {
         JSON.stringify({
           ...params,
           barCode: barCodeInput,
-          calendarDateStart: startOfMonth,
-          calendarDateEnd: endOfMonth,
+          calendarDateStart: startOfMonthUTC,
+          calendarDateEnd: endOfMonthUTC,
         })
       )
       formData.set('view', view)
