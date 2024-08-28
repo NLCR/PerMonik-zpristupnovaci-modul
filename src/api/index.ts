@@ -55,7 +55,8 @@ const baseApi = ({ handledCodes, throwErrorFromKy = true }: BaseOptions) =>
               queryClient.invalidateQueries({ queryKey: ['me'] })
             }
             // toast.warn(processError(response, error))
-          } catch (e: unknown) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          } catch (e) {
             /* empty */
           }
         },

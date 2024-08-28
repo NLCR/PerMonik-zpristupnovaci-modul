@@ -1,4 +1,4 @@
-import i18next from 'i18next'
+import i18next, { changeLanguage, init, use } from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import cs from './lang/cs/cs'
@@ -16,8 +16,8 @@ export const resources = {
   en,
 } as const
 
-export const changeLanguage = (lang: TSupportedLanguages) => {
-  i18next.changeLanguage(lang).then(() => {
+export const changeAppLanguage = (lang: TSupportedLanguages) => {
+  changeLanguage(lang).then(() => {
     const location = window.location.href
     const hasLang = /\/[a-z][a-z]\//.test(location)
     window.history.replaceState(
@@ -28,10 +28,10 @@ export const changeLanguage = (lang: TSupportedLanguages) => {
   })
 }
 
-i18next.use(LanguageDetector).use(initReactI18next)
+use(LanguageDetector).use(initReactI18next)
 
 if (!i18next.isInitialized) {
-  i18next.init({
+  init({
     ns: [defaultNS],
     fallbackLng: defaultLang,
     supportedLngs: supportedLanguages,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 // import IconButton from '@mui/material/IconButton'
@@ -20,7 +20,7 @@ import Logo from '../assets/logo.png'
 import Czech from '../assets/images/czech-republic.png'
 import Slovakia from '../assets/images/slovakia.png'
 import English from '../assets/images/united-states.png'
-import { changeLanguage, TSupportedLanguages } from '../i18next'
+import { changeAppLanguage, TSupportedLanguages } from '../i18next'
 import { useLogoutMutation, useMeQuery } from '../api/user'
 import { queryClient } from '../api'
 
@@ -96,6 +96,7 @@ const data: { shorthand: TSupportedLanguages; label: string; image: string }[] =
   ]
 
 const Header = () => {
+  const navigate = useNavigate()
   const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null)
   // const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null)
   const { t, i18n } = useTranslation()
@@ -121,14 +122,19 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await doLogout()
+      navigate('/')
       queryClient.invalidateQueries({ queryKey: ['me'] })
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       /* empty */
     }
   }
 
   const items = data.map((item) => (
-    <MenuItem key={item.label} onClick={() => changeLanguage(item.shorthand)}>
+    <MenuItem
+      key={item.label}
+      onClick={() => changeAppLanguage(item.shorthand)}
+    >
       <Avatar
         src={item.image}
         alt={item.label}
