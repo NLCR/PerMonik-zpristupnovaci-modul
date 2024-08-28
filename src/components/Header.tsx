@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 // import IconButton from '@mui/material/IconButton'
@@ -96,6 +96,7 @@ const data: { shorthand: TSupportedLanguages; label: string; image: string }[] =
   ]
 
 const Header = () => {
+  const navigate = useNavigate()
   const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null)
   // const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null)
   const { t, i18n } = useTranslation()
@@ -121,6 +122,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await doLogout()
+      navigate('/')
       queryClient.invalidateQueries({ queryKey: ['me'] })
     } catch (e) {
       /* empty */
