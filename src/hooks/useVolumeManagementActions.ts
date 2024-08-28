@@ -73,6 +73,7 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
           specimens: data.repairedSpecimens,
         })
         toast.success(t('volume_overview.volume_updated_successfully'))
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error(t('volume_overview.volume_update_error'))
       }
@@ -92,6 +93,7 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
           specimens: data.repairedSpecimens,
         })
         toast.success(t('volume_overview.volume_updated_successfully'))
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error(t('volume_overview.volume_update_error'))
       }
@@ -112,6 +114,7 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
         })
         toast.success(t('volume_overview.volume_created_successfully'))
         navigate(`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${id}`)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error(t('volume_overview.volume_create_error'))
       }
@@ -129,6 +132,7 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
         await callDelete(data.repairedVolume.id)
         toast.success(t('volume_overview.volume_deleted_successfully'))
         navigate(`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/`)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error(t('volume_overview.volume_deletion_error'))
       }

@@ -101,6 +101,7 @@ const Users = ({ me }: { me: TMe }) => {
     try {
       await doUpdate(user)
       toast.success(t('common.saved_successfully'))
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       toast.error(t('common.error_occurred_somewhere'))
     }

@@ -17,6 +17,7 @@ export const SpecimenDamageTypesSchema = z.enum([
   'ChDatum',
 ])
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SpecimensPublicationDaysSchema = z.object({
   publicationDayMin: z.string().nullable(),
   publicationDayMax: z.string().nullable(),
