@@ -131,7 +131,10 @@
     "renumber_header": "Confirm renumbering",
     "renumber_text": "Numbers to renumber: {{value}}. Do you really want to make changes?",
     "renumbered_correctly": "Renumbered {{willBeRenumbered}} numbers ranging from {{firstNumber}} to {{lastNumber}}",
-    "do_renumber": "Renumber"
+    "do_renumber": "Renumber",
+    "delete_volume_caption": "Confirm deletion",
+    "delete_volume_text": "Do you really want to delete the whole volume?",
+    "delete_volume_text2": "Don't you want to change your mind?"
   },
   "table": {
     "mutations": "Mutations",
