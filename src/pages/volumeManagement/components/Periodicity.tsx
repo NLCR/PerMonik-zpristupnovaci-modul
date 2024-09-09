@@ -182,9 +182,6 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
       <Button
         disabled={!canEdit}
         variant="contained"
-        sx={{
-          marginTop: '15px',
-        }}
         onClick={() => setPeriodicityModalVisible(true)}
       >
         {t('volume_overview.edit_periodicity')}
@@ -319,16 +316,6 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
                   })}
                 </TableBody>
               </Table>
-              {/* <Typography */}
-              {/*  variant="body2" */}
-              {/*  sx={{ */}
-              {/*    marginTop: '5px', */}
-              {/*    textAlign: 'right', */}
-              {/*    color: theme.palette.grey['600'], */}
-              {/*  }} */}
-              {/* > */}
-              {/*  {t('volume_overview.changes_are_saved_automatically')} */}
-              {/* </Typography> */}
               <Box
                 sx={{
                   display: 'flex',
