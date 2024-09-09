@@ -22,6 +22,29 @@ import { TPublication } from '../../../schema/publication'
 import { TMetaTitle } from '../../../schema/metaTitle'
 import PublicationMarkSelectorModal from './editCells/PublicationMarkSelectorModal'
 import Periodicity from './Periodicity'
+import Modal from '@mui/material/Modal'
+import Backdrop from '@mui/material/Backdrop'
+import Fade from '@mui/material/Fade'
+import Typography from '@mui/material/Typography'
+import { blue } from '@mui/material/colors'
+import VolumeOverviewStatsModal from '../../specimensOverview/components/VolumeOverviewStatsModal'
+import Button from '@mui/material/Button'
+
+const modalStyle = {
+  overflowY: 'auto',
+  position: 'absolute' as const,
+  maxHeight: '800px',
+  height: '80vh',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '90vw',
+  maxWidth: '1000px',
+  bgcolor: 'background.paper',
+  borderRadius: '4px',
+  boxShadow: 24,
+  p: 4,
+}
 
 interface InputDataProps {
   canEdit: boolean
@@ -45,6 +68,7 @@ const InputData: FC<InputDataProps> = ({
 
   const [publicationMarksModalOpened, setPublicationMarksModalOpened] =
     useState(false)
+  const [volumeStatsModalOpened, setVolumeStatsModalOpened] = useState(false)
 
   const volumeState = useVolumeManagementStore((state) => state.volumeState)
   const volumeActions = useVolumeManagementStore((state) => state.volumeActions)
@@ -283,7 +307,53 @@ const InputData: FC<InputDataProps> = ({
         }
         label={t('volume_overview.show_attachments_at_the_end')}
       />
-      <Periodicity canEdit={canEdit} publications={publications} />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Periodicity canEdit={canEdit} publications={publications} />
+        {volumeStatsModalOpened ? (
+          <Modal
+            open={volumeStatsModalOpened}
+            onClose={() => {
+              setVolumeStatsModalOpened(false)
+            }}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                color: '#fff',
+                timeout: 500,
+              },
+            }}
+          >
+            <Fade in={volumeStatsModalOpened}>
+              <Box sx={modalStyle}>
+                <Typography
+                  sx={{
+                    color: blue['900'],
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    marginBottom: '16px',
+                  }}
+                >
+                  {t('specimens_overview.volume_overview_modal_link')}{' '}
+                </Typography>
+                <VolumeOverviewStatsModal volumeBarCode={volumeState.id} />
+              </Box>
+            </Fade>
+          </Modal>
+        ) : null}
+        <Button
+          variant="contained"
+          onClick={() => setVolumeStatsModalOpened(true)}
+        >
+          {t('specimens_overview.volume_overview_modal_link')}
+        </Button>
+      </Box>
     </Box>
   )
 }

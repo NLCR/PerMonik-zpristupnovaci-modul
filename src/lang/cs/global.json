@@ -131,7 +131,10 @@
     "renumber_header": "Potvrdit přečíslování",
     "renumber_text": "Čísel k přečíslování: {{value}}. Opravdu chcete provést změny?",
     "renumbered_correctly": "Přečíslováno {{willBeRenumbered}} čísel v rozsahu od {{firstNumber}} po {{lastNumber}}",
-    "do_renumber": "Přečíslovat"
+    "do_renumber": "Přečíslovat",
+    "delete_volume_caption": "Potvrdit smazání",
+    "delete_volume_text": "Chcete opravdu smazat celý svazek?",
+    "delete_volume_text2": "Nechcete si to ještě rozmyslet?"
   },
   "table": {
     "mutations": "Mutace",

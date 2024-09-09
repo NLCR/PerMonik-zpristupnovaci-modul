@@ -5,7 +5,7 @@ import SpeedDial from '@mui/material/SpeedDial'
 import SpeedDialAction from '@mui/material/SpeedDialAction'
 import SpeedDialIcon from '@mui/material/SpeedDialIcon'
 import Typography from '@mui/material/Typography'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import SaveIcon from '@mui/icons-material/Save'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
@@ -23,11 +23,36 @@ import { useMetaTitleListQuery } from '../../api/metaTitle'
 import { useVolumeManagementStore } from '../../slices/useVolumeManagementStore'
 import InputData from './components/InputData'
 import { useVolumeManagementActions } from '../../hooks/useVolumeManagementActions'
+import Modal from '@mui/material/Modal'
+import Backdrop from '@mui/material/Backdrop'
+import Fade from '@mui/material/Fade'
+import Button from '@mui/material/Button'
+
+const modalStyle = {
+  overflowY: 'auto',
+  position: 'absolute' as const,
+  maxHeight: '200px',
+  height: '80vh',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '90vw',
+  maxWidth: '400px',
+  bgcolor: 'background.paper',
+  borderRadius: '4px',
+  boxShadow: 24,
+  p: 4,
+}
 
 const VolumeManagement = () => {
   const { volumeId } = useParams()
   const { data: me, isLoading: meLoading, isError: meError } = useMeQuery()
   const { t } = useTranslation()
+
+  const [confirmDeletionModalStage, setConfirmDeletionModalStage] = useState({
+    opened: false,
+    stage: 1,
+  })
 
   const setInitialState = useVolumeManagementStore(
     (state) => state.setInitialState
@@ -89,6 +114,10 @@ const VolumeManagement = () => {
     }
   }, [publications, volumeId, volumePeriodicityActions, setInitialState])
 
+  const handleDeletion = () => {
+    doDelete()
+  }
+
   const canEdit = useMemo(
     () =>
       me?.owners?.some((o) => o === volume?.volume.ownerId) ||
@@ -124,7 +153,7 @@ const VolumeManagement = () => {
       actionsArray.push({
         icon: <DeleteForeverIcon />,
         name: t('administration.delete'),
-        onClick: doDelete,
+        onClick: () => setConfirmDeletionModalStage({ opened: true, stage: 1 }),
       })
     }
     if (!volumeId) {
@@ -136,15 +165,7 @@ const VolumeManagement = () => {
     }
 
     return actionsArray
-  }, [
-    doCreate,
-    doDelete,
-    doRegeneratedUpdate,
-    doUpdate,
-    t,
-    volumeId,
-    volumeRegenerated,
-  ])
+  }, [doCreate, doRegeneratedUpdate, doUpdate, t, volumeId, volumeRegenerated])
 
   if (
     volumeLoading ||
@@ -278,6 +299,108 @@ const VolumeManagement = () => {
             />
           ))}
         </SpeedDial>
+      ) : null}
+      {confirmDeletionModalStage.opened ? (
+        <Modal
+          open={confirmDeletionModalStage.opened}
+          onClose={() => {
+            setConfirmDeletionModalStage((prevState) => ({
+              ...prevState,
+              opened: false,
+            }))
+          }}
+          closeAfterTransition
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: {
+              color: '#fff',
+              timeout: 500,
+            },
+          }}
+        >
+          <Fade in={confirmDeletionModalStage.opened}>
+            <Box sx={modalStyle}>
+              <Typography
+                sx={{
+                  color: blue['900'],
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  marginBottom: '16px',
+                }}
+              >
+                {t('volume_overview.delete_volume_caption')}
+              </Typography>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
+                {confirmDeletionModalStage.stage === 1
+                  ? t('volume_overview.delete_volume_text')
+                  : t('volume_overview.delete_volume_text2')}
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: '10px',
+                }}
+              >
+                {confirmDeletionModalStage.stage === 1 ? (
+                  <>
+                    <Button
+                      variant="outlined"
+                      onClick={() =>
+                        setConfirmDeletionModalStage((prevState) => ({
+                          ...prevState,
+                          stage: 2,
+                        }))
+                      }
+                    >
+                      {t('common.yes')}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() =>
+                        setConfirmDeletionModalStage((prevState) => ({
+                          ...prevState,
+                          opened: false,
+                        }))
+                      }
+                    >
+                      {t('common.no')}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        setConfirmDeletionModalStage((prevState) => ({
+                          ...prevState,
+                          opened: false,
+                        }))
+                        handleDeletion()
+                      }}
+                    >
+                      {t('common.no')}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() =>
+                        setConfirmDeletionModalStage((prevState) => ({
+                          ...prevState,
+                          opened: false,
+                        }))
+                      }
+                    >
+                      {t('common.yes')}
+                    </Button>
+                  </>
+                )}
+              </Box>
+            </Box>
+          </Fade>
+        </Modal>
       ) : null}
     </Box>
   )
