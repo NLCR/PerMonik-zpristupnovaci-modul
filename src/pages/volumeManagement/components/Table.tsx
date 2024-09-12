@@ -5,9 +5,9 @@ import {
   gridClasses,
   GridColDef,
   GridRenderCellParams,
-  DataGrid,
+  DataGridPro,
   GridColumnHeaderParams,
-} from '@mui/x-data-grid'
+} from '@mui/x-data-grid-pro'
 import Box from '@mui/material/Box'
 import { alpha, styled } from '@mui/material/styles'
 import Checkbox from '@mui/material/Checkbox'
@@ -38,7 +38,7 @@ import HeaderWithColumnAction from './editCells/HeaderWithColumnAction'
 
 const ODD_OPACITY = 0.2
 
-const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
+const StripedDataGrid = styled(DataGridPro)(({ theme }) => ({
   [`& .${gridClasses.row}.even`]: {
     backgroundColor: theme.palette.grey[100],
     '&:hover': {
@@ -86,7 +86,7 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
       },
     },
   },
-})) as typeof DataGrid
+})) as typeof DataGridPro
 
 const renderCheckBox = (
   checked: boolean,
@@ -640,15 +640,9 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       rows={sortedSpecimensState}
       columns={columns}
       initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: 100,
-            page: 0,
-          },
-        },
         density: 'compact',
+        pinnedColumns: { left: ['publicationDate'] },
       }}
-      pageSizeOptions={[100]}
       disableRowSelectionOnClick
       disableColumnSorting
       isCellEditable={isCellEditable}

@@ -14,8 +14,9 @@ import 'react-toastify/dist/ReactToastify.css'
 import theme from './theme'
 // eslint-disable-next-line import/order
 import './styles.css'
+import { LicenseInfo } from '@mui/x-license'
 
-const { MODE, VITE_SENTRY_DNS } = import.meta.env
+const { MODE, VITE_SENTRY_DNS, VITE_MUI_LICENCE_KEY } = import.meta.env
 
 // Setup Sentry for errors reporting in production
 SentryInit({
@@ -35,6 +36,8 @@ SentryInit({
     return MODE === 'development' ? null : event
   },
 })
+
+LicenseInfo.setLicenseKey(VITE_MUI_LICENCE_KEY)
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

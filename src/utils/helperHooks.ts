@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { csCZ, skSK, enUS } from '@mui/x-data-grid/locales'
+import { csCZ, skSK, enUS } from '@mui/x-data-grid-pro/locales'
 import { TSupportedLanguages } from '../i18next'
 
 export const useLanguageCode = () => {
