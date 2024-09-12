@@ -2,7 +2,11 @@
 import React, { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import { GridColDef, GridRenderCellParams, DataGrid } from '@mui/x-data-grid'
+import {
+  GridColDef,
+  GridRenderCellParams,
+  DataGridPro,
+} from '@mui/x-data-grid-pro'
 import CheckIcon from '@mui/icons-material/Check'
 import Box from '@mui/material/Box'
 import { TEditableSpecimen, TSpecimen } from '../../../schema/specimen'
@@ -241,20 +245,14 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
   }, [languageCode, mutations, publications, t])
 
   return (
-    <DataGrid
+    <DataGridPro
       localeText={MuiTableLocale}
       rows={volume?.specimens}
       columns={columns}
       initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: 100,
-            page: 0,
-          },
-        },
         density: 'compact',
+        pinnedColumns: { left: ['publicationDate'] },
       }}
-      pageSizeOptions={[100]}
       disableRowSelectionOnClick
       disableColumnSorting
     />

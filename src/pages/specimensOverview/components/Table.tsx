@@ -1,6 +1,10 @@
 import React, { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { GridColDef, GridRenderCellParams, DataGrid } from '@mui/x-data-grid'
+import {
+  GridColDef,
+  GridRenderCellParams,
+  DataGridPro,
+} from '@mui/x-data-grid-pro'
 import dayjs from 'dayjs'
 import Tooltip from '@mui/material/Tooltip'
 import Box from '@mui/material/Box'
@@ -207,7 +211,7 @@ const Table: FC<Props> = ({ metaTitle }) => {
   }, [languageCode, mutations, owners, publications, t])
 
   return (
-    <DataGrid
+    <DataGridPro
       localeText={MuiTableLocale}
       initialState={{
         pagination: {
@@ -228,7 +232,8 @@ const Table: FC<Props> = ({ metaTitle }) => {
         setPagination({ pageSize: model.pageSize, pageIndex: model.page })
       }
       columns={columns}
-      pageSizeOptions={[25, 50, 100]}
+      pagination
+      pageSizeOptions={[100, 1000, 5000, 10000]}
       disableRowSelectionOnClick
     />
   )
