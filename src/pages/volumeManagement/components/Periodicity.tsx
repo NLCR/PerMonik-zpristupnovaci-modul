@@ -23,16 +23,26 @@ import { blue } from '@mui/material/colors'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { useLanguageCode } from '../../../utils/helperHooks'
 import { TPublication } from '../../../schema/publication'
-import { repairVolume, VolumeSchema } from '../../../schema/volume'
+import {
+  repairVolume,
+  TEditableVolumePeriodicity,
+  VolumeSchema,
+} from '../../../schema/volume'
 import {
   repairOrCreateSpecimen,
   TEditableSpecimen,
 } from '../../../schema/specimen'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import { isEqual } from 'lodash-es'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import useSortedSpecimensNamesAndSubNames from '../../../hooks/useSortedSpecimensNamesAndSubNames'
+import Autocomplete from '@mui/material/Autocomplete'
 
 const mainModalStyle = {
   overflow: 'auto',
   position: 'absolute' as const,
-  maxHeight: '600px',
+  maxHeight: '650px',
   height: '80vh',
   top: '50%',
   left: '50%',
@@ -72,6 +82,9 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
   const { t, i18n } = useTranslation()
   const { languageCode } = useLanguageCode()
 
+  const setShowAttachmentsAtTheEnd = useVolumeManagementStore(
+    (state) => state.volumeActions.setShowAttachmentsAtTheEnd
+  )
   const volumePeriodicityActions = useVolumeManagementStore(
     (state) => state.volumePeriodicityActions
   )
@@ -80,13 +93,41 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
   )
   const volumeState = useVolumeManagementStore((state) => state.volumeState)
 
+  const { names, subNames } = useSortedSpecimensNamesAndSubNames()
+
+  const duplicateRow = (row: TEditableVolumePeriodicity) => {
+    const periodicityClone = clone(volumeState.periodicity)
+    const periodicityIndex = volumeState.periodicity.findIndex((p) =>
+      isEqual(p, row)
+    )
+
+    if (periodicityIndex >= 0) {
+      periodicityClone.splice(periodicityIndex + 1, 0, {
+        ...row,
+        duplicated: true,
+      })
+      volumePeriodicityActions.setPeriodicityState(periodicityClone)
+    }
+  }
+
+  const removeRow = (row: TEditableVolumePeriodicity) => {
+    const periodicityClone = clone(volumeState.periodicity)
+    const periodicityIndex = volumeState.periodicity.findIndex((p) =>
+      isEqual(p, row)
+    )
+
+    if (periodicityIndex >= 0) {
+      periodicityClone.splice(periodicityIndex, 1)
+      volumePeriodicityActions.setPeriodicityState(periodicityClone)
+    }
+  }
+
   const generateVolume = () => {
     // This ensures that `getDayName` will return english name of day
     dayjs.locale('en')
     const volumeClone = clone(volumeState)
 
     const repairedVolume = repairVolume(volumeClone, publications)
-
     const validation = VolumeSchema.safeParse(repairedVolume)
 
     if (!validation.success) {
@@ -221,6 +262,7 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
                     <TableCell>{t('volume_overview.pages_count')}</TableCell>
                     <TableCell>{t('volume_overview.name')}</TableCell>
                     <TableCell>{t('volume_overview.sub_name')}</TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -286,36 +328,104 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
                           />
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <Autocomplete
+                            freeSolo
+                            renderInput={(params) => (
+                              <TextField {...params} label="" />
+                            )}
+                            sx={{
+                              minWidth: '250px',
+                            }}
                             size="small"
                             value={p.name}
                             disabled={!canEdit}
-                            onChange={(event) =>
+                            onChange={(event, value) =>
                               volumePeriodicityActions.setName(
-                                event.target.value,
+                                value ? value : '',
                                 index
                               )
                             }
+                            options={names}
                           />
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <Autocomplete
+                            freeSolo
+                            renderInput={(params) => (
+                              <TextField {...params} label="" />
+                            )}
+                            sx={{
+                              minWidth: '250px',
+                            }}
                             size="small"
                             value={p.subName}
                             disabled={!canEdit}
-                            onChange={(event) =>
+                            onChange={(event, value) =>
                               volumePeriodicityActions.setSubName(
-                                event.target.value,
+                                value ? value : '',
                                 index
                               )
                             }
+                            options={subNames}
                           />
+                        </TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              height: '100%',
+                            }}
+                          >
+                            {p.duplicated ? (
+                              <DeleteOutlineIcon
+                                onClick={() => removeRow(p)}
+                                sx={{
+                                  cursor: 'pointer',
+                                }}
+                              />
+                            ) : (
+                              <AddCircleOutlineIcon
+                                onClick={() => duplicateRow(p)}
+                                sx={{
+                                  cursor: 'pointer',
+                                }}
+                              />
+                            )}
+                          </Box>
                         </TableCell>
                       </TableRow>
                     )
                   })}
                 </TableBody>
               </Table>
+              <FormControlLabel
+                sx={{
+                  // display: 'flex',
+                  width: '100%',
+                  marginTop: '10px',
+                  // justifyContent: 'space-between',
+                  // alignItems: 'start',
+                  // fontSize: '12px',
+                }}
+                control={
+                  <Checkbox
+                    checked={volumeState.showAttachmentsAtTheEnd}
+                    onChange={(event) =>
+                      setShowAttachmentsAtTheEnd(event.target.checked)
+                    }
+                    disabled={!canEdit}
+                    sx={{
+                      // marginTop: 1,
+                      // marginBottom: 1,
+                      cursor: 'pointer',
+                      // width: '100%',
+                    }}
+                  />
+                }
+                label={t('volume_overview.show_attachments_at_the_end')}
+              />
               <Box
                 sx={{
                   display: 'flex',

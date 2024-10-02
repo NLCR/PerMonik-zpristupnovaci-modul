@@ -35,6 +35,7 @@ export const EditableVolumePeriodicitySchema = z.object({
   pagesCount: z.number().or(z.string()),
   name: z.string(),
   subName: z.string(),
+  duplicated: z.boolean().optional(),
 })
 
 export const VolumeSchema = z.object({
@@ -123,7 +124,7 @@ export const repairVolume = (
   publications: TPublication[]
 ): TVolume => {
   return {
-    id: volume.id ?? uuid(),
+    id: volume.id.length ? volume.id : uuid(),
     barCode: volume.barCode.trim() || '',
     dateFrom: volume.dateFrom ?? '',
     dateTo: volume.dateTo ?? '',

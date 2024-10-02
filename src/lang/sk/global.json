@@ -18,7 +18,8 @@
     "saved_successfully": "Úspešne uložené",
     "error_when_saving": "Pri ukladaní nastala chyba",
     "retry_fetch": "Znova načítať",
-    "session_expired": "Relácia vypršala"
+    "session_expired": "Relácia vypršala",
+    "back": "Späť"
   },
   "helmet": {
     "title": "Evidencia periodík – výskumná aplikácia"
@@ -134,7 +135,8 @@
     "do_renumber": "Prečíslovať",
     "delete_volume_caption": "Potvrdenie vymazania",
     "delete_volume_text": "Naozaj chcete odstrániť celý balík?",
-    "delete_volume_text2": "Nechcete si to rozmyslieť?"
+    "delete_volume_text2": "Nechcete si to rozmyslieť?",
+    "back_to_specimens_overview": "Späť na tabuľku"
   },
   "table": {
     "mutations": "Mutácie",
@@ -181,7 +183,8 @@
     "home": "Domov",
     "login": "Prihlásenie",
     "administration": "Administrácia",
-    "logout": "Odhlásiť sa"
+    "logout": "Odhlásiť sa",
+    "volume": "Zväzok"
   },
   "not_found": {
     "page_dont_exists": "Táto stránka neexistuje"
@@ -215,7 +218,8 @@
     "cs_name": "Český názov",
     "sk_name": "Slovenský názov",
     "en_name": "Anglický názov",
-    "delete": "Zmazať"
+    "delete": "Zmazať",
+    "verified": "overené"
   },
   "schema": {
     "name_min_length": "Vyplňte prosím pole `meno`",

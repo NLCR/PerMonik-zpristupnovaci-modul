@@ -125,3 +125,13 @@ export const useSpecimensStartDateForCalendar = (metaTitleId?: string) => {
     enabled: !!metaTitleId,
   })
 }
+
+export const useGetSpecimenNamesAndSubNames = () => {
+  return useQuery({
+    queryKey: ['specimen', 'names'],
+    queryFn: () =>
+      api()
+        .get(`specimen/names`)
+        .json<{ names: string[]; subNames: string[] }>(),
+  })
+}

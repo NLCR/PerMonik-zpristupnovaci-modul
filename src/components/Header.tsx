@@ -191,6 +191,14 @@ const Header = () => {
               )}
               {me && (
                 <>
+                  <NavLinkStyled
+                    sx={{
+                      marginRight: 0,
+                    }}
+                    to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/`}
+                  >
+                    {t('header.volume')}
+                  </NavLinkStyled>
                   <Divider
                     orientation="vertical"
                     flexItem

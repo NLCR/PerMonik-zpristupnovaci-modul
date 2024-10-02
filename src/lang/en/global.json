@@ -18,7 +18,8 @@
     "saved_successfully": "Saved successfully",
     "error_when_saving": "An error occurred while saving",
     "retry_fetch": "Retry fetch",
-    "session_expired": "Session expired"
+    "session_expired": "Session expired",
+    "back": "Back"
   },
   "helmet": {
     "title": "Periodicals Register – Research Application"
@@ -134,7 +135,8 @@
     "do_renumber": "Renumber",
     "delete_volume_caption": "Confirm deletion",
     "delete_volume_text": "Do you really want to delete the whole volume?",
-    "delete_volume_text2": "Don't you want to change your mind?"
+    "delete_volume_text2": "Don't you want to change your mind?",
+    "back_to_specimens_overview": "Back to table"
   },
   "table": {
     "mutations": "Mutations",
@@ -181,7 +183,8 @@
     "home": "Home",
     "login": "Login",
     "administration": "Administration",
-    "logout": "Logout"
+    "logout": "Logout",
+    "volume": "Volume"
   },
   "not_found": {
     "page_dont_exists": "This page does not exist"
@@ -215,7 +218,8 @@
     "cs_name": "Czech name",
     "sk_name": "Slovak name",
     "en_name": "English name",
-    "delete": "Delete"
+    "delete": "Delete",
+    "verified": "Verified"
   },
   "schema": {
     "name_min_length": "Please fill out the 'name' field",

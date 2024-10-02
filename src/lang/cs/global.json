@@ -18,7 +18,8 @@
     "saved_successfully": "Úpspěšně uloženo",
     "error_when_saving": "Při ukládání nastala chyba",
     "retry_fetch": "Znovu načíst",
-    "session_expired": "Relace vypršela"
+    "session_expired": "Relace vypršela",
+    "back": "Zpět"
   },
   "helmet": {
     "title": "Evidence periodik – badatelská aplikace"
@@ -134,7 +135,8 @@
     "do_renumber": "Přečíslovat",
     "delete_volume_caption": "Potvrdit smazání",
     "delete_volume_text": "Chcete opravdu smazat celý svazek?",
-    "delete_volume_text2": "Nechcete si to ještě rozmyslet?"
+    "delete_volume_text2": "Nechcete si to ještě rozmyslet?",
+    "back_to_specimens_overview": "Zpět na tabulku"
   },
   "table": {
     "mutations": "Mutace",
@@ -181,7 +183,8 @@
     "home": "Domů",
     "login": "Přihlášení",
     "administration": "Administrace",
-    "logout": "Odhlásit se"
+    "logout": "Odhlásit se",
+    "volume": "Svazek"
   },
   "not_found": {
     "page_dont_exists": "Tato stránka neexistuje"
@@ -215,7 +218,8 @@
     "cs_name": "Český název",
     "sk_name": "Slovenský název",
     "en_name": "Anglický název",
-    "delete": "Smazat"
+    "delete": "Smazat",
+    "verified": "Ověřeno"
   },
   "schema": {
     "name_min_length": "Vyplňte prosím pole `jméno`",

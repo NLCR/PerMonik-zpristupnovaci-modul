@@ -4,7 +4,11 @@ import clone from 'lodash/clone'
 import { useTranslation } from 'react-i18next'
 import { useVolumeManagementStore } from '../slices/useVolumeManagementStore'
 import { repairVolume, VolumeSchema } from '../schema/volume'
-import { repairOrCreateSpecimen, SpecimenSchema } from '../schema/specimen'
+import {
+  repairOrCreateSpecimen,
+  SpecimenSchema,
+  TEditableSpecimen,
+} from '../schema/specimen'
 import {
   useCreateVolumeWithSpecimensMutation,
   useDeleteVolumeWithSpecimensMutation,
@@ -63,14 +67,31 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
     }
   }
 
-  const doUpdate = async () => {
+  const setSpecimensVerified = (
+    input: TEditableSpecimen[]
+  ): TEditableSpecimen[] =>
+    input.map((sp) => {
+      if (sp.numExists) {
+        const damageTypes = new Set(sp.damageTypes)
+        damageTypes.add('OK')
+        return {
+          ...sp,
+          damageTypes: Array.from(damageTypes),
+        }
+      }
+      return sp
+    })
+
+  const doUpdate = async (setVerified = false) => {
     try {
       const data = doValidation()
 
       try {
         await callUpdate({
           volume: data.repairedVolume,
-          specimens: data.repairedSpecimens,
+          specimens: setVerified
+            ? setSpecimensVerified(data.repairedSpecimens)
+            : data.repairedSpecimens,
         })
         toast.success(t('volume_overview.volume_updated_successfully'))
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -83,14 +104,16 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
     }
   }
 
-  const doRegeneratedUpdate = async () => {
+  const doRegeneratedUpdate = async (setVerified = false) => {
     try {
       const data = doValidation()
 
       try {
         await callRegeneratedUpdate({
           volume: data.repairedVolume,
-          specimens: data.repairedSpecimens,
+          specimens: setVerified
+            ? setSpecimensVerified(data.repairedSpecimens)
+            : data.repairedSpecimens,
         })
         toast.success(t('volume_overview.volume_updated_successfully'))
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -103,14 +126,16 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
     }
   }
 
-  const doCreate = async () => {
+  const doCreate = async (setVerified = false) => {
     try {
       const data = doValidation()
 
       try {
         const id = await callCreate({
           volume: data.repairedVolume,
-          specimens: data.repairedSpecimens,
+          specimens: setVerified
+            ? setSpecimensVerified(data.repairedSpecimens)
+            : data.repairedSpecimens,
         })
         toast.success(t('volume_overview.volume_created_successfully'))
         navigate(`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${id}`)
