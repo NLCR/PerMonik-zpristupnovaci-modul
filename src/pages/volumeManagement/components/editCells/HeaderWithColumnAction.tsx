@@ -29,22 +29,6 @@ const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
     ).length
     const specimensThatExists = specimens.filter((sp) => sp.numExists).length
 
-    if (field === 'OK') {
-      specimensClone = specimensClone.map((sp) => {
-        if (sp.numExists) {
-          const damageTypes = new Set(sp.damageTypes)
-          damageTypes.add(field)
-          return {
-            ...sp,
-            damageTypes: Array.from(damageTypes),
-          }
-        }
-        return sp
-      })
-      specimensActions.setSpecimensState(specimensClone)
-      return
-    }
-
     if (
       !specimensWithSelectedDamage ||
       specimensWithSelectedDamage !== specimensThatExists

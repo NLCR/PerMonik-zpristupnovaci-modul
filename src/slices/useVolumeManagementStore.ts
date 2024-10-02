@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { create } from 'zustand'
 import { produce } from 'immer'
-import { Dayjs } from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import {
   TEditableVolume,
   TEditableVolumePeriodicity,
@@ -36,8 +36,8 @@ export const initialState: TVariablesState = {
   volumeState: {
     id: '',
     barCode: '',
-    dateFrom: '',
-    dateTo: '',
+    dateFrom: dayjs().startOf('year').format('YYYY-MM-DD'),
+    dateTo: dayjs().startOf('year').format('YYYY-MM-DD'),
     firstNumber: '',
     lastNumber: '',
     metaTitleId: '',
@@ -64,7 +64,7 @@ interface TState extends TVariablesState {
   setInitialState: () => void
   volumeActions: {
     setVolumeState: (value: TEditableVolume) => void
-    setMetaTitleId: (value: string) => void
+    setMetaTitle: (id: string, name: string) => void
     setMutationId: (value: string) => void
     setPublicationMark: (value: string) => void
     setBarCode: (value: string) => void
@@ -86,6 +86,7 @@ interface TState extends TVariablesState {
     setName: (value: string, index: number) => void
     setSubName: (value: string, index: number) => void
     setPeriodicityGenerationUsed: (value: boolean) => void
+    setPeriodicityState: (periodicity: TEditableVolumePeriodicity[]) => void
   }
   specimensActions: {
     setSpecimensState: (value: TEditableSpecimen[]) => void
@@ -108,10 +109,13 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
       set(() => ({
         volumeState: value,
       })),
-    setMetaTitleId: (value) =>
+    setMetaTitle: (id, name) =>
       set(
         produce((state: TState) => {
-          state.volumeState.metaTitleId = value
+          state.volumeState.metaTitleId = id
+          state.volumeState.periodicity = state.volumeState.periodicity.map(
+            (p) => ({ ...p, name: name })
+          )
         })
       ),
     setMutationId: (value) =>
@@ -147,9 +151,13 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
     setDateFrom: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.dateFrom = value?.isValid()
-            ? value.format('YYYY-MM-DD')
-            : ''
+          if (value?.isValid()) {
+            state.volumeState.dateFrom = value.format('YYYY-MM-DD')
+            state.volumeState.dateTo = value.endOf('month').format('YYYY-MM-DD')
+          } else {
+            state.volumeState.dateFrom = ''
+            state.volumeState.dateTo = ''
+          }
         })
       ),
     setDateTo: (value) =>
@@ -240,6 +248,12 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
       set(
         produce((state: TState) => {
           state.periodicityGenerationUsed = value
+        })
+      ),
+    setPeriodicityState: (periodicity: TEditableVolumePeriodicity[]) =>
+      set(
+        produce((state: TState) => {
+          state.volumeState.periodicity = periodicity
         })
       ),
   },

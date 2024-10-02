@@ -1,14 +1,12 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
-import SpeedDial from '@mui/material/SpeedDial'
-import SpeedDialAction from '@mui/material/SpeedDialAction'
-import SpeedDialIcon from '@mui/material/SpeedDialIcon'
 import Typography from '@mui/material/Typography'
 import React, { useEffect, useMemo, useState } from 'react'
 import SaveIcon from '@mui/icons-material/Save'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { blue } from '@mui/material/colors'
 import { useMangedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
@@ -48,6 +46,8 @@ const VolumeManagement = () => {
   const { volumeId } = useParams()
   const { data: me, isLoading: meLoading, isError: meError } = useMeQuery()
   const { t } = useTranslation()
+
+  const navigate = useNavigate()
 
   const [confirmDeletionModalStage, setConfirmDeletionModalStage] = useState({
     opened: false,
@@ -130,38 +130,65 @@ const VolumeManagement = () => {
     const actionsArray: {
       icon: JSX.Element
       name: string
+      color: 'primary' | 'secondary' | 'error'
       onClick: () => void
     }[] = []
 
     if (volumeId && volumeRegenerated) {
-      actionsArray.push({
-        icon: <SaveAsIcon />,
-        // name: t('administration.update'),
-        name: t('administration.save'),
-        onClick: doRegeneratedUpdate,
-      })
+      actionsArray.push(
+        {
+          icon: <CheckCircleIcon />,
+          name: t('administration.verified'),
+          color: 'primary',
+          onClick: () => doRegeneratedUpdate(true),
+        },
+        {
+          icon: <SaveAsIcon />,
+          name: t('administration.save'),
+          color: 'primary',
+          onClick: doRegeneratedUpdate,
+        }
+      )
     }
     if (volumeId && !volumeRegenerated) {
-      actionsArray.push({
-        icon: <SaveAsIcon />,
-        // name: t('administration.update'),
-        name: t('administration.save'),
-        onClick: doUpdate,
-      })
+      actionsArray.push(
+        {
+          icon: <CheckCircleIcon />,
+          name: t('administration.verified'),
+          color: 'primary',
+          onClick: () => doUpdate(true),
+        },
+        {
+          icon: <SaveAsIcon />,
+          name: t('administration.save'),
+          color: 'primary',
+          onClick: doUpdate,
+        }
+      )
     }
     if (volumeId) {
       actionsArray.push({
         icon: <DeleteForeverIcon />,
         name: t('administration.delete'),
+        color: 'error',
         onClick: () => setConfirmDeletionModalStage({ opened: true, stage: 1 }),
       })
     }
     if (!volumeId) {
-      actionsArray.push({
-        icon: <SaveIcon />,
-        name: t('administration.save'),
-        onClick: doCreate,
-      })
+      actionsArray.push(
+        {
+          icon: <CheckCircleIcon />,
+          name: t('administration.verified'),
+          color: 'primary',
+          onClick: () => doCreate(true),
+        },
+        {
+          icon: <SaveIcon />,
+          name: t('administration.save'),
+          color: 'primary',
+          onClick: doCreate,
+        }
+      )
     }
 
     return actionsArray
@@ -283,24 +310,51 @@ const VolumeManagement = () => {
           mutations={mutations}
           publications={publications}
         />
-      </Box>
-      {canEdit ? (
-        <SpeedDial
-          ariaLabel=""
-          sx={{ position: 'absolute', bottom: 16, right: 16 }}
-          icon={<SpeedDialIcon />}
+        <Box
+          sx={{
+            marginTop: '16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
         >
-          {actions.map((action) => (
-            <SpeedDialAction
-              key={action.name}
-              icon={action.icon}
-              tooltipTitle={action.name}
-              onClick={action.onClick}
-            />
-          ))}
-        </SpeedDial>
-      ) : null}
-      {confirmDeletionModalStage.opened ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '8px',
+              alignItems: 'center',
+            }}
+          >
+            <Button variant="outlined" onClick={() => navigate(-1)}>
+              {t('volume_overview.back_to_specimens_overview')}
+            </Button>
+          </Box>
+          {canEdit ? (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                gap: '8px',
+                alignItems: 'center',
+              }}
+            >
+              {actions.map((action) => (
+                <Button
+                  variant="contained"
+                  color={action.color}
+                  key={action.name}
+                  startIcon={action.icon}
+                  onClick={action.onClick}
+                >
+                  {action.name}
+                </Button>
+              ))}
+            </Box>
+          ) : null}
+        </Box>
+      </Box>
+      {volumeId?.length && confirmDeletionModalStage.opened ? (
         <Modal
           open={confirmDeletionModalStage.opened}
           onClose={() => {

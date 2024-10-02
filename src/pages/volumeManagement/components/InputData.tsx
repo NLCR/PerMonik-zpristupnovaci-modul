@@ -10,8 +10,6 @@ import Box from '@mui/material/Box'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
-import Checkbox from '@mui/material/Checkbox'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import { DatePicker } from '@mui/x-date-pickers-pro'
 import { useLanguageCode } from '../../../utils/helperHooks'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
@@ -95,7 +93,11 @@ const InputData: FC<InputDataProps> = ({
                 value={volumeState.metaTitleId}
                 disabled={!canEdit}
                 onChange={(event) =>
-                  volumeActions.setMetaTitleId(event.target.value)
+                  volumeActions.setMetaTitle(
+                    event.target.value,
+                    metaTitles.find((m) => m.id === event.target.value)?.name ||
+                      ''
+                  )
                 }
               >
                 {metaTitles.map((o) => (
@@ -282,36 +284,12 @@ const InputData: FC<InputDataProps> = ({
           </TableRow>
         </TableBody>
       </Table>
-      <FormControlLabel
-        sx={{
-          // display: 'flex',
-          width: '100%',
-          // justifyContent: 'space-between',
-          // alignItems: 'start',
-          // fontSize: '12px',
-        }}
-        control={
-          <Checkbox
-            checked={volumeState.showAttachmentsAtTheEnd}
-            onChange={(event) =>
-              volumeActions.setShowAttachmentsAtTheEnd(event.target.checked)
-            }
-            disabled={!canEdit}
-            sx={{
-              // marginTop: 1,
-              // marginBottom: 1,
-              cursor: 'pointer',
-              // width: '100%',
-            }}
-          />
-        }
-        label={t('volume_overview.show_attachments_at_the_end')}
-      />
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          marginTop: '16px',
         }}
       >
         <Periodicity canEdit={canEdit} publications={publications} />
