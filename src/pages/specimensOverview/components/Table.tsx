@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
 import Tooltip from '@mui/material/Tooltip'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useParams } from 'react-router-dom'
 import { blue, green, grey, orange, red } from '@mui/material/colors'
 import { TFunction } from 'i18next'
 import { TMetaTitle } from '../../../schema/metaTitle'
@@ -21,6 +21,7 @@ import { useSpecimenListQuery } from '../../../api/specimen'
 import { TSpecimen } from '../../../schema/specimen'
 import { damageTypes } from '../../../utils/constants'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
+import { generateVolumeUrlWithParams } from '../../../utils/helperFunctions'
 
 const getSpecimenState = (sp: TSpecimen, t: TFunction) => {
   if (sp.damageTypes) {
@@ -106,6 +107,8 @@ const OwnersBarCodeCell: FC<{
 }> = ({ row, ownerId }) => {
   const { t, i18n } = useTranslation()
 
+  const { metaTitleId } = useParams()
+
   return row.ownerId === ownerId ? (
     <Grid
       container
@@ -125,9 +128,12 @@ const OwnersBarCodeCell: FC<{
           },
         }}
         component={RouterLink}
-        to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
-          row.volumeId
-        }`}
+        to={generateVolumeUrlWithParams(
+          `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
+            row.volumeId
+          }`,
+          metaTitleId || ''
+        )}
       >
         {row.barCode}
       </Grid>

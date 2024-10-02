@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -25,6 +25,7 @@ import Modal from '@mui/material/Modal'
 import Backdrop from '@mui/material/Backdrop'
 import Fade from '@mui/material/Fade'
 import Button from '@mui/material/Button'
+import { BACK_META_TITLE_ID } from '../../utils/constants'
 
 const modalStyle = {
   overflowY: 'auto',
@@ -45,8 +46,9 @@ const modalStyle = {
 const VolumeManagement = () => {
   const { volumeId } = useParams()
   const { data: me, isLoading: meLoading, isError: meError } = useMeQuery()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
   const [confirmDeletionModalStage, setConfirmDeletionModalStage] = useState({
@@ -326,7 +328,16 @@ const VolumeManagement = () => {
               alignItems: 'center',
             }}
           >
-            <Button variant="outlined" onClick={() => navigate(-1)}>
+            <Button
+              variant="outlined"
+              onClick={() =>
+                navigate(
+                  `/${i18n.resolvedLanguage}/${t('urls.specimens_overview')}/${searchParams.get(
+                    BACK_META_TITLE_ID
+                  )}`
+                )
+              }
+            >
               {t('volume_overview.back_to_specimens_overview')}
             </Button>
           </Box>
