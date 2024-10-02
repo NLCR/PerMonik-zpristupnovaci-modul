@@ -1,6 +1,5 @@
 import type { TSpecimenDamageTypes } from '../schema/specimen'
 
-// eslint-disable-next-line import/prefer-default-export
 export const damageTypes: TSpecimenDamageTypes[] = [
   'OK',
   'ChCC',
@@ -15,3 +14,5 @@ export const damageTypes: TSpecimenDamageTypes[] = [
   'CzV',
   'ChDatum',
 ]
+
+export const BACK_META_TITLE_ID = 'backMetaTitleId'

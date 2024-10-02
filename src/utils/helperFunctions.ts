@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
+import { BACK_META_TITLE_ID } from './constants'
 
-// eslint-disable-next-line import/prefer-default-export
 export const getFirstMondayOfMonth = (date: Date | null) => {
   if (!date) return null
   const year = date.getFullYear()
@@ -13,4 +13,8 @@ export const getFirstMondayOfMonth = (date: Date | null) => {
   }
 
   return firstMonday
+}
+
+export const generateVolumeUrlWithParams = (url: string, id: string) => {
+  return `${url}?${BACK_META_TITLE_ID}=${id}`
 }
