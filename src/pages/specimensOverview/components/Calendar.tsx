@@ -14,7 +14,7 @@ import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import DriveFileMoveOutlinedIcon from '@mui/icons-material/DriveFileMoveOutlined'
-import { Link as ReactLink, useParams } from 'react-router-dom'
+import { Link as ReactLink, useNavigate, useParams } from 'react-router-dom'
 import { blue } from '@mui/material/colors'
 import { TSpecimen } from '../../../schema/specimen'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
@@ -47,6 +47,7 @@ type TSpecimensDay = {
 const Calendar: FC<TProps> = ({ metaTitle }) => {
   const { t, i18n } = useTranslation()
   const { metaTitleId } = useParams()
+  const navigate = useNavigate()
   const calendarDate = useSpecimensOverviewStore((state) => state.calendarDate)
   const { data: mutations } = useMutationListQuery()
   const { data: publications } = usePublicationListQuery()
@@ -333,6 +334,21 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
             setSubModalOpened(false)
             setSubModalData(null)
           },
+        }}
+        acceptButton={{
+          callback: () => {
+            if (subModalData?.volumeId) {
+              navigate(
+                generateVolumeUrlWithParams(
+                  `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
+                    subModalData.volumeId
+                  }`,
+                  metaTitleId || ''
+                )
+              )
+            }
+          },
+          text: t('specimens_overview.detailed_volume_overview'),
         }}
         opened={subModalOpened}
         header={`${t('specimens_overview.volume_overview_modal_link')} ${subModalData?.barCode}`}
