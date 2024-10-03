@@ -53,12 +53,11 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
   const { data: publications } = usePublicationListQuery()
   const { data: owners } = useOwnerListQuery()
   const { languageCode } = useLanguageCode()
-  const [mainModalOpened, setMainModalOpened] = useState(false)
+
   const [mainModalData, setMainModalData] = useState<{
     data: TSpecimen[]
     day: string
   } | null>(null)
-  const [subModalOpened, setSubModalOpened] = useState(false)
   const [subModalData, setSubModalData] = useState<TSpecimen | null>(null)
 
   const {
@@ -149,16 +148,14 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
     >
       <ModalContainer
         onClose={() => {
-          setMainModalOpened(false)
           setMainModalData(null)
         }}
         closeButton={{
           callback: () => {
-            setMainModalOpened(false)
             setMainModalData(null)
           },
         }}
-        opened={mainModalOpened}
+        opened={!!mainModalData}
         header={metaTitle.name}
         style="fitted"
       >
@@ -276,7 +273,6 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                         },
                       }}
                       onClick={() => {
-                        setSubModalOpened(true)
                         setSubModalData(s)
                       }}
                     >
@@ -326,12 +322,10 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
       </ModalContainer>
       <ModalContainer
         onClose={() => {
-          setSubModalOpened(false)
           setSubModalData(null)
         }}
         closeButton={{
           callback: () => {
-            setSubModalOpened(false)
             setSubModalData(null)
           },
         }}
@@ -350,7 +344,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
           },
           text: t('specimens_overview.detailed_volume_overview'),
         }}
-        opened={subModalOpened}
+        opened={!!subModalData}
         header={`${t('specimens_overview.volume_overview_modal_link')} ${subModalData?.barCode}`}
       >
         <VolumeOverviewStatsModal volumeId={subModalData?.volumeId} />
@@ -399,7 +393,6 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                     cursor: 'pointer',
                   })}
                   onClick={() => {
-                    setMainModalOpened(true)
                     setMainModalData({ data: row, day: day.day })
                   }}
                 >
