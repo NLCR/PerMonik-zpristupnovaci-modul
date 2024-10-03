@@ -4,31 +4,10 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import React, { FC, useState } from 'react'
 import clone from 'lodash/clone'
 import { toast } from 'react-toastify'
-import Backdrop from '@mui/material/Backdrop'
-import Fade from '@mui/material/Fade'
-import Box from '@mui/material/Box'
-import { blue } from '@mui/material/colors'
-import Modal from '@mui/material/Modal'
 import { useTranslation } from 'react-i18next'
-import Button from '@mui/material/Button'
 import { useVolumeManagementStore } from '../../../../slices/useVolumeManagementStore'
 import { TEditableSpecimen } from '../../../../schema/specimen'
-
-const modalStyle = {
-  overflowY: 'hidden',
-  position: 'absolute' as const,
-  maxHeight: '230px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '550px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  p: 4,
-}
+import ModalContainer from '../../../../components/ModalContainer'
 
 type RenumberableValueCellProps = {
   row: TEditableSpecimen
@@ -131,58 +110,32 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
           <KeyboardArrowDownIcon />
         </IconButton>
       </Typography>
-      {modalOpened ? (
-        <Modal
-          open={modalOpened}
-          onClose={() => setModalOpened(false)}
-          closeAfterTransition
-          slots={{ backdrop: Backdrop }}
-          slotProps={{
-            backdrop: {
-              color: '#fff',
-              timeout: 500,
-            },
+      <ModalContainer
+        header={t('volume_overview.renumber_header')}
+        opened={modalOpened}
+        onClose={() => setModalOpened(false)}
+        acceptButton={{
+          callback: () => {
+            setModalOpened(false)
+            doRenumber(type)
+          },
+          disabled: !canEdit,
+          text: t('volume_overview.do_renumber'),
+        }}
+        closeButton={{ callback: () => setModalOpened(false) }}
+        style="fitted"
+      >
+        <Typography
+          sx={{
+            marginBottom: '5px',
+            fontWeight: '600',
           }}
         >
-          <Fade in={modalOpened}>
-            <Box sx={modalStyle}>
-              <Typography
-                sx={{
-                  color: blue['900'],
-                  fontSize: '24px',
-                  fontWeight: 'bold',
-                  marginBottom: '16px',
-                }}
-              >
-                {t('volume_overview.renumber_header')}
-              </Typography>
-              <Typography
-                sx={{
-                  marginBottom: '5px',
-                  fontWeight: '600',
-                }}
-              >
-                {t('volume_overview.renumber_text', {
-                  value: getWillBeRenumbered(type),
-                })}
-              </Typography>
-              <Button
-                sx={{
-                  marginTop: '50px',
-                }}
-                variant="contained"
-                disabled={!canEdit}
-                onClick={() => {
-                  setModalOpened(false)
-                  doRenumber(type)
-                }}
-              >
-                {t('volume_overview.do_renumber')}
-              </Button>
-            </Box>
-          </Fade>
-        </Modal>
-      ) : null}
+          {t('volume_overview.renumber_text', {
+            value: getWillBeRenumbered(type),
+          })}
+        </Typography>
+      </ModalContainer>
     </>
   ) : null
 }

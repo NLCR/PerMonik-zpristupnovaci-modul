@@ -1,8 +1,5 @@
-import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
-import Modal from '@mui/material/Modal'
 import Table from '@mui/material/Table'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
@@ -35,38 +32,7 @@ import ShowError from '../../../components/ShowError'
 import VolumeOverviewStatsModal from './VolumeOverviewStatsModal'
 import { usePublicationListQuery } from '../../../api/publication'
 import { useOwnerListQuery } from '../../../api/owner'
-
-const mainModalStyle = {
-  overflowY: 'auto',
-  position: 'absolute' as const,
-  maxHeight: '600px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '1200px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  p: 4,
-}
-
-const subModalStyle = {
-  overflowY: 'auto',
-  position: 'absolute' as const,
-  maxHeight: '800px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '1000px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  p: 4,
-}
+import ModalContainer from '../../../components/ModalContainer'
 
 type TProps = {
   metaTitle: TMetaTitle
@@ -180,232 +146,199 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         // overflowY: 'auto',
       }}
     >
-      <Modal
-        open={mainModalOpened}
+      <ModalContainer
         onClose={() => {
           setMainModalOpened(false)
           setMainModalData(null)
         }}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            color: '#fff',
-            timeout: 500,
+        closeButton={{
+          callback: () => {
+            setMainModalOpened(false)
+            setMainModalData(null)
           },
         }}
+        opened={mainModalOpened}
+        header={metaTitle.name}
+        style="fitted"
       >
-        <Fade in={mainModalOpened}>
-          <Box sx={mainModalStyle}>
-            <Typography
-              sx={{
-                color: blue['900'],
-                fontSize: '24px',
-                fontWeight: 'bold',
-                marginBottom: '16px',
-              }}
-            >
-              {metaTitle.name}
-            </Typography>
-            {/* {dayjs(day.day).format('dddd DD.MM.YYYY')} */}
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: '700',
-                }}
-              >
-                {t('specimens_overview.date')}
-              </Typography>
-              <Typography
-                sx={{
-                  marginBottom: '20px',
-                }}
-              >
-                {dayjs(mainModalData?.day).format('dddd DD.MM.YYYY')}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: '700',
-                }}
-              >
-                {t('specimens_overview.specimens')}
-              </Typography>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>{t('specimens_overview.mutation')}</TableCell>
-                    <TableCell>{t('specimens_overview.publication')}</TableCell>
-                    <TableCell>{t('specimens_overview.name')}</TableCell>
-                    <TableCell>{t('specimens_overview.sub_name')}</TableCell>
-                    <TableCell>{t('specimens_overview.owner')}</TableCell>
-                    <TableCell>
-                      {t('specimens_overview.digitization')}
-                    </TableCell>
-                    <TableCell>
-                      {t('specimens_overview.volume_overview_modal_link')}
-                    </TableCell>
-                    <TableCell>
-                      {t('specimens_overview.volume_detail_link')}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {mainModalData?.data.map((s) => (
-                    <TableRow key={s.id}>
-                      <TableCell>
-                        {
-                          mutations?.find((m) => m.id === s.mutationId)?.name[
-                            languageCode
-                          ]
-                        }
-                      </TableCell>
-                      <TableCell>
-                        {
-                          publications?.find((p) => p.id === s.publicationId)
-                            ?.name[languageCode]
-                        }
-                      </TableCell>
-                      <TableCell>{s.name}</TableCell>
-                      <TableCell
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: '700',
+            }}
+          >
+            {t('specimens_overview.date')}
+          </Typography>
+          <Typography
+            sx={{
+              marginBottom: '20px',
+            }}
+          >
+            {dayjs(mainModalData?.day).format('dddd DD.MM.YYYY')}
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: '700',
+            }}
+          >
+            {t('specimens_overview.specimens')}
+          </Typography>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>{t('specimens_overview.mutation')}</TableCell>
+                <TableCell>{t('specimens_overview.publication')}</TableCell>
+                <TableCell>{t('specimens_overview.name')}</TableCell>
+                <TableCell>{t('specimens_overview.sub_name')}</TableCell>
+                <TableCell>{t('specimens_overview.owner')}</TableCell>
+                <TableCell>{t('specimens_overview.digitization')}</TableCell>
+                <TableCell>
+                  {t('specimens_overview.volume_overview_modal_link')}
+                </TableCell>
+                <TableCell>
+                  {t('specimens_overview.volume_detail_link')}
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {mainModalData?.data.map((s) => (
+                <TableRow key={s.id}>
+                  <TableCell>
+                    {
+                      mutations?.find((m) => m.id === s.mutationId)?.name[
+                        languageCode
+                      ]
+                    }
+                  </TableCell>
+                  <TableCell>
+                    {
+                      publications?.find((p) => p.id === s.publicationId)?.name[
+                        languageCode
+                      ]
+                    }
+                  </TableCell>
+                  <TableCell>{s.name}</TableCell>
+                  <TableCell
+                    sx={{
+                      maxWidth: '300px',
+                    }}
+                  >
+                    {s.subName}
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      component="a"
+                      href={`https://www.knihovny.cz/Search/Results?lookfor=${s.barCode}&type=AllFields&limit=20`}
+                      target="_blank"
+                      rel="noreferrer"
+                      sx={{
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        color: blue['700'],
+                        transition: 'color 0.1s',
+                        ':hover': {
+                          color: blue['900'],
+                        },
+                      }}
+                    >
+                      {owners?.find((o) => o.id === s.ownerId)?.name}{' '}
+                      <OpenInNewIcon
                         sx={{
-                          maxWidth: '300px',
+                          marginLeft: '3px',
                         }}
-                      >
-                        {s.subName}
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          component="a"
-                          href={`https://www.knihovny.cz/Search/Results?lookfor=${s.barCode}&type=AllFields&limit=20`}
-                          target="_blank"
-                          rel="noreferrer"
-                          sx={{
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            alignItems: 'center',
-                            color: blue['700'],
-                            transition: 'color 0.1s',
-                            ':hover': {
-                              color: blue['900'],
-                            },
-                          }}
-                        >
-                          {owners?.find((o) => o.id === s.ownerId)?.name}{' '}
-                          <OpenInNewIcon
-                            sx={{
-                              marginLeft: '3px',
-                            }}
-                          />
-                        </Typography>
-                      </TableCell>
-                      <TableCell />
-                      <TableCell>
-                        <Typography
-                          sx={{
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            alignItems: 'center',
-                            color: blue['700'],
-                            transition: 'color 0.1s',
-                            ':hover': {
-                              color: blue['900'],
-                            },
-                          }}
-                          onClick={() => {
-                            setSubModalOpened(true)
-                            setSubModalData(s)
-                          }}
-                        >
-                          {t('specimens_overview.open')}
-                          <DriveFileMoveOutlinedIcon
-                            sx={{
-                              marginLeft: '3px',
-                            }}
-                          />
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          component={ReactLink}
-                          sx={{
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            alignItems: 'center',
-                            color: blue['700'],
-                            transition: 'color 0.1s',
-                            ':hover': {
-                              color: blue['900'],
-                            },
-                          }}
-                          to={generateVolumeUrlWithParams(
-                            `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
-                              s.volumeId
-                            }`,
-                            metaTitleId || ''
-                          )}
-                        >
-                          {s.barCode}{' '}
-                          <DriveFileMoveOutlinedIcon
-                            sx={{
-                              marginLeft: '3px',
-                            }}
-                          />
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-            {/* <CalendarModal row={row} day={day.day} /> */}
-          </Box>
-        </Fade>
-      </Modal>
-      <Modal
-        open={subModalOpened}
+                      />
+                    </Typography>
+                  </TableCell>
+                  <TableCell />
+                  <TableCell>
+                    <Typography
+                      sx={{
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        color: blue['700'],
+                        transition: 'color 0.1s',
+                        ':hover': {
+                          color: blue['900'],
+                        },
+                      }}
+                      onClick={() => {
+                        setSubModalOpened(true)
+                        setSubModalData(s)
+                      }}
+                    >
+                      {t('specimens_overview.open')}
+                      <DriveFileMoveOutlinedIcon
+                        sx={{
+                          marginLeft: '3px',
+                        }}
+                      />
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      component={ReactLink}
+                      sx={{
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        color: blue['700'],
+                        transition: 'color 0.1s',
+                        ':hover': {
+                          color: blue['900'],
+                        },
+                      }}
+                      to={generateVolumeUrlWithParams(
+                        `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
+                          s.volumeId
+                        }`,
+                        metaTitleId || ''
+                      )}
+                    >
+                      {s.barCode}{' '}
+                      <DriveFileMoveOutlinedIcon
+                        sx={{
+                          marginLeft: '3px',
+                        }}
+                      />
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+      </ModalContainer>
+      <ModalContainer
         onClose={() => {
           setSubModalOpened(false)
           setSubModalData(null)
         }}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            color: '#fff',
-            timeout: 500,
+        closeButton={{
+          callback: () => {
+            setSubModalOpened(false)
+            setSubModalData(null)
           },
         }}
+        opened={subModalOpened}
+        header={`${t('specimens_overview.volume_overview_modal_link')} ${subModalData?.barCode}`}
       >
-        <Fade in={subModalOpened}>
-          <Box sx={subModalStyle}>
-            <Typography
-              sx={{
-                color: blue['900'],
-                fontSize: '24px',
-                fontWeight: 'bold',
-                marginBottom: '16px',
-              }}
-            >
-              {t('specimens_overview.volume_overview_modal_link')}{' '}
-              {subModalData?.barCode}
-            </Typography>
-            <VolumeOverviewStatsModal volumeBarCode={subModalData?.volumeId} />
-          </Box>
-        </Fade>
-      </Modal>
+        <VolumeOverviewStatsModal volumeId={subModalData?.volumeId} />
+      </ModalContainer>
       {specimensInDay.map((day) => (
         <Box
           key={day.day}

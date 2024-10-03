@@ -19,7 +19,9 @@
     "error_when_saving": "An error occurred while saving",
     "retry_fetch": "Retry fetch",
     "session_expired": "Session expired",
-    "back": "Back"
+    "back": "Back",
+    "close": "Close",
+    "accept": "Accept"
   },
   "helmet": {
     "title": "Periodicals Register – Research Application"

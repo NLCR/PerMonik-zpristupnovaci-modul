@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Modal from '@mui/material/Modal'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'react-i18next'
 import { TEditableSpecimen } from '../../../../schema/specimen'
 import { TEditableVolume } from '../../../../schema/volume'
+import ModalContainer from '../../../../components/ModalContainer'
 
 const marks = ['●', '○', '■', '□', '★', '☆', '△', '▲', '✶'] as const
 type TMarks = (typeof marks)[number]
@@ -58,53 +58,44 @@ const PublicationMarkSelectorModal: FC<PublicationMarkSelectorModalProps> = ({
   }
 
   return (
-    <Modal open={open} onClose={doClose}>
+    <ModalContainer
+      header={t('volume_overview.publication_mark')}
+      opened={open}
+      onClose={doClose}
+      closeButton={{
+        callback: () => doClose(),
+      }}
+      acceptButton={{
+        callback: () => handleSave(),
+      }}
+      style="fitted"
+    >
       <Box
         sx={{
-          p: 2,
-          backgroundColor: 'white',
-          borderRadius: 2,
-          maxWidth: 400,
-          mx: 'auto',
-          my: '20%',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <TextField
-            value={inputMarks}
-            onChange={(e) => handleInputChange(e.target.value)}
-          />
-          <Box>
-            {marks.map((mark) => (
-              <Button
-                disabled={inputMarks.length > 0 && !inputMarks.includes(mark)}
-                key={`publication-mark-${mark}`}
-                onClick={() => handleSymbolSelect(mark)}
-                sx={{
-                  fontSize: '20px',
-                }}
-              >
-                {mark}
-              </Button>
-            ))}
-          </Box>
+        <TextField
+          value={inputMarks}
+          onChange={(e) => handleInputChange(e.target.value)}
+        />
+        <Box>
+          {marks.map((mark) => (
+            <Button
+              disabled={inputMarks.length > 0 && !inputMarks.includes(mark)}
+              key={`publication-mark-${mark}`}
+              onClick={() => handleSymbolSelect(mark)}
+              sx={{
+                fontSize: '20px',
+              }}
+            >
+              {mark}
+            </Button>
+          ))}
         </Box>
-        <Button
-          onClick={() => handleSave()}
-          sx={{
-            marginTop: '10px',
-          }}
-          variant="contained"
-        >
-          {t('administration.save')}
-        </Button>
       </Box>
-    </Modal>
+    </ModalContainer>
   )
 }
 

@@ -21,27 +21,10 @@ import { useMetaTitleListQuery } from '../../api/metaTitle'
 import { useVolumeManagementStore } from '../../slices/useVolumeManagementStore'
 import InputData from './components/InputData'
 import { useVolumeManagementActions } from '../../hooks/useVolumeManagementActions'
-import Modal from '@mui/material/Modal'
-import Backdrop from '@mui/material/Backdrop'
-import Fade from '@mui/material/Fade'
 import Button from '@mui/material/Button'
 import { BACK_META_TITLE_ID } from '../../utils/constants'
-
-const modalStyle = {
-  overflowY: 'auto',
-  position: 'absolute' as const,
-  maxHeight: '200px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '400px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  p: 4,
-}
+import ModalContainer from '../../components/ModalContainer'
+import VolumeOverviewStatsModal from '../specimensOverview/components/VolumeOverviewStatsModal'
 
 const VolumeManagement = () => {
   const { volumeId } = useParams()
@@ -51,6 +34,7 @@ const VolumeManagement = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
+  const [volumeStatsModalOpened, setVolumeStatsModalOpened] = useState(false)
   const [confirmDeletionModalStage, setConfirmDeletionModalStage] = useState({
     opened: false,
     stage: 1,
@@ -340,133 +324,112 @@ const VolumeManagement = () => {
             >
               {t('volume_overview.back_to_specimens_overview')}
             </Button>
-          </Box>
-          {canEdit ? (
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                gap: '8px',
-                alignItems: 'center',
-              }}
+            <Button
+              variant="outlined"
+              onClick={() => setVolumeStatsModalOpened(true)}
             >
-              {actions.map((action) => (
-                <Button
-                  variant="contained"
-                  color={action.color}
-                  key={action.name}
-                  startIcon={action.icon}
-                  onClick={action.onClick}
-                >
-                  {action.name}
-                </Button>
-              ))}
-            </Box>
-          ) : null}
+              {t('specimens_overview.volume_overview_modal_link')}
+            </Button>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '8px',
+              alignItems: 'center',
+            }}
+          >
+            {canEdit
+              ? actions.map((action) => (
+                  <Button
+                    variant="contained"
+                    color={action.color}
+                    key={action.name}
+                    startIcon={action.icon}
+                    onClick={action.onClick}
+                  >
+                    {action.name}
+                  </Button>
+                ))
+              : null}
+          </Box>
         </Box>
       </Box>
-      {volumeId?.length && confirmDeletionModalStage.opened ? (
-        <Modal
-          open={confirmDeletionModalStage.opened}
-          onClose={() => {
-            setConfirmDeletionModalStage((prevState) => ({
-              ...prevState,
-              opened: false,
-            }))
-          }}
-          closeAfterTransition
-          slots={{ backdrop: Backdrop }}
-          slotProps={{
-            backdrop: {
-              color: '#fff',
-              timeout: 500,
-            },
+      <ModalContainer
+        onClose={() =>
+          setConfirmDeletionModalStage((prevState) => ({
+            ...prevState,
+            opened: false,
+          }))
+        }
+        header={
+          confirmDeletionModalStage.stage === 1
+            ? t('volume_overview.delete_volume_text')
+            : t('volume_overview.delete_volume_text2')
+        }
+        opened={!!volumeId?.length && confirmDeletionModalStage.opened}
+        acceptButton={{
+          callback: () => {
+            if (confirmDeletionModalStage.stage === 1) {
+              setConfirmDeletionModalStage((prevState) => ({
+                ...prevState,
+                opened: false,
+              }))
+            }
+            if (confirmDeletionModalStage.stage === 2) {
+              setConfirmDeletionModalStage((prevState) => ({
+                ...prevState,
+                opened: false,
+              }))
+            }
+          },
+          text:
+            confirmDeletionModalStage.stage === 1
+              ? t('common.no')
+              : t('common.yes'),
+        }}
+        closeButton={{
+          callback: () => {
+            if (confirmDeletionModalStage.stage === 1) {
+              setConfirmDeletionModalStage((prevState) => ({
+                ...prevState,
+                stage: 2,
+              }))
+            }
+            if (confirmDeletionModalStage.stage === 2) {
+              setConfirmDeletionModalStage((prevState) => ({
+                ...prevState,
+                opened: false,
+              }))
+              handleDeletion()
+            }
+          },
+          text:
+            confirmDeletionModalStage.stage === 1
+              ? t('common.yes')
+              : t('common.no'),
+        }}
+        style="fitted"
+        switchButtons={confirmDeletionModalStage.stage === 2}
+      >
+        <Typography
+          sx={{
+            marginBottom: '16px',
           }}
         >
-          <Fade in={confirmDeletionModalStage.opened}>
-            <Box sx={modalStyle}>
-              <Typography
-                sx={{
-                  color: blue['900'],
-                  fontSize: '24px',
-                  fontWeight: 'bold',
-                  marginBottom: '16px',
-                }}
-              >
-                {t('volume_overview.delete_volume_caption')}
-              </Typography>
-              <Typography
-                sx={{
-                  marginBottom: '16px',
-                }}
-              >
-                {confirmDeletionModalStage.stage === 1
-                  ? t('volume_overview.delete_volume_text')
-                  : t('volume_overview.delete_volume_text2')}
-              </Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: '10px',
-                }}
-              >
-                {confirmDeletionModalStage.stage === 1 ? (
-                  <>
-                    <Button
-                      variant="outlined"
-                      onClick={() =>
-                        setConfirmDeletionModalStage((prevState) => ({
-                          ...prevState,
-                          stage: 2,
-                        }))
-                      }
-                    >
-                      {t('common.yes')}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={() =>
-                        setConfirmDeletionModalStage((prevState) => ({
-                          ...prevState,
-                          opened: false,
-                        }))
-                      }
-                    >
-                      {t('common.no')}
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        setConfirmDeletionModalStage((prevState) => ({
-                          ...prevState,
-                          opened: false,
-                        }))
-                        handleDeletion()
-                      }}
-                    >
-                      {t('common.no')}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={() =>
-                        setConfirmDeletionModalStage((prevState) => ({
-                          ...prevState,
-                          opened: false,
-                        }))
-                      }
-                    >
-                      {t('common.yes')}
-                    </Button>
-                  </>
-                )}
-              </Box>
-            </Box>
-          </Fade>
-        </Modal>
-      ) : null}
+          {confirmDeletionModalStage.stage === 1
+            ? t('volume_overview.delete_volume_text')
+            : t('volume_overview.delete_volume_text2')}
+        </Typography>
+      </ModalContainer>
+      <ModalContainer
+        header={t('specimens_overview.volume_overview_modal_link')}
+        opened={volumeStatsModalOpened}
+        onClose={() => setVolumeStatsModalOpened(false)}
+        closeButton={{ callback: () => setVolumeStatsModalOpened(false) }}
+      >
+        <VolumeOverviewStatsModal volumeId={volumeId} />
+      </ModalContainer>
     </Box>
   )
 }

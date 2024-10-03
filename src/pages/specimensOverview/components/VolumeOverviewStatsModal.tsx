@@ -16,12 +16,10 @@ const bolderTextStyle = {
 }
 
 type TProps = {
-  volumeBarCode?: string
+  volumeId?: string
 }
 
-const VolumeOverviewStatsModal: FC<TProps> = ({
-  volumeBarCode = undefined,
-}) => {
+const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
   const { t } = useTranslation()
 
   const { languageCode } = useLanguageCode()
@@ -46,7 +44,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
     data: volumeStats,
     isLoading: volumeStatsLoading,
     isError: volumeStatsError,
-  } = useVolumeOverviewStatsQuery(volumeBarCode)
+  } = useVolumeOverviewStatsQuery(volumeId)
 
   if (
     volumeStatsLoading ||
