@@ -278,7 +278,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
         const { row } = params
         return renderRenumberableValue(
           row,
-          row.numExists && !row.isAttachment,
+          (row.numExists || row.numMissing) && !row.isAttachment,
           canEdit,
           'number'
         )
