@@ -25,6 +25,7 @@ import Button from '@mui/material/Button'
 import { BACK_META_TITLE_ID } from '../../utils/constants'
 import ModalContainer from '../../components/ModalContainer'
 import VolumeOverviewStatsModal from '../specimensOverview/components/VolumeOverviewStatsModal'
+import Periodicity from './components/Periodicity'
 
 const VolumeManagement = () => {
   const { volumeId } = useParams()
@@ -265,7 +266,6 @@ const VolumeManagement = () => {
           me={me}
           mutations={mutations}
           owners={owners}
-          publications={publications}
           metaTitles={metaTitles}
         />
       </Box>
@@ -339,8 +339,10 @@ const VolumeManagement = () => {
               alignItems: 'center',
             }}
           >
-            {canEdit
-              ? actions.map((action) => (
+            {canEdit ? (
+              <>
+                <Periodicity canEdit={canEdit} publications={publications} />
+                {actions.map((action) => (
                   <Button
                     variant="contained"
                     color={action.color}
@@ -350,8 +352,9 @@ const VolumeManagement = () => {
                   >
                     {action.name}
                   </Button>
-                ))
-              : null}
+                ))}
+              </>
+            ) : null}
           </Box>
         </Box>
       </Box>
