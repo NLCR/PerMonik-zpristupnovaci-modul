@@ -16,17 +16,14 @@ import { useVolumeManagementStore } from '../../../slices/useVolumeManagementSto
 import { TMe } from '../../../schema/user'
 import { TMutation } from '../../../schema/mutation'
 import { TOwner } from '../../../schema/owner'
-import { TPublication } from '../../../schema/publication'
 import { TMetaTitle } from '../../../schema/metaTitle'
 import PublicationMarkSelectorModal from './editCells/PublicationMarkSelectorModal'
-import Periodicity from './Periodicity'
 
 interface InputDataProps {
   canEdit: boolean
   me: TMe
   mutations: TMutation[]
   owners: TOwner[]
-  publications: TPublication[]
   metaTitles: TMetaTitle[]
 }
 
@@ -35,7 +32,6 @@ const InputData: FC<InputDataProps> = ({
   me,
   mutations,
   owners,
-  publications,
   metaTitles,
 }) => {
   const { t } = useTranslation()
@@ -260,16 +256,6 @@ const InputData: FC<InputDataProps> = ({
           </TableRow>
         </TableBody>
       </Table>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '16px',
-        }}
-      >
-        <Periodicity canEdit={canEdit} publications={publications} />
-      </Box>
     </Box>
   )
 }
