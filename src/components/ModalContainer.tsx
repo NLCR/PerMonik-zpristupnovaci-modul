@@ -15,7 +15,7 @@ const sharedStyle = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  bgcolor: 'background.paper',
+  backgroundColor: 'background.paper',
   borderRadius: '4px',
   boxShadow: 24,
   padding: '16px 24px 24px',
@@ -121,6 +121,8 @@ const ModalContainer: FC<TModalContainerProps> = ({
             alignItems: 'center',
             gap: '12px',
             marginTop: style === 'scrollable' ? 'auto' : '16px',
+            paddingTop: '8px',
+            backgroundColor: 'background.paper',
           }}
         >
           {showButtons ? (
