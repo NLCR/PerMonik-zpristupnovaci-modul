@@ -81,7 +81,10 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('volume_overview.number'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return renderValue(row.number, row.numExists && !row.isAttachment)
+          return renderValue(
+            row.number,
+            (row.numExists || row.numMissing) && !row.isAttachment
+          )
         },
       },
       {
