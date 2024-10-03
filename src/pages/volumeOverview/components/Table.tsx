@@ -159,7 +159,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.OK'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('OK'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('OK') && row.numExists
+          )
         },
       },
       {
@@ -167,7 +169,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.PP'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('PP'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('PP') && row.numExists
+          )
         },
       },
       {
@@ -175,7 +179,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.Deg'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('Deg'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('Deg') && row.numExists
+          )
         },
       },
       {
@@ -183,7 +189,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChS'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('ChS'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('ChS') && row.numExists
+          )
         },
       },
       {
@@ -191,7 +199,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChPag'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('ChPag'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('ChPag') && row.numExists
+          )
         },
       },
       {
@@ -199,7 +209,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChDatum'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('ChDatum'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('ChDatum') && row.numExists
+          )
         },
       },
       {
@@ -207,7 +219,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChCis'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('ChCis'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('ChCis') && row.numExists
+          )
         },
       },
       {
@@ -215,7 +229,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.ChSv'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('ChSv'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('ChSv') && row.numExists
+          )
         },
       },
       {
@@ -223,7 +239,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.NS'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('NS'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('NS') && row.numExists
+          )
         },
       },
       {
@@ -231,7 +249,9 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         headerName: t('facet_states.Cz'),
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
-          return CenteredIcon(!!row.damageTypes?.includes('Cz'))
+          return CenteredIcon(
+            !!row.damageTypes?.includes('Cz') && row.numExists
+          )
         },
       },
       {
