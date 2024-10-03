@@ -51,6 +51,7 @@ export const useSpecimenFacetsQuery = (metaTitleId?: string) => {
 export interface TSpecimenList extends TSpecimensPublicationDays {
   specimens: TSpecimen[]
   count: number
+  owners: string[]
 }
 
 export const useSpecimenListQuery = (metaTitleId?: string) => {

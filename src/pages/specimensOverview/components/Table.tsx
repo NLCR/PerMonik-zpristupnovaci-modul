@@ -227,24 +227,26 @@ const Table: FC<Props> = ({ metaTitle }) => {
         headerName: t('table.pages_count'),
       },
       ...(owners
-        ? owners.map((o) => ({
-            field: `owner${o.id}`,
-            flex: 1,
-            headerName: o.name,
-            renderCell: (params: GridRenderCellParams<TSpecimen>) => {
-              const { row } = params
-              return (
-                <OwnersBarCodeCell
-                  row={row}
-                  ownerId={o.id}
-                  setModalData={setModalData}
-                />
-              )
-            },
-          }))
+        ? owners
+            .filter((o) => specimens?.owners.includes(o.id))
+            .map((o) => ({
+              field: `owner${o.id}`,
+              flex: 1,
+              headerName: o.name,
+              renderCell: (params: GridRenderCellParams<TSpecimen>) => {
+                const { row } = params
+                return (
+                  <OwnersBarCodeCell
+                    row={row}
+                    ownerId={o.id}
+                    setModalData={setModalData}
+                  />
+                )
+              },
+            }))
         : []),
     ]
-  }, [languageCode, mutations, owners, publications, t, setModalData])
+  }, [t, owners, mutations, languageCode, publications, specimens?.owners])
 
   return (
     <>
