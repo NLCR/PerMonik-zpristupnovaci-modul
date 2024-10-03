@@ -19,7 +19,9 @@
     "error_when_saving": "Pri ukladaní nastala chyba",
     "retry_fetch": "Znova načítať",
     "session_expired": "Relácia vypršala",
-    "back": "Späť"
+    "back": "Späť",
+    "close": "Zavrieť",
+    "accept": "Potvrdiť"
   },
   "helmet": {
     "title": "Evidencia periodík – výskumná aplikácia"

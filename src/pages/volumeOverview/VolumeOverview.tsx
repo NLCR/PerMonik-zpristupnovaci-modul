@@ -19,27 +19,9 @@ import { useOwnerListQuery } from '../../api/owner'
 import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
 import Button from '@mui/material/Button'
-import Backdrop from '@mui/material/Backdrop'
-import Fade from '@mui/material/Fade'
 import VolumeOverviewStatsModal from '../specimensOverview/components/VolumeOverviewStatsModal'
-import Modal from '@mui/material/Modal'
 import React, { useState } from 'react'
-
-const modalStyle = {
-  overflowY: 'auto',
-  position: 'absolute' as const,
-  maxHeight: '800px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '1000px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  p: 4,
-}
+import ModalContainer from '../../components/ModalContainer'
 
 const VolumeOverview = () => {
   const { volumeId } = useParams()
@@ -180,36 +162,16 @@ const VolumeOverview = () => {
             </TableRow>
           </TableBody>
         </Table>
-        <Modal
-          open={modalOpened}
-          onClose={() => {
-            setModalOpened(false)
-          }}
-          closeAfterTransition
-          slots={{ backdrop: Backdrop }}
-          slotProps={{
-            backdrop: {
-              color: '#fff',
-              timeout: 500,
-            },
+        <ModalContainer
+          onClose={() => setModalOpened(false)}
+          header={t('specimens_overview.volume_overview_modal_link')}
+          opened={modalOpened}
+          closeButton={{
+            callback: () => setModalOpened(false),
           }}
         >
-          <Fade in={modalOpened}>
-            <Box sx={modalStyle}>
-              <Typography
-                sx={{
-                  color: blue['900'],
-                  fontSize: '24px',
-                  fontWeight: 'bold',
-                  marginBottom: '16px',
-                }}
-              >
-                {t('specimens_overview.volume_overview_modal_link')}{' '}
-              </Typography>
-              <VolumeOverviewStatsModal volumeBarCode={volumeId} />
-            </Box>
-          </Fade>
-        </Modal>
+          <VolumeOverviewStatsModal volumeId={volumeId} />
+        </ModalContainer>
         <Button
           sx={{
             marginTop: '10px',

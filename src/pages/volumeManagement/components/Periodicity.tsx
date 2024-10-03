@@ -11,15 +11,10 @@ import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
 import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import Modal from '@mui/material/Modal'
-import Backdrop from '@mui/material/Backdrop'
-import Fade from '@mui/material/Fade'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import clone from 'lodash/clone'
 import dayjs from 'dayjs'
-import { blue } from '@mui/material/colors'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { useLanguageCode } from '../../../utils/helperHooks'
 import { TPublication } from '../../../schema/publication'
@@ -38,22 +33,7 @@ import { isEqual } from 'lodash-es'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import useSortedSpecimensNamesAndSubNames from '../../../hooks/useSortedSpecimensNamesAndSubNames'
 import Autocomplete from '@mui/material/Autocomplete'
-
-const mainModalStyle = {
-  overflow: 'auto',
-  position: 'absolute' as const,
-  maxHeight: '650px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '1200px',
-  borderRadius: '4px',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-}
+import ModalContainer from '../../../components/ModalContainer'
 
 const getDaysArray = (start: string, end: string): string[] => {
   const arr: string[] = []
@@ -227,226 +207,189 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
       >
         {t('volume_overview.edit_periodicity')}
       </Button>
-      {periodicityModalVisible ? (
-        <Modal
-          open={periodicityModalVisible}
-          onClose={() => {
-            setPeriodicityModalVisible(false)
+      <ModalContainer
+        header={t('volume_overview.periodicity')}
+        opened={periodicityModalVisible}
+        onClose={() => setPeriodicityModalVisible(false)}
+        closeButton={{
+          callback: () => setPeriodicityModalVisible(false),
+        }}
+        acceptButton={{
+          callback: () => generateVolume(),
+          text: t('volume_overview.generate_volume'),
+        }}
+      >
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>{t('volume_overview.releasing')}</TableCell>
+              <TableCell>{t('volume_overview.is_in_volume')}</TableCell>
+              <TableCell>{t('volume_overview.publication')}</TableCell>
+              <TableCell>{t('volume_overview.pages_count')}</TableCell>
+              <TableCell>{t('volume_overview.name')}</TableCell>
+              <TableCell>{t('volume_overview.sub_name')}</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {volumeState.periodicity.map((p, index) => {
+              return (
+                <TableRow key={`volume-periodicity-${p.day}`}>
+                  <TableCell>{t(`volume_overview.days.${p.day}`)}</TableCell>
+                  <TableCell>
+                    <Checkbox
+                      size="small"
+                      checked={p.numExists}
+                      onChange={(event) =>
+                        volumePeriodicityActions.setNumExists(
+                          event.target.checked,
+                          index
+                        )
+                      }
+                      disabled={!canEdit}
+                      sx={{
+                        // marginTop: 1,
+                        // marginBottom: 1,
+                        cursor: 'pointer',
+                        // width: '100%',
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        minWidth: '200px',
+                      }}
+                      value={p.publicationId}
+                      disabled={!canEdit}
+                      onChange={(event) =>
+                        volumePeriodicityActions.setPublicationId(
+                          event.target.value,
+                          index
+                        )
+                      }
+                    >
+                      {publications.map((o) => (
+                        <MenuItem key={o.id} value={o.id}>
+                          {o.name[languageCode]}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      size="small"
+                      value={p.pagesCount}
+                      disabled={!canEdit}
+                      onChange={(event) =>
+                        volumePeriodicityActions.setPagesCount(
+                          event.target.value,
+                          index
+                        )
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Autocomplete
+                      freeSolo
+                      renderInput={(params) => (
+                        <TextField {...params} label="" />
+                      )}
+                      sx={{
+                        minWidth: '200px',
+                      }}
+                      size="small"
+                      value={p.name}
+                      disabled={!canEdit}
+                      onChange={(event, value) =>
+                        volumePeriodicityActions.setName(
+                          value ? value : '',
+                          index
+                        )
+                      }
+                      options={names}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Autocomplete
+                      freeSolo
+                      renderInput={(params) => (
+                        <TextField {...params} label="" />
+                      )}
+                      sx={{
+                        minWidth: '200px',
+                      }}
+                      size="small"
+                      value={p.subName}
+                      disabled={!canEdit}
+                      onChange={(event, value) =>
+                        volumePeriodicityActions.setSubName(
+                          value ? value : '',
+                          index
+                        )
+                      }
+                      options={subNames}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                      }}
+                    >
+                      {p.duplicated ? (
+                        <DeleteOutlineIcon
+                          onClick={() => removeRow(p)}
+                          sx={{
+                            cursor: 'pointer',
+                          }}
+                        />
+                      ) : (
+                        <AddCircleOutlineIcon
+                          onClick={() => duplicateRow(p)}
+                          sx={{
+                            cursor: 'pointer',
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+        <FormControlLabel
+          sx={{
+            // display: 'flex',
+            marginTop: '10px',
+            // justifyContent: 'space-between',
+            // alignItems: 'start',
+            // fontSize: '12px',
           }}
-          closeAfterTransition
-          slots={{ backdrop: Backdrop }}
-          slotProps={{
-            backdrop: {
-              color: '#fff',
-              timeout: 500,
-            },
-          }}
-        >
-          <Fade in={periodicityModalVisible}>
-            <Box sx={mainModalStyle}>
-              <Typography
-                variant="h5"
-                sx={{
-                  marginBottom: '8px',
-                  color: blue['900'],
-                }}
-              >
-                {t('volume_overview.periodicity')}
-              </Typography>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>{t('volume_overview.releasing')}</TableCell>
-                    <TableCell>{t('volume_overview.is_in_volume')}</TableCell>
-                    <TableCell>{t('volume_overview.publication')}</TableCell>
-                    <TableCell>{t('volume_overview.pages_count')}</TableCell>
-                    <TableCell>{t('volume_overview.name')}</TableCell>
-                    <TableCell>{t('volume_overview.sub_name')}</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {volumeState.periodicity.map((p, index) => {
-                    return (
-                      <TableRow key={`volume-periodicity-${p.day}`}>
-                        <TableCell>
-                          {t(`volume_overview.days.${p.day}`)}
-                        </TableCell>
-                        <TableCell>
-                          <Checkbox
-                            size="small"
-                            checked={p.numExists}
-                            onChange={(event) =>
-                              volumePeriodicityActions.setNumExists(
-                                event.target.checked,
-                                index
-                              )
-                            }
-                            disabled={!canEdit}
-                            sx={{
-                              // marginTop: 1,
-                              // marginBottom: 1,
-                              cursor: 'pointer',
-                              // width: '100%',
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            variant="outlined"
-                            size="small"
-                            sx={{
-                              minWidth: '218px',
-                            }}
-                            value={p.publicationId}
-                            disabled={!canEdit}
-                            onChange={(event) =>
-                              volumePeriodicityActions.setPublicationId(
-                                event.target.value,
-                                index
-                              )
-                            }
-                          >
-                            {publications.map((o) => (
-                              <MenuItem key={o.id} value={o.id}>
-                                {o.name[languageCode]}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            size="small"
-                            value={p.pagesCount}
-                            disabled={!canEdit}
-                            onChange={(event) =>
-                              volumePeriodicityActions.setPagesCount(
-                                event.target.value,
-                                index
-                              )
-                            }
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Autocomplete
-                            freeSolo
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              minWidth: '250px',
-                            }}
-                            size="small"
-                            value={p.name}
-                            disabled={!canEdit}
-                            onChange={(event, value) =>
-                              volumePeriodicityActions.setName(
-                                value ? value : '',
-                                index
-                              )
-                            }
-                            options={names}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Autocomplete
-                            freeSolo
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              minWidth: '250px',
-                            }}
-                            size="small"
-                            value={p.subName}
-                            disabled={!canEdit}
-                            onChange={(event, value) =>
-                              volumePeriodicityActions.setSubName(
-                                value ? value : '',
-                                index
-                              )
-                            }
-                            options={subNames}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              height: '100%',
-                            }}
-                          >
-                            {p.duplicated ? (
-                              <DeleteOutlineIcon
-                                onClick={() => removeRow(p)}
-                                sx={{
-                                  cursor: 'pointer',
-                                }}
-                              />
-                            ) : (
-                              <AddCircleOutlineIcon
-                                onClick={() => duplicateRow(p)}
-                                sx={{
-                                  cursor: 'pointer',
-                                }}
-                              />
-                            )}
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-              <FormControlLabel
-                sx={{
-                  // display: 'flex',
-                  width: '100%',
-                  marginTop: '10px',
-                  // justifyContent: 'space-between',
-                  // alignItems: 'start',
-                  // fontSize: '12px',
-                }}
-                control={
-                  <Checkbox
-                    checked={volumeState.showAttachmentsAtTheEnd}
-                    onChange={(event) =>
-                      setShowAttachmentsAtTheEnd(event.target.checked)
-                    }
-                    disabled={!canEdit}
-                    sx={{
-                      // marginTop: 1,
-                      // marginBottom: 1,
-                      cursor: 'pointer',
-                      // width: '100%',
-                    }}
-                  />
-                }
-                label={t('volume_overview.show_attachments_at_the_end')}
-              />
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: '10px',
-                  marginTop: '20px',
-                }}
-              >
-                <Button variant="outlined" onClick={() => generateVolume()}>
-                  {t('volume_overview.generate_volume')}
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => setPeriodicityModalVisible(false)}
-                >
-                  {t('volume_overview.close')}
-                </Button>
-              </Box>
-            </Box>
-          </Fade>
-        </Modal>
-      ) : null}
+          control={
+            <Checkbox
+              checked={volumeState.showAttachmentsAtTheEnd}
+              onChange={(event) =>
+                setShowAttachmentsAtTheEnd(event.target.checked)
+              }
+              disabled={!canEdit}
+              sx={{
+                // marginTop: 1,
+                // marginBottom: 1,
+                cursor: 'pointer',
+                // width: '100%',
+              }}
+            />
+          }
+          label={t('volume_overview.show_attachments_at_the_end')}
+        />
+      </ModalContainer>
     </>
   )
 }
