@@ -3,8 +3,10 @@ import clone from 'lodash/clone'
 import { api, queryClient } from './index'
 import { TMe, TUser } from '../schema/user'
 
+const { MODE } = import.meta.env
+
 export const useMeQuery = () => {
-  const useMock = false
+  const useMock = MODE === 'development'
 
   return useQuery({
     queryKey: ['me'],
