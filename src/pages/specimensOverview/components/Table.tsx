@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react'
+import React, { FC, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   GridColDef,
@@ -8,8 +8,7 @@ import {
 import dayjs from 'dayjs'
 import Tooltip from '@mui/material/Tooltip'
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import { Link as RouterLink, useParams } from 'react-router-dom'
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import { blue, green, grey, orange, red } from '@mui/material/colors'
 import { TFunction } from 'i18next'
 import { TMetaTitle } from '../../../schema/metaTitle'
@@ -22,6 +21,9 @@ import { TSpecimen } from '../../../schema/specimen'
 import { damageTypes } from '../../../utils/constants'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { generateVolumeUrlWithParams } from '../../../utils/helperFunctions'
+import DriveFileMoveOutlinedIcon from '@mui/icons-material/DriveFileMoveOutlined'
+import VolumeOverviewStatsModal from './VolumeOverviewStatsModal'
+import ModalContainer from '../../../components/ModalContainer'
 
 const getSpecimenState = (sp: TSpecimen, t: TFunction) => {
   if (sp.damageTypes) {
@@ -104,21 +106,23 @@ const getSpecimenState = (sp: TSpecimen, t: TFunction) => {
 const OwnersBarCodeCell: FC<{
   row: TSpecimen
   ownerId: string
-}> = ({ row, ownerId }) => {
+  setModalData: (row: TSpecimen) => void
+}> = ({ row, ownerId, setModalData }) => {
   const { t, i18n } = useTranslation()
 
   const { metaTitleId } = useParams()
 
   return row.ownerId === ownerId ? (
-    <Grid
-      container
-      spacing={1}
-      alignItems="center"
-      justifyContent="center"
-      flexWrap="nowrap"
+    <Box
+      sx={{
+        display: 'flex',
+        gap: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'nowrap',
+      }}
     >
-      <Grid
-        item
+      <Box
         sx={{
           textDecoration: 'none',
           color: blue['700'],
@@ -126,6 +130,23 @@ const OwnersBarCodeCell: FC<{
           ':hover': {
             color: blue['900'],
           },
+          cursor: 'pointer',
+        }}
+        onClick={() => setModalData(row)}
+      >
+        {row.barCode}
+      </Box>
+      <Box
+        sx={{
+          textDecoration: 'none',
+          color: blue['700'],
+          transition: 'color 0.1s',
+          ':hover': {
+            color: blue['900'],
+          },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
         component={RouterLink}
         to={generateVolumeUrlWithParams(
@@ -135,10 +156,10 @@ const OwnersBarCodeCell: FC<{
           metaTitleId || ''
         )}
       >
-        {row.barCode}
-      </Grid>
-      <Grid item>{getSpecimenState(row, t)}</Grid>
-    </Grid>
+        <DriveFileMoveOutlinedIcon />
+      </Box>
+      <Box>{getSpecimenState(row, t)}</Box>
+    </Box>
   ) : undefined
 }
 
@@ -147,12 +168,17 @@ type Props = {
 }
 
 const Table: FC<Props> = ({ metaTitle }) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { MuiTableLocale } = useMuiTableLang()
+  const navigate = useNavigate()
+
+  const [modalData, setModalData] = useState<TSpecimen | null>(null)
+
   const pagination = useSpecimensOverviewStore((state) => state.pagination)
   const setPagination = useSpecimensOverviewStore(
     (state) => state.setPagination
   )
+
   const { data: mutations } = useMutationListQuery()
   const { data: publications } = usePublicationListQuery()
   const { data: owners } = useOwnerListQuery()
@@ -206,42 +232,80 @@ const Table: FC<Props> = ({ metaTitle }) => {
         ? owners.map((o) => ({
             field: `owner${o.id}`,
             flex: 1,
+            minWidth: 140,
             headerName: o.name,
             renderCell: (params: GridRenderCellParams<TSpecimen>) => {
               const { row } = params
-              return <OwnersBarCodeCell row={row} ownerId={o.id} />
+              return (
+                <OwnersBarCodeCell
+                  row={row}
+                  ownerId={o.id}
+                  setModalData={setModalData}
+                />
+              )
             },
           }))
         : []),
     ]
-  }, [languageCode, mutations, owners, publications, t])
+  }, [languageCode, mutations, owners, publications, t, setModalData])
 
   return (
-    <DataGridPro
-      localeText={MuiTableLocale}
-      initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: pagination.pageSize,
-            page: pagination.pageIndex,
+    <>
+      <DataGridPro
+        localeText={MuiTableLocale}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: pagination.pageSize,
+              page: pagination.pageIndex,
+            },
           },
-        },
-        density: 'compact',
-      }}
-      disableColumnFilter
-      disableColumnSorting
-      rows={specimens?.specimens || []}
-      rowCount={specimens?.count || 0}
-      paginationMode="server"
-      loading={specimensFetching}
-      onPaginationModelChange={(model) =>
-        setPagination({ pageSize: model.pageSize, pageIndex: model.page })
-      }
-      columns={columns}
-      pagination
-      pageSizeOptions={[100, 1000, 5000, 10000]}
-      disableRowSelectionOnClick
-    />
+          density: 'compact',
+        }}
+        disableColumnFilter
+        disableColumnSorting
+        rows={specimens?.specimens || []}
+        rowCount={specimens?.count || 0}
+        paginationMode="server"
+        loading={specimensFetching}
+        onPaginationModelChange={(model) =>
+          setPagination({ pageSize: model.pageSize, pageIndex: model.page })
+        }
+        columns={columns}
+        pagination
+        pageSizeOptions={[100, 1000, 5000, 10000]}
+        disableRowSelectionOnClick
+      />
+      <ModalContainer
+        onClose={() => {
+          setModalData(null)
+        }}
+        closeButton={{
+          callback: () => {
+            setModalData(null)
+          },
+        }}
+        acceptButton={{
+          callback: () => {
+            if (modalData?.volumeId) {
+              navigate(
+                generateVolumeUrlWithParams(
+                  `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
+                    modalData.volumeId
+                  }`,
+                  modalData.metaTitleId || ''
+                )
+              )
+            }
+          },
+          text: t('specimens_overview.detailed_volume_overview'),
+        }}
+        opened={!!modalData}
+        header={`${t('specimens_overview.volume_overview_modal_link')} ${modalData?.barCode}`}
+      >
+        <VolumeOverviewStatsModal volumeId={modalData?.volumeId} />
+      </ModalContainer>
+    </>
   )
 }
 
