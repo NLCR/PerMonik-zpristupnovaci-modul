@@ -210,12 +210,10 @@ const Table: FC<Props> = ({ metaTitle }) => {
       {
         field: 'name',
         headerName: t('table.name'),
-        flex: 1,
       },
       {
         field: 'publicationId',
         headerName: t('table.publication'),
-        flex: 1,
         valueFormatter: (value) => {
           return publications?.find((m) => m.id === value)?.name[languageCode]
         },
@@ -232,7 +230,6 @@ const Table: FC<Props> = ({ metaTitle }) => {
         ? owners.map((o) => ({
             field: `owner${o.id}`,
             flex: 1,
-            minWidth: 140,
             headerName: o.name,
             renderCell: (params: GridRenderCellParams<TSpecimen>) => {
               const { row } = params
