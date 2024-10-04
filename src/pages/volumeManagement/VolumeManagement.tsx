@@ -133,7 +133,7 @@ const VolumeManagement = () => {
           icon: <SaveAsIcon />,
           name: t('administration.save'),
           color: 'primary',
-          onClick: doRegeneratedUpdate,
+          onClick: () => doRegeneratedUpdate(),
         }
       )
     }
@@ -149,7 +149,7 @@ const VolumeManagement = () => {
           icon: <SaveAsIcon />,
           name: t('administration.save'),
           color: 'primary',
-          onClick: doUpdate,
+          onClick: () => doUpdate(),
         }
       )
     }
@@ -173,7 +173,7 @@ const VolumeManagement = () => {
           icon: <SaveIcon />,
           name: t('administration.save'),
           color: 'primary',
-          onClick: doCreate,
+          onClick: () => doCreate(),
         }
       )
     }
