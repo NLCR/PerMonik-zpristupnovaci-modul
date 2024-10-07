@@ -153,7 +153,8 @@ const OwnersBarCodeCell: FC<{
           `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
             row.volumeId
           }`,
-          metaTitleId || ''
+          metaTitleId || '',
+          row.id
         )}
       >
         <DriveFileMoveOutlinedIcon />
@@ -292,7 +293,8 @@ const Table: FC<Props> = ({ metaTitle }) => {
                   `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
                     modalData.volumeId
                   }`,
-                  modalData.metaTitleId || ''
+                  modalData.metaTitleId || '',
+                  modalData.id
                 )
               )
             }

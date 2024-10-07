@@ -303,7 +303,8 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                         `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
                           s.volumeId
                         }`,
-                        metaTitleId || ''
+                        metaTitleId || '',
+                        s.id
                       )}
                     >
                       {s.barCode}{' '}
@@ -337,7 +338,8 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                   `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
                     subModalData.volumeId
                   }`,
-                  metaTitleId || ''
+                  metaTitleId || '',
+                  subModalData.id
                 )
               )
             }

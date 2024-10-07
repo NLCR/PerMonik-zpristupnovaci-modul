@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { BACK_META_TITLE_ID } from './constants'
+import { BACK_META_TITLE_ID, JUMP_TO_SPECIMEN_WITH_ID } from './constants'
 
 export const getFirstMondayOfMonth = (date: Date | null) => {
   if (!date) return null
@@ -15,6 +15,10 @@ export const getFirstMondayOfMonth = (date: Date | null) => {
   return firstMonday
 }
 
-export const generateVolumeUrlWithParams = (url: string, id: string) => {
-  return `${url}?${BACK_META_TITLE_ID}=${id}`
+export const generateVolumeUrlWithParams = (
+  url: string,
+  metaTitleId: string,
+  specimenId: string
+) => {
+  return `${url}?${BACK_META_TITLE_ID}=${metaTitleId}&${JUMP_TO_SPECIMEN_WITH_ID}=${specimenId}`
 }
