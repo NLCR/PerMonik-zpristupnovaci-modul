@@ -143,7 +143,7 @@
   },
   "table": {
     "mutations": "Mutations",
-    "publication_date": "Publication date",
+    "publication_date": "Date",
     "name": "Name",
     "publication": "Publication",
     "number": "Number",

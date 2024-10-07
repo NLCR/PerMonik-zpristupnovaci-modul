@@ -18,7 +18,13 @@ export const getFirstMondayOfMonth = (date: Date | null) => {
 export const generateVolumeUrlWithParams = (
   url: string,
   metaTitleId: string,
-  specimenId: string
+  specimenId?: string
 ) => {
-  return `${url}?${BACK_META_TITLE_ID}=${metaTitleId}&${JUMP_TO_SPECIMEN_WITH_ID}=${specimenId}`
+  let volumeUrl = `${url}?${BACK_META_TITLE_ID}=${metaTitleId}`
+
+  if (specimenId) {
+    volumeUrl += `&${JUMP_TO_SPECIMEN_WITH_ID}=${specimenId}`
+  }
+
+  return volumeUrl
 }

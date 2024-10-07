@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import clone from 'lodash/clone'
 import { useTranslation } from 'react-i18next'
@@ -17,10 +17,13 @@ import {
   useUpdateVolumeWithSpecimensMutation,
 } from '../api/volume'
 import { TPublication } from '../schema/publication'
+import { generateVolumeUrlWithParams } from '../utils/helperFunctions'
+import { BACK_META_TITLE_ID } from '../utils/constants'
 
 const useVolumeManagementActions = (publications: TPublication[]) => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { mutateAsync: callUpdate, status: updateStatus } =
     useUpdateVolumeWithSpecimensMutation()
   const { mutateAsync: callCreate, status: createStatus } =
@@ -181,7 +184,10 @@ const useVolumeManagementActions = (publications: TPublication[]) => {
       )
 
       navigate(
-        `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/duplicated`
+        generateVolumeUrlWithParams(
+          `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/duplicated`,
+          searchParams.get(BACK_META_TITLE_ID) || ''
+        )
       )
       specimensActions.setSpecimensState(duplicatedSpecimens)
       volumeActions.setVolumeState(duplicatedVolume)
