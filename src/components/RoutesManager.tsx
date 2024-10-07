@@ -7,6 +7,7 @@ import Home from '../pages/Home'
 import Loader from './Loader'
 import SpecimensOverview from '../pages/specimensOverview/SpecimensOverview'
 import { useMeQuery } from '../api/user'
+import { APP_WITH_EDITING_ENABLED } from '../utils/constants'
 
 const Administration = React.lazy(
   () => import('../pages/administration/Administration')
@@ -40,6 +41,8 @@ const RoutesManager = () => {
   const { t } = useTranslation('global', { keyPrefix: 'urls' })
   const { data: me, isLoading: meLoading } = useMeQuery()
 
+  const canUseEditing = APP_WITH_EDITING_ENABLED && !!me
+
   if (meLoading) {
     return <Loader />
   }
@@ -53,7 +56,7 @@ const RoutesManager = () => {
           path={`/:lang/${t('specimens_overview')}/:metaTitleId`}
           element={<SpecimensOverview />}
         />
-        {me ? (
+        {canUseEditing ? (
           <>
             <Route
               path={`/:lang/${t('volume_overview')}`}
@@ -74,7 +77,7 @@ const RoutesManager = () => {
             element={<VolumeOverview />}
           />
         )}
-        {me?.role?.includes('admin') ? (
+        {canUseEditing && me?.role?.includes('admin') ? (
           <Route
             path={`/:lang/${t('administration')}`}
             element={<Administration />}

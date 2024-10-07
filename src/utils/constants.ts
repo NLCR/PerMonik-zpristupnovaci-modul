@@ -1,4 +1,7 @@
 import type { TSpecimenDamageTypes } from '../schema/specimen'
+const { VITE_APP_TYPE } = import.meta.env
+
+export const APP_WITH_EDITING_ENABLED = VITE_APP_TYPE === 'admin'
 
 export const damageTypes: TSpecimenDamageTypes[] = [
   'OK',
