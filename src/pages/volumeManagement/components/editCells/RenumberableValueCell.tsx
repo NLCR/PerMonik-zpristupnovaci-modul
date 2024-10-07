@@ -35,12 +35,17 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
     let willBeRenumbered = 0
 
     for (let i = specimenIndex; i < max; i += 1) {
-      if (specimens[i].numExists || specimens[i].numMissing) {
-        if (renumberType === 'number' && !specimens[i].isAttachment) {
-          willBeRenumbered += 1
-        }
-        if (renumberType === 'attachmentNumber' && specimens[i].isAttachment) {
-          willBeRenumbered += 1
+      if (specimens[i]) {
+        if (specimens[i].numExists || specimens[i].numMissing) {
+          if (renumberType === 'number' && !specimens[i].isAttachment) {
+            willBeRenumbered += 1
+          }
+          if (
+            renumberType === 'attachmentNumber' &&
+            specimens[i].isAttachment
+          ) {
+            willBeRenumbered += 1
+          }
         }
       }
     }

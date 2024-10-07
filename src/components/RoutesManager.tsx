@@ -60,6 +60,10 @@ const RoutesManager = () => {
               element={<VolumeManagement />}
             />
             <Route
+              path={`/:lang/${t('volume_overview')}/duplicated`}
+              element={<VolumeManagement duplicated={true} />}
+            />
+            <Route
               path={`/:lang/${t('volume_overview')}/:volumeId`}
               element={<VolumeManagement />}
             />

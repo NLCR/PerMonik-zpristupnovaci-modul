@@ -222,7 +222,8 @@
     "sk_name": "Slovenský název",
     "en_name": "Anglický název",
     "delete": "Smazat",
-    "verified": "Ověřeno"
+    "verified": "Ověřeno",
+    "duplicate_volume": "Duplikovat svazek"
   },
   "schema": {
     "name_min_length": "Vyplňte prosím pole `jméno`",

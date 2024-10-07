@@ -2,11 +2,12 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import SaveIcon from '@mui/icons-material/Save'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { blue } from '@mui/material/colors'
 import { useMangedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
@@ -20,14 +21,20 @@ import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
 import { useVolumeManagementStore } from '../../slices/useVolumeManagementStore'
 import InputData from './components/InputData'
-import { useVolumeManagementActions } from '../../hooks/useVolumeManagementActions'
+import useVolumeManagementActions from '../../hooks/useVolumeManagementActions'
 import Button from '@mui/material/Button'
 import { BACK_META_TITLE_ID } from '../../utils/constants'
 import ModalContainer from '../../components/ModalContainer'
 import VolumeOverviewStatsModal from '../specimensOverview/components/VolumeOverviewStatsModal'
 import Periodicity from './components/Periodicity'
 
-const VolumeManagement = () => {
+type TVolumeManagementProps = {
+  duplicated?: boolean
+}
+
+const VolumeManagement: FC<TVolumeManagementProps> = ({
+  duplicated = false,
+}) => {
   const { volumeId } = useParams()
   const { data: me, isLoading: meLoading, isError: meError } = useMeQuery()
   const { t, i18n } = useTranslation()
@@ -81,8 +88,14 @@ const VolumeManagement = () => {
     isError: metaTitlesError,
   } = useMetaTitleListQuery()
 
-  const { doUpdate, doRegeneratedUpdate, doCreate, doDelete, pendingActions } =
-    useVolumeManagementActions(publications || [])
+  const {
+    doDuplicate,
+    doUpdate,
+    doRegeneratedUpdate,
+    doCreate,
+    doDelete,
+    pendingActions,
+  } = useVolumeManagementActions(publications || [])
 
   useEffect(() => {
     if (volume) {
@@ -93,13 +106,19 @@ const VolumeManagement = () => {
   }, [specimensActions, volume, volumeActions, volumePeriodicityActions])
 
   useEffect(() => {
-    if (!volumeId) {
+    if (!volumeId && !duplicated) {
       setInitialState()
       if (publications) {
         volumePeriodicityActions.setDefaultPeriodicityPublication(publications)
       }
     }
-  }, [publications, volumeId, volumePeriodicityActions, setInitialState])
+  }, [
+    publications,
+    volumeId,
+    volumePeriodicityActions,
+    setInitialState,
+    duplicated,
+  ])
 
   const handleDeletion = () => {
     doDelete()
@@ -124,6 +143,12 @@ const VolumeManagement = () => {
     if (volumeId && volumeRegenerated) {
       actionsArray.push(
         {
+          icon: <ContentCopyIcon />,
+          name: t('administration.duplicate_volume'),
+          color: 'primary',
+          onClick: () => doDuplicate(),
+        },
+        {
           icon: <CheckCircleIcon />,
           name: t('administration.verified'),
           color: 'primary',
@@ -139,6 +164,12 @@ const VolumeManagement = () => {
     }
     if (volumeId && !volumeRegenerated) {
       actionsArray.push(
+        {
+          icon: <ContentCopyIcon />,
+          name: t('administration.duplicate_volume'),
+          color: 'primary',
+          onClick: () => doDuplicate(),
+        },
         {
           icon: <CheckCircleIcon />,
           name: t('administration.verified'),
@@ -179,7 +210,15 @@ const VolumeManagement = () => {
     }
 
     return actionsArray
-  }, [doCreate, doRegeneratedUpdate, doUpdate, t, volumeId, volumeRegenerated])
+  }, [
+    doDuplicate,
+    doCreate,
+    doRegeneratedUpdate,
+    doUpdate,
+    t,
+    volumeId,
+    volumeRegenerated,
+  ])
 
   if (
     volumeLoading ||
