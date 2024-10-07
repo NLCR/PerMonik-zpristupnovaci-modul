@@ -14,6 +14,7 @@ import ShowError from '../../components/ShowError'
 import { EditableOwnerSchema, TEditableOwner } from '../../schema/owner'
 import {
   useCreateOwnerMutation,
+  useGetSiglaListMutation,
   useOwnerListQuery,
   useUpdateOwnerMutation,
 } from '../../api/owner'
@@ -69,6 +70,7 @@ const Owners = () => {
     isLoading: ownersLoading,
     isError: ownersError,
   } = useOwnerListQuery()
+  const { mutateAsync: getSiglaList } = useGetSiglaListMutation()
 
   const { mutateAsync: doUpdate, isPending: updatingOwner } =
     useUpdateOwnerMutation()
@@ -83,12 +85,22 @@ const Owners = () => {
       validation.error.errors.map((e) => toast.error(e.message))
       return
     }
+
     try {
+      const siglaResponse = await getSiglaList(owner.sigla)
+
+      // Double check, zda je sigla validní
+      if (!siglaResponse.records?.find((s) => s.sigla === owner.sigla)) {
+        toast.error(t('administration.invalid_sigla'))
+        return // Zastavení kódu při nevalidní sigle
+      }
+
       if (owner.id) {
         await doUpdate(owner)
       } else {
         await doCreate(owner)
       }
+
       toast.success(t('common.saved_successfully'))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
@@ -191,7 +203,7 @@ const Owners = () => {
                   onChange={(event) =>
                     setOwner((prevState) => ({
                       ...prevState,
-                      sigla: event.target.value,
+                      sigla: event.target.value.trim(),
                     }))
                   }
                 />

@@ -223,7 +223,9 @@
     "en_name": "Anglický názov",
     "delete": "Zmazať",
     "verified": "overené",
-    "duplicate_volume": "Duplikovať zväzok"
+    "duplicate_volume": "Duplikovať zväzok",
+    "error_fetching_sigla": "Nastala chyba pri načítaní dát sigle",
+    "invalid_sigla": "Nesprávna sigla"
   },
   "schema": {
     "name_min_length": "Vyplňte prosím pole `meno`",

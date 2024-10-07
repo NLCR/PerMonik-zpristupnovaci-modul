@@ -223,7 +223,9 @@
     "en_name": "English name",
     "delete": "Delete",
     "verified": "Verified",
-    "duplicate_volume": "Duplicate volume"
+    "duplicate_volume": "Duplicate volume",
+    "error_fetching_sigla": "An error occurred while loading sigla data",
+    "invalid_sigla": "Invalid sigla"
   },
   "schema": {
     "name_min_length": "Please fill out the 'name' field",
