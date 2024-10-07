@@ -3,8 +3,9 @@ import { toast } from 'react-toastify'
 import clone from 'lodash/clone'
 import { useTranslation } from 'react-i18next'
 import { useVolumeManagementStore } from '../slices/useVolumeManagementStore'
-import { repairVolume, VolumeSchema } from '../schema/volume'
+import { duplicateVolume, repairVolume, VolumeSchema } from '../schema/volume'
 import {
+  duplicateSpecimen,
   repairOrCreateSpecimen,
   SpecimenSchema,
   TEditableSpecimen,
@@ -17,8 +18,7 @@ import {
 } from '../api/volume'
 import { TPublication } from '../schema/publication'
 
-// eslint-disable-next-line import/prefer-default-export
-export const useVolumeManagementActions = (publications: TPublication[]) => {
+const useVolumeManagementActions = (publications: TPublication[]) => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { mutateAsync: callUpdate, status: updateStatus } =
@@ -35,6 +35,10 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
   const volumeState = useVolumeManagementStore((state) => state.volumeState)
   const specimensState = useVolumeManagementStore(
     (state) => state.specimensState
+  )
+  const volumeActions = useVolumeManagementStore((state) => state.volumeActions)
+  const specimensActions = useVolumeManagementStore(
+    (state) => state.specimensActions
   )
 
   const doValidation = () => {
@@ -167,7 +171,28 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
     }
   }
 
+  const doDuplicate = () => {
+    try {
+      const data = doValidation()
+
+      const duplicatedVolume = duplicateVolume(data.repairedVolume)
+      const duplicatedSpecimens = data.repairedSpecimens.map((s) =>
+        duplicateSpecimen(s, data.repairedVolume)
+      )
+
+      navigate(
+        `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/duplicated`
+      )
+      specimensActions.setSpecimensState(duplicatedSpecimens)
+      volumeActions.setVolumeState(duplicatedVolume)
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e)
+    }
+  }
+
   return {
+    doDuplicate,
     doUpdate,
     doRegeneratedUpdate,
     doCreate,
@@ -179,3 +204,5 @@ export const useVolumeManagementActions = (publications: TPublication[]) => {
       deleteStatus === 'pending',
   }
 }
+
+export default useVolumeManagementActions

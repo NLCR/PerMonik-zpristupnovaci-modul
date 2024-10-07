@@ -21,7 +21,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import Typography from '@mui/material/Typography'
 import { blue } from '@mui/material/colors'
 import {
-  duplicateSpecimen,
+  copySpecimen,
   filterSpecimen,
   TEditableSpecimen,
   TSpecimenDamageTypes,
@@ -205,17 +205,13 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
   const duplicateRow = useCallback(
     (row: TEditableSpecimen) => {
       const specimensStateClone = clone(specimensState)
-      const duplicatedSpecimen = duplicateSpecimen(row)
+      const copiedSpecimen = copySpecimen(row)
       const originalSpecimenIndex = specimensState.findIndex(
         (s) => s.id === row.id
       )
 
       if (originalSpecimenIndex >= 0) {
-        specimensStateClone.splice(
-          originalSpecimenIndex + 1,
-          0,
-          duplicatedSpecimen
-        )
+        specimensStateClone.splice(originalSpecimenIndex + 1, 0, copiedSpecimen)
         specimenActions.setSpecimensState(specimensStateClone)
       }
     },

@@ -140,32 +140,63 @@ export const repairOrCreateSpecimen = (
   }
 }
 
-export const duplicateSpecimen = (
-  input: Partial<TEditableSpecimen>
+export const copySpecimen = (
+  specimen: Partial<TEditableSpecimen>
 ): TEditableSpecimen => {
   return {
     id: uuid(),
-    metaTitleId: input.metaTitleId ?? '',
-    volumeId: input.volumeId ?? '',
-    barCode: input.barCode ?? '',
-    numExists: input.numExists ?? false,
-    numMissing: input.numMissing ?? false,
-    ownerId: input.ownerId ?? '',
-    damageTypes: input.damageTypes ?? [],
-    damagedPages: input.damagedPages ?? [],
-    missingPages: input.missingPages ?? [],
-    note: input.note ?? '',
-    name: input.name ?? '',
-    subName: input.subName ?? '',
-    publicationId: input.publicationId ?? '',
-    mutationId: input.mutationId ?? '',
-    publicationMark: input.publicationMark ?? '',
-    publicationDate: input.publicationDate ?? '',
-    publicationDateString: input.publicationDateString ?? '',
-    number: input.number ?? '',
-    attachmentNumber: input.attachmentNumber ?? '',
-    pagesCount: input.pagesCount ?? 0,
-    isAttachment: input.isAttachment ?? false,
+    metaTitleId: specimen.metaTitleId ?? '',
+    volumeId: specimen.volumeId ?? '',
+    barCode: specimen.barCode ?? '',
+    numExists: specimen.numExists ?? false,
+    numMissing: specimen.numMissing ?? false,
+    ownerId: specimen.ownerId ?? '',
+    damageTypes: specimen.damageTypes ?? [],
+    damagedPages: specimen.damagedPages ?? [],
+    missingPages: specimen.missingPages ?? [],
+    note: specimen.note ?? '',
+    name: specimen.name ?? '',
+    subName: specimen.subName ?? '',
+    publicationId: specimen.publicationId ?? '',
+    mutationId: specimen.mutationId ?? '',
+    publicationMark: specimen.publicationMark ?? '',
+    publicationDate: specimen.publicationDate ?? '',
+    publicationDateString: specimen.publicationDateString ?? '',
+    number: specimen.number ?? '',
+    attachmentNumber: specimen.attachmentNumber ?? '',
+    pagesCount: specimen.pagesCount ?? 0,
+    isAttachment: specimen.isAttachment ?? false,
+    duplicated: true,
+  }
+}
+
+export const duplicateSpecimen = (
+  specimen: TSpecimen,
+  volume: TVolume
+): TEditableSpecimen => {
+  return {
+    id: uuid(),
+    metaTitleId: specimen.metaTitleId,
+    volumeId: volume.id,
+    barCode: '',
+    numExists: specimen.numExists,
+    numMissing: specimen.numMissing,
+    ownerId: volume.ownerId,
+    damageTypes: [],
+    damagedPages: [],
+    missingPages: [],
+    note: '',
+    name: specimen.name,
+    subName: specimen.subName,
+    publicationId: specimen.publicationId,
+    mutationId: specimen.mutationId,
+    publicationMark: specimen.publicationMark,
+    publicationDate: specimen.publicationDate,
+    publicationDateString: specimen.publicationDateString,
+    number: specimen.number,
+    attachmentNumber: specimen.attachmentNumber,
+    pagesCount: specimen.pagesCount,
+    isAttachment: specimen.isAttachment,
     duplicated: true,
   }
 }
