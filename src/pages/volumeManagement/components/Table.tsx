@@ -194,13 +194,11 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     if (
       !scrolledToRow.current &&
       apiRef.current &&
-      searchParams.get(JUMP_TO_SPECIMEN_WITH_ID)
+      searchParams.get(JUMP_TO_SPECIMEN_WITH_ID)?.length
     ) {
       const rowIndex = specimensState.findIndex(
         (s) => s.id === searchParams.get(JUMP_TO_SPECIMEN_WITH_ID)
       )
-
-      console.log(rowIndex)
 
       if (rowIndex >= 0) {
         setTimeout(() => {
