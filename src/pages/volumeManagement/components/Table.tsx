@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
@@ -7,6 +7,7 @@ import {
   GridRenderCellParams,
   DataGridPro,
   GridColumnHeaderParams,
+  useGridApiRef,
 } from '@mui/x-data-grid-pro'
 import Box from '@mui/material/Box'
 import { alpha, styled } from '@mui/material/styles'
@@ -35,6 +36,8 @@ import DamageTypesEditCell from './editCells/DamageTypesEditCell'
 import PublicationMarkSelectorModalContainer from './editCells/PublicationMarkSelectorModalContainer'
 import RenumberableValueCell from './editCells/RenumberableValueCell'
 import HeaderWithColumnAction from './editCells/HeaderWithColumnAction'
+import { useSearchParams } from 'react-router-dom'
+import { JUMP_TO_SPECIMEN_WITH_ID } from '../../../utils/constants'
 
 const ODD_OPACITY = 0.2
 
@@ -169,6 +172,11 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
   const { languageCode } = useLanguageCode()
   const { MuiTableLocale } = useMuiTableLang()
   const { t } = useTranslation()
+  const apiRef = useGridApiRef()
+
+  const [searchParams] = useSearchParams()
+
+  const scrolledToRow = useRef<boolean>(false)
 
   const showAttachmentsAtTheEnd = useVolumeManagementStore(
     (state) => state.volumeState.showAttachmentsAtTheEnd
@@ -181,6 +189,29 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     (state) => state.specimensActions
   )
 
+  useEffect(() => {
+    const timeout = undefined
+    if (
+      !scrolledToRow.current &&
+      apiRef.current &&
+      searchParams.get(JUMP_TO_SPECIMEN_WITH_ID)
+    ) {
+      const rowIndex = specimensState.findIndex(
+        (s) => s.id === searchParams.get(JUMP_TO_SPECIMEN_WITH_ID)
+      )
+
+      console.log(rowIndex)
+
+      if (rowIndex >= 0) {
+        setTimeout(() => {
+          apiRef.current.scrollToIndexes({ rowIndex: rowIndex })
+          scrolledToRow.current = true
+        }, 250)
+      }
+    }
+    return () => clearTimeout(timeout)
+  }, [apiRef, searchParams, specimensState])
+
   const sortedSpecimensState = useMemo(() => {
     const clonedSpecimens = clone(specimensState)
     if (showAttachmentsAtTheEnd) {
@@ -192,15 +223,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     }
     return clonedSpecimens
   }, [specimensState, showAttachmentsAtTheEnd])
-
-  // TODO: https://github.com/mui/mui-x/issues/7799 https://github.com/NLCR/evidence.periodik/issues/239
-  // useEffect(() => {
-  //   const allRows = gridPaginatedVisibleSortedGridRowEntriesSelector(apiRef)
-  //   const rowIndex = allRows.findIndex(
-  //     (row) => row.id === 'auto-generated-row-company/Paramount Pictures'
-  //   )
-  //   apiRef.current.scrollToIndexes({ rowIndex })
-  // }, [])
 
   const duplicateRow = useCallback(
     (row: TEditableSpecimen) => {
@@ -624,6 +646,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
 
   return (
     <StripedDataGrid
+      apiRef={apiRef}
       localeText={MuiTableLocale}
       getRowClassName={(params) => {
         let classes =
