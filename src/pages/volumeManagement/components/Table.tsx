@@ -306,10 +306,11 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return renderValue(
-          row.attachmentNumber,
-          row.numExists && row.isAttachment,
-          canEdit
+        return renderRenumberableValue(
+          row,
+          (row.numExists || row.numMissing) && row.isAttachment,
+          canEdit,
+          'attachmentNumber'
         )
       },
       // renderEditCell: renderAttachmentNumberEditCell,
