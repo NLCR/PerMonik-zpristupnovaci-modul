@@ -72,17 +72,18 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
         }
         if (renumberType === 'number' && !specimens[i].isAttachment) {
           specimensClone[i] = {
-            ...specimens[i],
+            ...specimensClone[i],
             number: currentNumber.toString(),
           }
+          currentNumber += 1
         }
         if (renumberType === 'attachmentNumber' && specimens[i].isAttachment) {
           specimensClone[i] = {
-            ...specimens[i],
+            ...specimensClone[i],
             attachmentNumber: currentNumber.toString(),
           }
+          currentNumber += 1
         }
-        currentNumber += 1
       }
     }
 
