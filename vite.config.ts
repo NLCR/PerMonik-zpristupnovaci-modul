@@ -9,19 +9,21 @@ import { visualizer } from 'rollup-plugin-visualizer'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
+  process.env = { ...process.env, ...env }
+
   return {
     plugins: [
       react(),
       eslintPlugin(),
       sentryVitePlugin({
-        url: env.VITE_SENTRY_URL,
-        authToken: env.VITE_SENTRY_AUTH_TOKEN,
-        org: env.VITE_SENTRY_ORG,
-        project: env.VITE_SENTRY_PROJECT,
+        url: process.env.SENTRY_URL,
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
         release: {
-          create: !!env.SENTRY_DEPLOY_ENV,
+          create: !!process.env.SENTRY_DEPLOY_ENV,
           deploy: {
-            env: env.SENTRY_DEPLOY_ENV || 'Not specified',
+            env: process.env.SENTRY_DEPLOY_ENV || 'Not specified',
           },
           setCommits: {
             auto: true,
