@@ -12,11 +12,10 @@ import { queryClient } from './api'
 import { WrappedApp } from './App'
 import 'react-toastify/dist/ReactToastify.css'
 import theme from './theme'
-// eslint-disable-next-line import/order
 import './styles.css'
 import { LicenseInfo } from '@mui/x-license'
 
-const { MODE, VITE_SENTRY_DNS, VITE_MUI_LICENCE_KEY } = import.meta.env
+const { NODE_ENV, VITE_SENTRY_DNS, VITE_MUI_LICENCE_KEY } = import.meta.env
 
 // Setup Sentry for errors reporting in production
 SentryInit({
@@ -28,12 +27,12 @@ SentryInit({
     /^\//,
   ],
   integrations: [browserTracingIntegration()],
-  environment: MODE,
+  environment: NODE_ENV,
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
-  tracesSampleRate: MODE === 'development' ? 0 : 0.5,
+  tracesSampleRate: NODE_ENV === 'development' ? 0 : 0.5,
   beforeSend(event) {
-    return MODE === 'development' ? null : event
+    return NODE_ENV === 'development' ? null : event
   },
 })
 
