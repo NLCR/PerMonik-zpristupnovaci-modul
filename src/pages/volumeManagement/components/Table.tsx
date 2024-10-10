@@ -19,7 +19,6 @@ import {
 import clone from 'lodash/clone'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import Typography from '@mui/material/Typography'
 import { blue } from '@mui/material/colors'
 import {
   copySpecimen,
@@ -108,16 +107,13 @@ const renderValue = (
   canEdit: boolean
 ) => {
   return show ? (
-    <Typography
+    <Box
       sx={(theme) => ({
-        fontSize: '14px',
-        width: 'auto',
-        lineHeight: '2.5',
         color: canEdit ? theme.palette.grey[900] : theme.palette.grey[600],
       })}
     >
       {value}
-    </Typography>
+    </Box>
   ) : null
 }
 
