@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { useVolumeManagementStore } from '../../../../slices/useVolumeManagementStore'
 import { TEditableSpecimen } from '../../../../schema/specimen'
 import ModalContainer from '../../../../components/ModalContainer'
+import Box from '@mui/material/Box'
 
 type RenumberableValueCellProps = {
   row: TEditableSpecimen
@@ -99,11 +100,8 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
 
   return show ? (
     <>
-      <Typography
+      <Box
         sx={(theme) => ({
-          fontSize: '14px',
-          width: 'auto',
-          lineHeight: '2.5',
           color: canEdit ? theme.palette.grey[900] : theme.palette.grey[600],
         })}
       >
@@ -115,7 +113,7 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
         >
           <KeyboardArrowDownIcon />
         </IconButton>
-      </Typography>
+      </Box>
       <ModalContainer
         header={t('volume_overview.renumber_header')}
         opened={modalOpened}

@@ -44,7 +44,11 @@ const InputData: FC<InputDataProps> = ({
   const volumeActions = useVolumeManagementStore((state) => state.volumeActions)
 
   return (
-    <Box>
+    <Box
+      sx={{
+        overflowY: 'auto',
+      }}
+    >
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -60,7 +64,8 @@ const InputData: FC<InputDataProps> = ({
                 variant="outlined"
                 size="small"
                 sx={{
-                  minWidth: '218px',
+                  maxWidth: '200px',
+                  width: '100%',
                 }}
                 value={volumeState.metaTitleId}
                 disabled={!canEdit}
@@ -87,7 +92,8 @@ const InputData: FC<InputDataProps> = ({
                 variant="outlined"
                 size="small"
                 sx={{
-                  minWidth: '218px',
+                  maxWidth: '200px',
+                  width: '100%',
                 }}
                 value={volumeState.mutationId}
                 disabled={!canEdit}
@@ -107,6 +113,10 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.publication_mark')}</TableCell>
             <TableCell>
               <TextField
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
                 disabled={!canEdit}
                 value={volumeState.publicationMark}
                 size="small"
@@ -128,6 +138,10 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.bar_code')}</TableCell>
             <TableCell>
               <TextField
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
                 size="small"
                 value={volumeState.barCode}
                 disabled={!canEdit}
@@ -141,6 +155,10 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.signature')}</TableCell>
             <TableCell>
               <TextField
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
                 size="small"
                 value={volumeState.signature}
                 disabled={!canEdit}
@@ -154,6 +172,10 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.year')}</TableCell>
             <TableCell>
               <TextField
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
                 size="small"
                 value={volumeState.year}
                 disabled={!canEdit}
@@ -165,6 +187,10 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.date_from')}</TableCell>
             <TableCell>
               <DatePicker
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
                 disabled={!canEdit}
                 value={dayjs(volumeState.dateFrom)}
                 onChange={(value) => volumeActions.setDateFrom(value)}
@@ -175,6 +201,10 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.date_to')}</TableCell>
             <TableCell>
               <DatePicker
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
                 disabled={!canEdit}
                 value={dayjs(volumeState.dateTo)}
                 minDate={
@@ -190,6 +220,10 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.first_number')}</TableCell>
             <TableCell>
               <TextField
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
                 size="small"
                 value={volumeState.firstNumber}
                 disabled={!canEdit}
@@ -203,6 +237,10 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.last_number')}</TableCell>
             <TableCell>
               <TextField
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
                 size="small"
                 value={volumeState.lastNumber}
                 disabled={!canEdit}
@@ -219,7 +257,8 @@ const InputData: FC<InputDataProps> = ({
                 variant="outlined"
                 size="small"
                 sx={{
-                  minWidth: '218px',
+                  maxWidth: '200px',
+                  width: '100%',
                 }}
                 value={volumeState.ownerId}
                 disabled={!canEdit}
@@ -247,6 +286,10 @@ const InputData: FC<InputDataProps> = ({
             <TableCell>{t('volume_overview.note')}</TableCell>
             <TableCell>
               <TextField
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
                 size="small"
                 value={volumeState.note}
                 disabled={!canEdit}
