@@ -14,7 +14,7 @@ import { TFunction } from 'i18next'
 import { TMetaTitle } from '../../../schema/metaTitle'
 import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useMutationListQuery } from '../../../api/mutation'
-import { usePublicationListQuery } from '../../../api/publication'
+import { useEditionListQuery } from '../../../api/edition'
 import { useOwnerListQuery } from '../../../api/owner'
 import { useSpecimenListQuery } from '../../../api/specimen'
 import { TSpecimen } from '../../../schema/specimen'
@@ -181,7 +181,7 @@ const Table: FC<Props> = ({ metaTitle }) => {
   )
 
   const { data: mutations } = useMutationListQuery()
-  const { data: publications } = usePublicationListQuery()
+  const { data: editions } = useEditionListQuery()
   const { data: owners } = useOwnerListQuery()
   const { languageCode } = useLanguageCode()
 
@@ -213,10 +213,10 @@ const Table: FC<Props> = ({ metaTitle }) => {
         headerName: t('table.name'),
       },
       {
-        field: 'publicationId',
-        headerName: t('table.publication'),
+        field: 'editionId',
+        headerName: t('table.edition'),
         valueFormatter: (value) => {
-          return publications?.find((m) => m.id === value)?.name[languageCode]
+          return editions?.find((m) => m.id === value)?.name[languageCode]
         },
       },
       {
@@ -247,7 +247,7 @@ const Table: FC<Props> = ({ metaTitle }) => {
             }))
         : []),
     ]
-  }, [t, owners, mutations, languageCode, publications, specimens?.owners])
+  }, [t, owners, mutations, languageCode, editions, specimens?.owners])
 
   return (
     <>

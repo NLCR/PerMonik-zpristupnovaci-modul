@@ -7,8 +7,8 @@ export type TParams = {
   names: string[]
   subNames: string[]
   mutationIds: string[]
-  publicationIds: string[]
-  publicationMarks: string[]
+  editionIds: string[]
+  mutationMarks: string[]
   ownerIds: string[]
   damageTypes: string[]
 }
@@ -19,8 +19,8 @@ export const initialParams: TParams = {
   names: [],
   subNames: [],
   mutationIds: [],
-  publicationIds: [],
-  publicationMarks: [],
+  editionIds: [],
+  mutationMarks: [],
   ownerIds: [],
   damageTypes: [],
 }

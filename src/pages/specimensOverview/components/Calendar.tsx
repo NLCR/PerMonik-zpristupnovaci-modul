@@ -30,7 +30,7 @@ import Loader from '../../../components/Loader'
 import { useSpecimenListQuery } from '../../../api/specimen'
 import ShowError from '../../../components/ShowError'
 import VolumeOverviewStatsModal from './VolumeOverviewStatsModal'
-import { usePublicationListQuery } from '../../../api/publication'
+import { useEditionListQuery } from '../../../api/edition'
 import { useOwnerListQuery } from '../../../api/owner'
 import ModalContainer from '../../../components/ModalContainer'
 
@@ -50,7 +50,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
   const navigate = useNavigate()
   const calendarDate = useSpecimensOverviewStore((state) => state.calendarDate)
   const { data: mutations } = useMutationListQuery()
-  const { data: publications } = usePublicationListQuery()
+  const { data: editions } = useEditionListQuery()
   const { data: owners } = useOwnerListQuery()
   const { languageCode } = useLanguageCode()
 
@@ -98,9 +98,9 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         sortBy(
           groupBy(
             found.specimens,
-            (obj) => `${obj.mutationId}_${obj.publicationMark}_${obj.number}`
+            (obj) => `${obj.mutationId}_${obj.mutationMark}_${obj.number}`
           ),
-          (obj) => obj.map((o) => `${o.mutationId}_${o.publicationMark}`)
+          (obj) => obj.map((o) => `${o.mutationId}_${o.mutationMark}`)
         )
       )
       specimensInDay.push({
@@ -192,7 +192,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
             <TableHead>
               <TableRow>
                 <TableCell>{t('specimens_overview.mutation')}</TableCell>
-                <TableCell>{t('specimens_overview.publication')}</TableCell>
+                <TableCell>{t('specimens_overview.edition')}</TableCell>
                 <TableCell>{t('specimens_overview.name')}</TableCell>
                 <TableCell>{t('specimens_overview.sub_name')}</TableCell>
                 <TableCell>{t('specimens_overview.owner')}</TableCell>
@@ -217,7 +217,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                   </TableCell>
                   <TableCell>
                     {
-                      publications?.find((p) => p.id === s.publicationId)?.name[
+                      editions?.find((p) => p.id === s.editionId)?.name[
                         languageCode
                       ]
                     }
@@ -404,8 +404,8 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                       mutations?.find((m) => m.id === firstInRow.mutationId)
                         ?.name[languageCode]
                     }{' '}
-                    {firstInRow.publicationMark.length
-                      ? firstInRow.publicationMark
+                    {firstInRow.mutationMark.length
+                      ? firstInRow.mutationMark
                       : t('specimens_overview.without_mark')}
                   </Typography>
                   <Box

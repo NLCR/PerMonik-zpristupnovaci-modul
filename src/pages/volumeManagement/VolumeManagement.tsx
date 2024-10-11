@@ -15,7 +15,7 @@ import ShowError from '../../components/ShowError'
 import ShowInfoMessage from '../../components/ShowInfoMessage'
 import { useMutationListQuery } from '../../api/mutation'
 import { useOwnerListQuery } from '../../api/owner'
-import { usePublicationListQuery } from '../../api/publication'
+import { useEditionListQuery } from '../../api/edition'
 import { useMeQuery } from '../../api/user'
 import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
@@ -78,10 +78,10 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
     isError: volumeError,
   } = useManagedVolumeDetailQuery(volumeId)
   const {
-    data: publications,
-    isLoading: publicationsLoading,
-    isError: publicationsError,
-  } = usePublicationListQuery()
+    data: editions,
+    isLoading: editionsLoading,
+    isError: editionsError,
+  } = useEditionListQuery()
   const {
     data: metaTitles,
     isLoading: metaTitlesLoading,
@@ -95,7 +95,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
     doCreate,
     doDelete,
     pendingActions,
-  } = useVolumeManagementActions(publications || [])
+  } = useVolumeManagementActions(editions || [])
 
   useEffect(() => {
     if (volume?.volume) {
@@ -108,12 +108,12 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
   useEffect(() => {
     if (!volumeId && !duplicated) {
       setInitialState()
-      if (publications) {
-        volumePeriodicityActions.setDefaultPeriodicityPublication(publications)
+      if (editions) {
+        volumePeriodicityActions.setDefaultPeriodicityEdition(editions)
       }
     }
   }, [
-    publications,
+    editions,
     volumeId,
     volumePeriodicityActions,
     setInitialState,
@@ -222,7 +222,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
 
   if (
     volumeLoading ||
-    publicationsLoading ||
+    editionsLoading ||
     mutationsLoading ||
     ownersLoading ||
     metaTitlesLoading ||
@@ -231,7 +231,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
     return <Loader />
   if (
     volumeError ||
-    publicationsError ||
+    editionsError ||
     mutationsError ||
     ownersError ||
     metaTitlesError ||
@@ -240,7 +240,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
     return <ShowError />
   if (
     (!volume && volumeId?.length) ||
-    !publications ||
+    !editions ||
     !mutations ||
     !owners ||
     !metaTitles
@@ -333,7 +333,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
         <SpecimensTable
           canEdit={canEdit}
           mutations={mutations}
-          publications={publications}
+          editions={editions}
         />
         <Box
           sx={{
@@ -380,7 +380,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
           >
             {canEdit ? (
               <>
-                <Periodicity canEdit={canEdit} publications={publications} />
+                <Periodicity canEdit={canEdit} editions={editions} />
                 {actions.map((action) => (
                   <Button
                     variant="contained"

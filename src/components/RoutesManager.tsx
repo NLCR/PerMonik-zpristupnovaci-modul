@@ -17,9 +17,7 @@ const Owners = React.lazy(() => import('../pages/administration/Owners'))
 const MetaTitles = React.lazy(
   () => import('../pages/administration/MetaTitles')
 )
-const Publications = React.lazy(
-  () => import('../pages/administration/Publications')
-)
+const Editions = React.lazy(() => import('../pages/administration/Editions'))
 const Mutations = React.lazy(() => import('../pages/administration/Mutations'))
 
 const VolumeOverview = React.lazy(
@@ -86,7 +84,7 @@ const RoutesManager = () => {
             <Route path={t('users')} element={<Users me={me} />} />
             <Route path={t('owners')} element={<Owners />} />
             <Route path={t('meta_titles')} element={<MetaTitles />} />
-            <Route path={t('publications')} element={<Publications />} />
+            <Route path={t('editions')} element={<Editions />} />
             <Route path={t('mutations')} element={<Mutations />} />
           </Route>
         ) : null}

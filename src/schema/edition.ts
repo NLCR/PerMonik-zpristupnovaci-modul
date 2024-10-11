@@ -2,7 +2,7 @@ import { z } from 'zod'
 import i18next from '../i18next'
 import { AuditableSchema } from './common'
 
-export const PublicationSchema = AuditableSchema.extend({
+export const EditionSchema = AuditableSchema.extend({
   id: z.string(),
   name: z.object({
     cs: z.string().min(1, i18next.t('schema.cs_name_min_length')),
@@ -14,7 +14,7 @@ export const PublicationSchema = AuditableSchema.extend({
   isPeriodicAttachment: z.boolean(),
 })
 
-export const EditablePublicationSchema = PublicationSchema.partial({ id: true })
+export const EditableEditionSchema = EditionSchema.partial({ id: true })
 
-export type TPublication = z.infer<typeof PublicationSchema>
-export type TEditablePublication = z.infer<typeof EditablePublicationSchema>
+export type TEdition = z.infer<typeof EditionSchema>
+export type TEditableEdition = z.infer<typeof EditableEditionSchema>

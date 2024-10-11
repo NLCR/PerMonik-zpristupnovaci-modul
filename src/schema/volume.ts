@@ -5,7 +5,7 @@ import {
   SpecimenFacetSchema,
   SpecimenDamageTypesFacet,
 } from './specimen'
-import { TPublication } from './publication'
+import { TEdition } from './edition'
 import { AuditableSchema, copyAuditable } from './common'
 
 export const VolumePeriodicityDaysSchema = z.enum([
@@ -21,7 +21,7 @@ export const VolumePeriodicityDaysSchema = z.enum([
 export const VolumePeriodicitySchema = z.object({
   numExists: z.boolean(),
   isAttachment: z.boolean(),
-  publicationId: z.string().length(36),
+  editionId: z.string().length(36),
   day: VolumePeriodicityDaysSchema,
   pagesCount: z.number(),
   name: z.string(),
@@ -31,7 +31,7 @@ export const VolumePeriodicitySchema = z.object({
 export const EditableVolumePeriodicitySchema = z.object({
   numExists: z.boolean(),
   isAttachment: z.boolean(),
-  publicationId: z.string().nullable(),
+  editionId: z.string().nullable(),
   day: VolumePeriodicityDaysSchema,
   pagesCount: z.number().or(z.string()),
   name: z.string(),
@@ -54,7 +54,7 @@ export const VolumeSchema = AuditableSchema.extend({
   signature: z.string(),
   ownerId: z.string().length(36),
   year: z.number().min(0),
-  publicationMark: z.string(),
+  mutationMark: z.string(),
 })
 
 export const EditableVolumeSchema = AuditableSchema.extend({
@@ -72,7 +72,7 @@ export const EditableVolumeSchema = AuditableSchema.extend({
   signature: z.string(),
   ownerId: z.string(),
   year: z.string().or(z.number()).optional(),
-  publicationMark: z.string(),
+  mutationMark: z.string(),
 })
 
 // export const EditableVolumeSchema = VolumeSchema.extend({
@@ -102,8 +102,8 @@ const VolumeOverviewStatsSchema = z.object({
   numberMax: z.string().nullable(),
   pagesCount: z.string().nullable(),
   mutationIds: SpecimenFacetSchema.array(),
-  publicationMark: SpecimenFacetSchema.array(),
-  publicationIds: SpecimenFacetSchema.array(),
+  mutationMarks: SpecimenFacetSchema.array(),
+  editionIds: SpecimenFacetSchema.array(),
   damageTypes: SpecimenDamageTypesFacet.array(),
   publicationDayRanges: SpecimenFacetSchema.array(),
   specimens: SpecimenSchema.array(),
@@ -122,7 +122,7 @@ export type TVolumeOverviewStats = z.infer<typeof VolumeOverviewStatsSchema>
 
 export const repairVolume = (
   volume: TEditableVolume,
-  publications: TPublication[]
+  editions: TEdition[]
 ): TVolume => {
   return {
     ...copyAuditable(volume),
@@ -136,10 +136,8 @@ export const repairVolume = (
       volume.periodicity.map((p) => ({
         numExists: p.numExists ?? false,
         isAttachment: p.isAttachment ?? false,
-        publicationId:
-          p.publicationId ??
-          publications.find((pub) => pub.isDefault)?.id ??
-          '',
+        editionId:
+          p.editionId ?? editions.find((pub) => pub.isDefault)?.id ?? '',
         day: p.day,
         pagesCount: Number(p.pagesCount) ?? 0,
         name: p.name.trim() ?? '',
@@ -152,7 +150,7 @@ export const repairVolume = (
     signature: volume.signature.trim() ?? '',
     ownerId: volume.ownerId ?? '',
     year: Number(volume.year) ?? -1,
-    publicationMark: volume.publicationMark.trim() ?? '',
+    mutationMark: volume.mutationMark.trim() ?? '',
   }
 }
 
@@ -172,6 +170,6 @@ export const duplicateVolume = (volume: TVolume): TEditableVolume => {
     signature: volume.signature,
     ownerId: volume.ownerId,
     year: volume.year,
-    publicationMark: '',
+    mutationMark: '',
   }
 }

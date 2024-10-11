@@ -8,7 +8,7 @@ import Loader from '../../../components/Loader'
 import ShowError from '../../../components/ShowError'
 import { useOwnerListQuery } from '../../../api/owner'
 import { useMutationListQuery } from '../../../api/mutation'
-import { usePublicationListQuery } from '../../../api/publication'
+import { useEditionListQuery } from '../../../api/edition'
 import { useLanguageCode } from '../../../utils/helperHooks'
 
 const bolderTextStyle = {
@@ -35,10 +35,10 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
     isError: mutationsError,
   } = useMutationListQuery()
   const {
-    data: publications,
-    isLoading: publicationsLoading,
-    isError: publicationsError,
-  } = usePublicationListQuery()
+    data: editions,
+    isLoading: editionsLoading,
+    isError: editionsError,
+  } = useEditionListQuery()
 
   const {
     data: volumeStats,
@@ -50,7 +50,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
     volumeStatsLoading ||
     ownersLoading ||
     mutationsLoading ||
-    publicationsLoading
+    editionsLoading
   )
     return <Loader />
   if (
@@ -60,8 +60,8 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
     !owners ||
     mutationsError ||
     !mutations ||
-    publicationsError ||
-    !publications
+    editionsError ||
+    !editions
   )
     return <ShowError />
 
@@ -198,9 +198,9 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
         }}
       >
         <Typography sx={bolderTextStyle}>
-          {t('volume_overview.publication_mark')}:
+          {t('volume_overview.mutation_mark')}:
         </Typography>
-        {volumeStats.publicationMark.map((pm) => (
+        {volumeStats.mutationMarks.map((pm) => (
           <Box
             key={pm.name}
             sx={{
@@ -222,9 +222,9 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
         }}
       >
         <Typography sx={bolderTextStyle}>
-          {t('volume_overview.publication')}:
+          {t('volume_overview.edition')}:
         </Typography>
-        {volumeStats.publicationIds.map((p) => (
+        {volumeStats.editionIds.map((p) => (
           <Box
             key={p.name}
             sx={{
@@ -234,7 +234,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
             }}
           >
             <Typography variant="body2">
-              {publications.find((pk) => pk.id === p.name)?.name[languageCode]}
+              {editions.find((pk) => pk.id === p.name)?.name[languageCode]}
             </Typography>
             <Typography variant="body2">{p.count}x</Typography>
           </Box>

@@ -8,7 +8,7 @@ import {
   TVolumePeriodicityDays,
 } from '../schema/volume'
 import { filterSpecimen, TEditableSpecimen } from '../schema/specimen'
-import { TPublication } from '../schema/publication'
+import { TEdition } from '../schema/edition'
 
 const periodicityDays: TVolumePeriodicityDays[] = [
   'Monday',
@@ -23,7 +23,7 @@ const periodicityDays: TVolumePeriodicityDays[] = [
 const initialPeriodicity: TEditableVolumePeriodicity[] = [
   ...periodicityDays.map((d) => ({
     numExists: false,
-    publicationId: null,
+    editionId: null,
     day: d,
     pagesCount: '',
     name: '',
@@ -45,7 +45,7 @@ export const initialState: TVariablesState = {
     note: '',
     ownerId: '',
     periodicity: initialPeriodicity,
-    publicationMark: '',
+    mutationMark: '',
     showAttachmentsAtTheEnd: false,
     signature: '',
     year: '',
@@ -66,7 +66,7 @@ interface TState extends TVariablesState {
     setVolumeState: (value: TEditableVolume) => void
     setMetaTitle: (id: string, name: string) => void
     setMutationId: (value: string) => void
-    setPublicationMark: (value: string) => void
+    setMutationMark: (value: string) => void
     setBarCode: (value: string) => void
     setSignature: (value: string) => void
     setYear: (value: string) => void
@@ -79,9 +79,9 @@ interface TState extends TVariablesState {
     setShowAttachmentsAtTheEnd: (value: boolean) => void
   }
   volumePeriodicityActions: {
-    setDefaultPeriodicityPublication: (values: TPublication[]) => void
+    setDefaultPeriodicityEdition: (values: TEdition[]) => void
     setNumExists: (value: boolean, index: number) => void
-    setPublicationId: (value: string | null, index: number) => void
+    setEditionId: (value: string | null, index: number) => void
     setPagesCount: (value: string, index: number) => void
     setName: (value: string, index: number) => void
     setSubName: (value: string, index: number) => void
@@ -124,10 +124,10 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
           state.volumeState.mutationId = value
         })
       ),
-    setPublicationMark: (value) =>
+    setMutationMark: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.publicationMark = value
+          state.volumeState.mutationMark = value
         })
       ),
     setBarCode: (value) =>
@@ -200,13 +200,13 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
       ),
   },
   volumePeriodicityActions: {
-    setDefaultPeriodicityPublication: (values: TPublication[]) =>
+    setDefaultPeriodicityEdition: (values: TEdition[]) =>
       set(
         produce((state: TState) => {
           state.volumeState.periodicity = state.volumeState.periodicity.map(
             (p) => ({
               ...p,
-              publicationId: values.find((pub) => pub.isDefault)?.id || '',
+              editionId: values.find((pub) => pub.isDefault)?.id || '',
             })
           )
         })
@@ -217,10 +217,10 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
           state.volumeState.periodicity[index].numExists = value
         })
       ),
-    setPublicationId: (value: string | null, index: number) =>
+    setEditionId: (value: string | null, index: number) =>
       set(
         produce((state: TState) => {
-          state.volumeState.periodicity[index].publicationId = value
+          state.volumeState.periodicity[index].editionId = value
         })
       ),
     setPagesCount: (value: string, index: number) =>

@@ -185,7 +185,7 @@ const Owners = () => {
               >
                 <TextField
                   size="small"
-                  label={t('administration.name')}
+                  label={t('administration.shorthand')}
                   value={owner.name}
                   // disabled={savingUser}
                   onChange={(event) =>

@@ -1,9 +1,9 @@
 import { GridRenderEditCellParams } from '@mui/x-data-grid/models/params/gridCellParams'
 import React, { useEffect, useState } from 'react'
 import { TEditableSpecimen } from '../../../../schema/specimen'
-import PublicationMarkSelectorModal from './PublicationMarkSelectorModal'
+import MutationMarkSelectorModal from './MutationMarkSelectorModal'
 
-const PublicationMarkSelectorModalContainer = (
+const MutationMarkSelectorModalContainer = (
   props: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
   const { row, api } = props
@@ -24,8 +24,8 @@ const PublicationMarkSelectorModalContainer = (
       {/* <Button onClick={() => setModalOpened(true)}> */}
       {/*  {t('administration.update')} */}
       {/* </Button> */}
-      {row.publicationMark}
-      <PublicationMarkSelectorModal
+      {row.mutationMark}
+      <MutationMarkSelectorModal
         row={row}
         open={modalOpened}
         onClose={() => setModalOpened(false)}
@@ -35,4 +35,4 @@ const PublicationMarkSelectorModalContainer = (
   )
 }
 
-export default PublicationMarkSelectorModalContainer
+export default MutationMarkSelectorModalContainer

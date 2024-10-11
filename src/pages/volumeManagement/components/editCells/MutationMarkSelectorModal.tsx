@@ -10,25 +10,25 @@ import ModalContainer from '../../../../components/ModalContainer'
 const marks = ['●', '○', '■', '□', '★', '☆', '△', '▲', '✶'] as const
 type TMarks = (typeof marks)[number]
 
-interface PublicationMarkSelectorModalProps {
+interface MutationMarkSelectorModalProps {
   row: TEditableSpecimen | TEditableVolume
   open: boolean
   onClose: () => void
   onSave: (data: TEditableSpecimen | TEditableVolume) => void
 }
 
-const PublicationMarkSelectorModal: FC<PublicationMarkSelectorModalProps> = ({
+const MutationMarkSelectorModal: FC<MutationMarkSelectorModalProps> = ({
   row,
   open,
   onClose,
   onSave,
 }) => {
   const { t } = useTranslation()
-  const [inputMarks, setInputMarks] = useState(row.publicationMark)
+  const [inputMarks, setInputMarks] = useState(row.mutationMark)
 
   useEffect(() => {
-    if (open) setInputMarks(row.publicationMark)
-  }, [open, row.publicationMark])
+    if (open) setInputMarks(row.mutationMark)
+  }, [open, row.mutationMark])
 
   const doClose = () => {
     // setInputMarks('')
@@ -36,7 +36,7 @@ const PublicationMarkSelectorModal: FC<PublicationMarkSelectorModalProps> = ({
   }
 
   const handleSave = () => {
-    onSave({ ...row, publicationMark: inputMarks })
+    onSave({ ...row, mutationMark: inputMarks })
     doClose()
   }
 
@@ -59,7 +59,7 @@ const PublicationMarkSelectorModal: FC<PublicationMarkSelectorModalProps> = ({
 
   return (
     <ModalContainer
-      header={t('volume_overview.publication_mark')}
+      header={t('volume_overview.mutation_mark')}
       opened={open}
       onClose={doClose}
       closeButton={{
@@ -84,7 +84,7 @@ const PublicationMarkSelectorModal: FC<PublicationMarkSelectorModalProps> = ({
           {marks.map((mark) => (
             <Button
               disabled={inputMarks.length > 0 && !inputMarks.includes(mark)}
-              key={`publication-mark-${mark}`}
+              key={`mutation-mark-${mark}`}
               onClick={() => handleSymbolSelect(mark)}
               sx={{
                 fontSize: '20px',
@@ -99,4 +99,4 @@ const PublicationMarkSelectorModal: FC<PublicationMarkSelectorModalProps> = ({
   )
 }
 
-export default PublicationMarkSelectorModal
+export default MutationMarkSelectorModal

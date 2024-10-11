@@ -181,7 +181,7 @@ const MetaTitles = () => {
               >
                 <TextField
                   size="small"
-                  label={t('administration.name')}
+                  label={t('administration.title')}
                   value={metaTitle.name}
                   onChange={(event) =>
                     setMetaTitle((prevState) => ({
