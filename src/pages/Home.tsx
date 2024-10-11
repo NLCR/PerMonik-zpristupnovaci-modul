@@ -28,7 +28,7 @@ const Home = () => {
       </Typography>
       {isLoading ? <Loader /> : null}
       {isError && !isLoading ? <ShowError onRetry={refetch} /> : null}
-      {data ? (
+      {data && !isLoading && !isError ? (
         <Box
           sx={{
             marginTop: 10,

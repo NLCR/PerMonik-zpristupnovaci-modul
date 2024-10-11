@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import { v4 as uuid } from 'uuid'
 import type { TVolume } from './volume'
+import { AuditableSchema, copyAuditable } from './common'
+import { TPublication } from './publication'
 
 export const SpecimenDamageTypesSchema = z.enum([
   'OK',
@@ -28,7 +30,7 @@ export const SpecimenDamageTypesFacet = z.object({
   count: z.number(),
 })
 
-export const SpecimenSchema = z.object({
+export const SpecimenSchema = AuditableSchema.extend({
   id: z.string().length(36),
   metaTitleId: z.string().length(36),
   volumeId: z.string().length(36),
@@ -80,33 +82,38 @@ export type TSpecimensPublicationDays = z.infer<
   typeof SpecimensPublicationDaysSchema
 >
 
-export const filterSpecimen = (input: TEditableSpecimen): TEditableSpecimen => {
+export const filterSpecimen = (
+  specimen: TEditableSpecimen
+): TEditableSpecimen => {
   return {
-    id: input.id,
-    metaTitleId: input.metaTitleId,
-    volumeId: input.volumeId,
-    barCode: input.barCode.trim(),
-    numExists: input.numExists,
-    numMissing: input.numMissing,
-    ownerId: input.ownerId,
-    damageTypes: input.damageTypes,
-    damagedPages: input.damagedPages,
-    missingPages: input.missingPages,
-    note: input.note.trim(),
-    name: input.name.trim(),
-    subName: input.subName.trim(),
-    publicationId: input.publicationId,
-    mutationId: input.mutationId,
-    publicationMark: input.publicationMark.trim(),
-    publicationDate: input.publicationDate,
-    publicationDateString: input.publicationDateString,
-    number: input.number ? input.number.trim() : null,
-    attachmentNumber: input.attachmentNumber
-      ? input.attachmentNumber.trim()
+    ...copyAuditable(specimen),
+    id: specimen.id,
+    metaTitleId: specimen.metaTitleId,
+    volumeId: specimen.volumeId,
+    barCode: specimen.barCode.trim(),
+    numExists: specimen.numExists,
+    numMissing: specimen.numMissing,
+    ownerId: specimen.ownerId,
+    damageTypes: specimen.damageTypes,
+    damagedPages: specimen.damagedPages,
+    missingPages: specimen.missingPages,
+    note: specimen.note.trim(),
+    name: specimen.name.trim(),
+    subName: specimen.subName.trim(),
+    publicationId: specimen.publicationId,
+    mutationId: specimen.mutationId,
+    publicationMark: specimen.publicationMark.trim(),
+    publicationDate: specimen.publicationDate,
+    publicationDateString: specimen.publicationDateString,
+    number: specimen.number ? specimen.number.trim() : null,
+    attachmentNumber: specimen.attachmentNumber
+      ? specimen.attachmentNumber.trim()
       : null,
-    pagesCount: Number(input.pagesCount.toString().replace(/\D/g, '').trim()),
-    isAttachment: input.isAttachment,
-    duplicated: input.duplicated,
+    pagesCount: Number(
+      specimen.pagesCount.toString().replace(/\D/g, '').trim()
+    ),
+    isAttachment: specimen.isAttachment,
+    duplicated: specimen.duplicated,
   }
 }
 
@@ -115,6 +122,7 @@ export const repairOrCreateSpecimen = (
   volume: TVolume
 ): TSpecimen => {
   return {
+    ...copyAuditable(specimen),
     id: specimen.id ?? uuid(),
     metaTitleId: volume.metaTitleId,
     volumeId: volume.id,
@@ -144,6 +152,7 @@ export const copySpecimen = (
   specimen: Partial<TEditableSpecimen>
 ): TEditableSpecimen => {
   return {
+    ...copyAuditable(specimen),
     id: uuid(),
     metaTitleId: specimen.metaTitleId ?? '',
     volumeId: specimen.volumeId ?? '',
@@ -198,5 +207,19 @@ export const duplicateSpecimen = (
     pagesCount: specimen.pagesCount,
     isAttachment: specimen.isAttachment,
     duplicated: true,
+  }
+}
+
+export const checkAttachmentChange = (
+  publications: TPublication[],
+  specimen: TEditableSpecimen
+): TEditableSpecimen => {
+  const publication = publications.find((p) => p.id === specimen.publicationId)
+  const isAttachment =
+    publication?.isAttachment || publication?.isPeriodicAttachment || false
+
+  return {
+    ...specimen,
+    isAttachment: isAttachment,
   }
 }

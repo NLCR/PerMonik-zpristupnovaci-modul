@@ -1,10 +1,36 @@
 import ky from 'ky'
-import { QueryClient } from '@tanstack/react-query'
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import i18next from '../i18next'
+import { captureException, withScope } from '@sentry/react'
 
 // Setup queryClient
 export const queryClient = new QueryClient({
+  mutationCache: new MutationCache({
+    onError: (err, _variables, _context, mutation) => {
+      withScope((scope) => {
+        scope.setContext('mutation', {
+          mutationId: mutation.mutationId,
+          variables: mutation.state.variables,
+        })
+        if (mutation.options.mutationKey) {
+          scope.setFingerprint(
+            Array.from(mutation.options.mutationKey) as string[]
+          )
+        }
+        captureException(err)
+      })
+    },
+  }),
+  queryCache: new QueryCache({
+    onError: (err, query) => {
+      withScope((scope) => {
+        scope.setContext('query', { queryHash: query.queryHash })
+        scope.setFingerprint([query.queryHash.replaceAll(/[0-9]/g, '0')])
+        captureException(err)
+      })
+    },
+  }),
   defaultOptions: {
     queries: {
       retry: 0,

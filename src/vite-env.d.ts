@@ -1,7 +1,6 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly NODE_ENV: string
   readonly SENTRY_AUTH_TOKEN: string
   readonly SENTRY_ORG: string
   readonly SENTRY_PROJECT: string

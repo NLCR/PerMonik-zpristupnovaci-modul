@@ -3,7 +3,7 @@ import { api, queryClient } from './index'
 import { TVolume, TVolumeDetail, TVolumeOverviewStats } from '../schema/volume'
 import { TSpecimen } from '../schema/specimen'
 
-export const useMangedVolumeDetailQuery = (id?: string) =>
+export const useManagedVolumeDetailQuery = (id?: string) =>
   useQuery({
     queryKey: ['volume', 'detail', id],
     queryFn: () =>
