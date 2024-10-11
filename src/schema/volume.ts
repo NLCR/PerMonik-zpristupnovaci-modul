@@ -6,6 +6,7 @@ import {
   SpecimenDamageTypesFacet,
 } from './specimen'
 import { TPublication } from './publication'
+import { AuditableSchema, copyAuditable } from './common'
 
 export const VolumePeriodicityDaysSchema = z.enum([
   'Monday',
@@ -38,7 +39,7 @@ export const EditableVolumePeriodicitySchema = z.object({
   duplicated: z.boolean().optional(),
 })
 
-export const VolumeSchema = z.object({
+export const VolumeSchema = AuditableSchema.extend({
   id: z.string().length(36),
   barCode: z.string().min(1),
   dateFrom: z.string().min(1),
@@ -56,7 +57,7 @@ export const VolumeSchema = z.object({
   publicationMark: z.string(),
 })
 
-export const EditableVolumeSchema = z.object({
+export const EditableVolumeSchema = AuditableSchema.extend({
   id: z.string(),
   barCode: z.string(),
   dateFrom: z.string(),
@@ -124,6 +125,7 @@ export const repairVolume = (
   publications: TPublication[]
 ): TVolume => {
   return {
+    ...copyAuditable(volume),
     id: volume.id.length ? volume.id : uuid(),
     barCode: volume.barCode.trim() || '',
     dateFrom: volume.dateFrom ?? '',

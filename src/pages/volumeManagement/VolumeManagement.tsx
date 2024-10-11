@@ -9,7 +9,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { blue } from '@mui/material/colors'
-import { useMangedVolumeDetailQuery } from '../../api/volume'
+import { useManagedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
 import ShowInfoMessage from '../../components/ShowInfoMessage'
@@ -76,7 +76,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
     data: volume,
     isLoading: volumeLoading,
     isError: volumeError,
-  } = useMangedVolumeDetailQuery(volumeId)
+  } = useManagedVolumeDetailQuery(volumeId)
   const {
     data: publications,
     isLoading: publicationsLoading,
@@ -98,7 +98,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
   } = useVolumeManagementActions(publications || [])
 
   useEffect(() => {
-    if (volume) {
+    if (volume?.volume) {
       volumeActions.setVolumeState(volume.volume)
       specimensActions.setSpecimensState(volume.specimens)
       volumePeriodicityActions.setPeriodicityGenerationUsed(false)
@@ -126,10 +126,10 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
 
   const canEdit = useMemo(
     () =>
-      me?.owners?.some((o) => o === volume?.volume.ownerId) ||
+      me?.owners?.some((o) => o === volume?.volume?.ownerId) ||
       !volumeId?.length ||
       me?.role === 'super_admin',
-    [me, volume?.volume.ownerId, volumeId?.length]
+    [me, volume?.volume, volumeId?.length]
   )
 
   const actions = useMemo(() => {

@@ -21,6 +21,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { blue } from '@mui/material/colors'
 import {
+  checkAttachmentChange,
   copySpecimen,
   filterSpecimen,
   TEditableSpecimen,
@@ -613,9 +614,10 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
   }
 
   const handleUpdate = (newRow: TEditableSpecimen) => {
-    // console.log(newRow)
-    specimenActions.setSpecimen(newRow)
-    return filterSpecimen(newRow)
+    const row = checkAttachmentChange(publications, newRow)
+    // console.log(row)
+    specimenActions.setSpecimen(row)
+    return filterSpecimen(row)
   }
 
   const isCellEditable = (params: GridCellParams<TEditableSpecimen>) => {

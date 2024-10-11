@@ -3,7 +3,12 @@ import ReactDOM from 'react-dom/client'
 import { I18nextProvider } from 'react-i18next'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { init as SentryInit, browserTracingIntegration } from '@sentry/react'
+import {
+  setTag,
+  init as SentryInit,
+  browserTracingIntegration,
+  extraErrorDataIntegration,
+} from '@sentry/react'
 import { ToastContainer } from 'react-toastify'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
@@ -15,24 +20,35 @@ import theme from './theme'
 import './styles.css'
 import { LicenseInfo } from '@mui/x-license'
 
-const { NODE_ENV, VITE_SENTRY_DNS, VITE_MUI_LICENCE_KEY } = import.meta.env
+const { MODE, VITE_SENTRY_DNS, VITE_MUI_LICENCE_KEY } = import.meta.env
+
+const getEnvironment = () => {
+  let environment = 'unknown'
+  const hostname = window.location.hostname
+
+  if (hostname.includes('permonik')) {
+    environment = 'test'
+  }
+  if (hostname.includes('permonik-test')) {
+    environment = 'test'
+  }
+  if (hostname.includes('localhost')) {
+    environment = 'localhost'
+  }
+
+  return environment
+}
 
 // Setup Sentry for errors reporting in production
+setTag('APP_TYPE', MODE) // public or admin
 SentryInit({
   dsn: VITE_SENTRY_DNS,
-  tracePropagationTargets: [
-    'localhost',
-    'permonik.nkp.cz',
-    'permonik-test.nkp.cz',
-    /^\//,
-  ],
-  integrations: [browserTracingIntegration()],
-  environment: NODE_ENV,
-  // We recommend adjusting this value in production, or using tracesSampler
-  // for finer control
-  tracesSampleRate: NODE_ENV === 'development' ? 0 : 0.5,
+  tracePropagationTargets: ['permonik.nkp.cz', 'permonik-test.nkp.cz', /^\//],
+  integrations: [browserTracingIntegration(), extraErrorDataIntegration()],
+  tracesSampleRate: 0.5,
+  environment: getEnvironment(),
   beforeSend(event) {
-    return NODE_ENV === 'development' ? null : event
+    return getEnvironment() === 'localhost' ? null : event
   },
 })
 

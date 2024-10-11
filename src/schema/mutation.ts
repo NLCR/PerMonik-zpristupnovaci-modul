@@ -1,7 +1,8 @@
 import { z } from 'zod'
 import i18next from '../i18next'
+import { AuditableSchema } from './common'
 
-export const MutationSchema = z.object({
+export const MutationSchema = AuditableSchema.extend({
   id: z.string(),
   name: z.object({
     cs: z.string().min(1, i18next.t('schema.cs_name_min_length')),
