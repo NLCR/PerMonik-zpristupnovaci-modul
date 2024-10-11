@@ -30,10 +30,10 @@ import {
 import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { TMutation } from '../../../schema/mutation'
-import { TPublication } from '../../../schema/publication'
+import { TEdition } from '../../../schema/edition'
 import DamagedAndMissingPagesEditCell from './editCells/DamagedAndMissingPagesEditCell'
 import DamageTypesEditCell from './editCells/DamageTypesEditCell'
-import PublicationMarkSelectorModalContainer from './editCells/PublicationMarkSelectorModalContainer'
+import MutationMarkSelectorModalContainer from './editCells/MutationMarkSelectorModalContainer'
 import RenumberableValueCell from './editCells/RenumberableValueCell'
 import HeaderWithColumnAction from './editCells/HeaderWithColumnAction'
 import { useSearchParams } from 'react-router-dom'
@@ -153,19 +153,19 @@ const renderDamageTypesEditCell = (
   return <DamageTypesEditCell {...params} />
 }
 
-const renderPublicationMarkEditCell = (
+const renderMutationMarkEditCell = (
   params: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
-  return <PublicationMarkSelectorModalContainer {...params} />
+  return <MutationMarkSelectorModalContainer {...params} />
 }
 
 interface TableProps {
   canEdit: boolean
   mutations: TMutation[]
-  publications: TPublication[]
+  editions: TEdition[]
 }
 
-const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
+const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
   const { languageCode } = useLanguageCode()
   const { MuiTableLocale } = useMuiTableLang()
   const { t } = useTranslation()
@@ -331,20 +331,18 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
       type: 'singleSelect',
     },
     {
-      field: 'publicationId',
-      headerName: t('volume_overview.publication'),
+      field: 'editionId',
+      headerName: t('volume_overview.edition'),
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(
-          publications.find((m) => m.id === row.publicationId)?.name[
-            languageCode
-          ],
+          editions.find((m) => m.id === row.editionId)?.name[languageCode],
           row.numExists,
           canEdit
         )
       },
-      valueOptions: publications.map((v) => ({
+      valueOptions: editions.map((v) => ({
         value: v.id,
         label: v.name[languageCode],
       })),
@@ -381,15 +379,15 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
     },
     {
       /* bug fix, with the right name it hasn't updated value */
-      field: 'publicationMark2',
+      field: 'mutationMark2',
       type: 'string',
-      headerName: t('volume_overview.publication_mark'),
+      headerName: t('volume_overview.mutation_mark'),
       editable: canEdit,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return renderValue(row.publicationMark, row.numExists, canEdit)
+        return renderValue(row.mutationMark, row.numExists, canEdit)
       },
-      renderEditCell: renderPublicationMarkEditCell,
+      renderEditCell: renderMutationMarkEditCell,
     },
     {
       field: 'OK',
@@ -614,7 +612,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, publications }) => {
   }
 
   const handleUpdate = (newRow: TEditableSpecimen) => {
-    const row = checkAttachmentChange(publications, newRow)
+    const row = checkAttachmentChange(editions, newRow)
     // console.log(row)
     specimenActions.setSpecimen(row)
     return filterSpecimen(row)

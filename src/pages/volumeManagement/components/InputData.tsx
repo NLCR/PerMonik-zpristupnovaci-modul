@@ -17,7 +17,7 @@ import { TMe } from '../../../schema/user'
 import { TMutation } from '../../../schema/mutation'
 import { TOwner } from '../../../schema/owner'
 import { TMetaTitle } from '../../../schema/metaTitle'
-import PublicationMarkSelectorModal from './editCells/PublicationMarkSelectorModal'
+import MutationMarkSelectorModal from './editCells/MutationMarkSelectorModal'
 
 interface InputDataProps {
   canEdit: boolean
@@ -37,7 +37,7 @@ const InputData: FC<InputDataProps> = ({
   const { t } = useTranslation()
   const { languageCode } = useLanguageCode()
 
-  const [publicationMarksModalOpened, setPublicationMarksModalOpened] =
+  const [mutationMarksModalOpened, setMutationMarksModalOpened] =
     useState(false)
 
   const volumeState = useVolumeManagementStore((state) => state.volumeState)
@@ -110,7 +110,7 @@ const InputData: FC<InputDataProps> = ({
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>{t('volume_overview.publication_mark')}</TableCell>
+            <TableCell>{t('volume_overview.mutation_mark')}</TableCell>
             <TableCell>
               <TextField
                 sx={{
@@ -118,17 +118,17 @@ const InputData: FC<InputDataProps> = ({
                   width: '100%',
                 }}
                 disabled={!canEdit}
-                value={volumeState.publicationMark}
+                value={volumeState.mutationMark}
                 size="small"
-                onClick={() => setPublicationMarksModalOpened(true)}
+                onClick={() => setMutationMarksModalOpened(true)}
               />
-              {publicationMarksModalOpened ? (
-                <PublicationMarkSelectorModal
+              {mutationMarksModalOpened ? (
+                <MutationMarkSelectorModal
                   row={volumeState}
-                  open={publicationMarksModalOpened}
-                  onClose={() => setPublicationMarksModalOpened(false)}
+                  open={mutationMarksModalOpened}
+                  onClose={() => setMutationMarksModalOpened(false)}
                   onSave={(data) =>
-                    volumeActions.setPublicationMark(data.publicationMark)
+                    volumeActions.setMutationMark(data.mutationMark)
                   }
                 />
               ) : null}

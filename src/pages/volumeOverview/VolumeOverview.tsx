@@ -115,8 +115,8 @@ const VolumeOverview = () => {
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t('volume_overview.publication_mark')}</TableCell>
-              <TableCell>{volume.volume.publicationMark}</TableCell>
+              <TableCell>{t('volume_overview.mutation_mark')}</TableCell>
+              <TableCell>{volume.volume.mutationMark}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t('volume_overview.bar_code')}</TableCell>

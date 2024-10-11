@@ -16,11 +16,11 @@ import {
   useUpdateRegeneratedVolumeWithSpecimensMutation,
   useUpdateVolumeWithSpecimensMutation,
 } from '../api/volume'
-import { TPublication } from '../schema/publication'
+import { TEdition } from '../schema/edition'
 import { generateVolumeUrlWithParams } from '../utils/helperFunctions'
 import { BACK_META_TITLE_ID } from '../utils/constants'
 
-const useVolumeManagementActions = (publications: TPublication[]) => {
+const useVolumeManagementActions = (editions: TEdition[]) => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -48,7 +48,7 @@ const useVolumeManagementActions = (publications: TPublication[]) => {
     const volumeClone = clone(volumeState)
     const specimensClone = clone(specimensState)
 
-    const repairedVolume = repairVolume(volumeClone, publications || [])
+    const repairedVolume = repairVolume(volumeClone, editions || [])
     const repairedSpecimens = specimensClone.map((s) =>
       repairOrCreateSpecimen(s, repairedVolume)
     )

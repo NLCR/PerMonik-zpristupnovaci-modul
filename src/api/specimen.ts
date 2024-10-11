@@ -13,8 +13,8 @@ interface TSpecimensFacets {
   names: TSpecimenFacet[]
   subNames: TSpecimenFacet[]
   mutationIds: TSpecimenFacet[]
-  publicationIds: TSpecimenFacet[]
-  publicationMarks: TSpecimenFacet[]
+  editionIds: TSpecimenFacet[]
+  mutationMarks: TSpecimenFacet[]
   ownerIds: TSpecimenFacet[]
   damageTypes: TSpecimenDamageTypesFacet[]
 }

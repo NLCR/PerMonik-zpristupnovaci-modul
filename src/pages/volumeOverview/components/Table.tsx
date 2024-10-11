@@ -13,7 +13,7 @@ import { TEditableSpecimen, TSpecimen } from '../../../schema/specimen'
 import { TVolumeDetail } from '../../../schema/volume'
 import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useMutationListQuery } from '../../../api/mutation'
-import { usePublicationListQuery } from '../../../api/publication'
+import { useEditionListQuery } from '../../../api/edition'
 
 type TProps = {
   volume?: TVolumeDetail
@@ -45,7 +45,7 @@ const renderValue = (
 const Table: FC<TProps> = ({ volume = undefined }) => {
   const { MuiTableLocale } = useMuiTableLang()
   const { data: mutations } = useMutationListQuery()
-  const { data: publications } = usePublicationListQuery()
+  const { data: editions } = useEditionListQuery()
   const { languageCode } = useLanguageCode()
   const { t } = useTranslation()
 
@@ -110,14 +110,12 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         },
       },
       {
-        field: 'publicationId',
-        headerName: t('volume_overview.publication'),
+        field: 'editionId',
+        headerName: t('volume_overview.edition'),
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
           return renderValue(
-            publications?.find((m) => m.id === row.publicationId)?.name[
-              languageCode
-            ],
+            editions?.find((m) => m.id === row.editionId)?.name[languageCode],
             row.numExists
           )
         },
@@ -147,11 +145,11 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         },
       },
       {
-        field: 'publicationMark',
-        headerName: t('volume_overview.publication_mark'),
+        field: 'mutationMark',
+        headerName: t('volume_overview.mutation_mark'),
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
-          return renderValue(row.publicationMark, row.numExists)
+          return renderValue(row.mutationMark, row.numExists)
         },
       },
       {
@@ -265,7 +263,7 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         },
       },
     ]
-  }, [languageCode, mutations, publications, t])
+  }, [languageCode, mutations, editions, t])
 
   return (
     <DataGridPro

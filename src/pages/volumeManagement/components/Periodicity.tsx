@@ -17,7 +17,7 @@ import clone from 'lodash/clone'
 import dayjs from 'dayjs'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { useLanguageCode } from '../../../utils/helperHooks'
-import { TPublication } from '../../../schema/publication'
+import { TEdition } from '../../../schema/edition'
 import {
   repairVolume,
   TEditableVolumePeriodicity,
@@ -53,11 +53,11 @@ const getDayName = (date: string): string => {
 }
 
 interface PeriodicityProps {
-  publications: TPublication[]
+  editions: TEdition[]
   canEdit: boolean
 }
 
-const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
+const Periodicity: FC<PeriodicityProps> = ({ canEdit, editions }) => {
   const [periodicityModalVisible, setPeriodicityModalVisible] = useState(false)
   const { t, i18n } = useTranslation()
   const { languageCode } = useLanguageCode()
@@ -107,7 +107,7 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
     dayjs.locale('en')
     const volumeClone = clone(volumeState)
 
-    const repairedVolume = repairVolume(volumeClone, publications)
+    const repairedVolume = repairVolume(volumeClone, editions)
     const validation = VolumeSchema.safeParse(repairedVolume)
 
     if (!validation.success) {
@@ -122,33 +122,30 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
     let number = repairedVolume.firstNumber
     let attachmentNumber = 1
     let periodicAttachmentNumber = 1
-    const defaultPublication = publications.find(
-      (publication) => publication.isDefault
-    )
+    const defaultEdition = editions.find((edition) => edition.isDefault)
 
     dates.forEach((dt) => {
       const dayStr = getDayName(dt)
       let inserted = false
       repairedVolume.periodicity.forEach((p) => {
         if (p.numExists && p.day === dayStr) {
-          const isAttachment = !!publications.find(
-            (pub) => pub.id === p.publicationId
-          )?.isAttachment
-          const isPeriodicAttachment = !!publications.find(
-            (pub) => pub.id === p.publicationId
+          const isAttachment = !!editions.find((pub) => pub.id === p.editionId)
+            ?.isAttachment
+          const isPeriodicAttachment = !!editions.find(
+            (pub) => pub.id === p.editionId
           )?.isPeriodicAttachment
 
           const specimen = repairOrCreateSpecimen(
             {
               publicationDate: dt,
               publicationDateString: dayjs(dt).format('YYYYMMDD'),
-              publicationMark: repairedVolume.publicationMark,
+              mutationMark: repairedVolume.mutationMark,
               mutationId: repairedVolume.mutationId,
               numExists: true,
               pagesCount: p.pagesCount,
               name: p.name,
               subName: p.subName,
-              publicationId: p.publicationId,
+              editionId: p.editionId,
               isAttachment,
               number: !isAttachment ? number.toString() : null,
               attachmentNumber: isAttachment
@@ -179,10 +176,10 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
           {
             publicationDate: dt,
             publicationDateString: dayjs(dt).format('YYYYMMDD'),
-            publicationMark: repairedVolume.publicationMark,
+            mutationMark: repairedVolume.mutationMark,
             mutationId: repairedVolume.mutationId,
             numExists: false,
-            publicationId: defaultPublication?.id,
+            editionId: defaultEdition?.id,
           },
           repairedVolume
         )
@@ -224,7 +221,7 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
             <TableRow>
               <TableCell>{t('volume_overview.releasing')}</TableCell>
               <TableCell>{t('volume_overview.is_in_volume')}</TableCell>
-              <TableCell>{t('volume_overview.publication')}</TableCell>
+              <TableCell>{t('volume_overview.edition')}</TableCell>
               <TableCell>{t('volume_overview.pages_count')}</TableCell>
               <TableCell>{t('volume_overview.name')}</TableCell>
               <TableCell>{t('volume_overview.sub_name')}</TableCell>
@@ -262,16 +259,16 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, publications }) => {
                       sx={{
                         minWidth: '200px',
                       }}
-                      value={p.publicationId}
+                      value={p.editionId}
                       disabled={!canEdit}
                       onChange={(event) =>
-                        volumePeriodicityActions.setPublicationId(
+                        volumePeriodicityActions.setEditionId(
                           event.target.value,
                           index
                         )
                       }
                     >
-                      {publications.map((o) => (
+                      {editions.map((o) => (
                         <MenuItem key={o.id} value={o.id}>
                           {o.name[languageCode]}
                         </MenuItem>

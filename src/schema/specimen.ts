@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { v4 as uuid } from 'uuid'
 import type { TVolume } from './volume'
 import { AuditableSchema, copyAuditable } from './common'
-import { TPublication } from './publication'
+import { TEdition } from './edition'
 
 export const SpecimenDamageTypesSchema = z.enum([
   'OK',
@@ -44,9 +44,9 @@ export const SpecimenSchema = AuditableSchema.extend({
   note: z.string(),
   name: z.string(),
   subName: z.string(),
-  publicationId: z.string().length(36),
+  editionId: z.string().length(36),
   mutationId: z.string().length(36),
-  publicationMark: z.string(),
+  mutationMark: z.string(),
   publicationDate: z.string().min(1),
   publicationDateString: z.string().min(1),
   number: z.string().nullable(),
@@ -64,7 +64,7 @@ export const EditableSpecimenSchema = SpecimenSchema.extend({
 // volumeId: true,
 // barCode: true,
 // ownerId: true,
-// publicationId: true,
+// editionId: true,
 // mutationId: true,
 // })
 
@@ -100,9 +100,9 @@ export const filterSpecimen = (
     note: specimen.note.trim(),
     name: specimen.name.trim(),
     subName: specimen.subName.trim(),
-    publicationId: specimen.publicationId,
+    editionId: specimen.editionId,
     mutationId: specimen.mutationId,
-    publicationMark: specimen.publicationMark.trim(),
+    mutationMark: specimen.mutationMark.trim(),
     publicationDate: specimen.publicationDate,
     publicationDateString: specimen.publicationDateString,
     number: specimen.number ? specimen.number.trim() : null,
@@ -136,9 +136,9 @@ export const repairOrCreateSpecimen = (
     note: specimen.note?.trim() ?? '',
     name: specimen.name?.trim() ?? '',
     subName: specimen.subName?.trim() ?? '',
-    publicationId: specimen.publicationId ?? '',
+    editionId: specimen.editionId ?? '',
     mutationId: specimen.mutationId ?? '',
-    publicationMark: specimen.publicationMark?.trim() ?? '',
+    mutationMark: specimen.mutationMark?.trim() ?? '',
     publicationDate: specimen.publicationDate ?? '',
     publicationDateString: specimen.publicationDateString ?? '',
     number: specimen.number?.trim() ?? '',
@@ -166,9 +166,9 @@ export const copySpecimen = (
     note: specimen.note ?? '',
     name: specimen.name ?? '',
     subName: specimen.subName ?? '',
-    publicationId: specimen.publicationId ?? '',
+    editionId: specimen.editionId ?? '',
     mutationId: specimen.mutationId ?? '',
-    publicationMark: specimen.publicationMark ?? '',
+    mutationMark: specimen.mutationMark ?? '',
     publicationDate: specimen.publicationDate ?? '',
     publicationDateString: specimen.publicationDateString ?? '',
     number: specimen.number ?? '',
@@ -197,9 +197,9 @@ export const duplicateSpecimen = (
     note: '',
     name: specimen.name,
     subName: specimen.subName,
-    publicationId: specimen.publicationId,
+    editionId: specimen.editionId,
     mutationId: specimen.mutationId,
-    publicationMark: specimen.publicationMark,
+    mutationMark: specimen.mutationMark,
     publicationDate: specimen.publicationDate,
     publicationDateString: specimen.publicationDateString,
     number: specimen.number,
@@ -211,12 +211,12 @@ export const duplicateSpecimen = (
 }
 
 export const checkAttachmentChange = (
-  publications: TPublication[],
+  editions: TEdition[],
   specimen: TEditableSpecimen
 ): TEditableSpecimen => {
-  const publication = publications.find((p) => p.id === specimen.publicationId)
+  const edition = editions.find((p) => p.id === specimen.editionId)
   const isAttachment =
-    publication?.isAttachment || publication?.isPeriodicAttachment || false
+    edition?.isAttachment || edition?.isPeriodicAttachment || false
 
   return {
     ...specimen,
