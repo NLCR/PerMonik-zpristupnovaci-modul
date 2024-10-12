@@ -1,4 +1,4 @@
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -27,6 +27,7 @@ import { BACK_META_TITLE_ID } from '../../utils/constants'
 import ModalContainer from '../../components/ModalContainer'
 import VolumeOverviewStatsModal from '../specimensOverview/components/VolumeOverviewStatsModal'
 import Periodicity from './components/Periodicity'
+import { validate as uuidValidate } from 'uuid'
 
 type TVolumeManagementProps = {
   duplicated?: boolean
@@ -40,7 +41,6 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
   const { t, i18n } = useTranslation()
 
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
 
   const [volumeStatsModalOpened, setVolumeStatsModalOpened] = useState(false)
   const [confirmDeletionModalStage, setConfirmDeletionModalStage] = useState({
@@ -87,6 +87,14 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
     isLoading: metaTitlesLoading,
     isError: metaTitlesError,
   } = useMetaTitleListQuery()
+
+  const backMetaTitle = useMemo(
+    () =>
+      uuidValidate(searchParams.get(BACK_META_TITLE_ID) || '')
+        ? searchParams.get(BACK_META_TITLE_ID)
+        : volume?.volume.metaTitleId,
+    [searchParams, volume?.volume.metaTitleId]
+  )
 
   const {
     doDuplicate,
@@ -351,24 +359,23 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
               alignItems: 'center',
             }}
           >
-            <Button
-              variant="outlined"
-              onClick={() =>
-                navigate(
-                  `/${i18n.resolvedLanguage}/${t('urls.specimens_overview')}/${searchParams.get(
-                    BACK_META_TITLE_ID
-                  )}`
-                )
-              }
-            >
-              {t('volume_overview.back_to_specimens_overview')}
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setVolumeStatsModalOpened(true)}
-            >
-              {t('specimens_overview.volume_overview_modal_link')}
-            </Button>
+            {backMetaTitle?.length ? (
+              <Button
+                component={Link}
+                variant="outlined"
+                to={`/${i18n.resolvedLanguage}/${t('urls.specimens_overview')}/${backMetaTitle}`}
+              >
+                {t('volume_overview.back_to_specimens_overview')}
+              </Button>
+            ) : null}
+            {volumeId ? (
+              <Button
+                variant="outlined"
+                onClick={() => setVolumeStatsModalOpened(true)}
+              >
+                {t('specimens_overview.volume_overview_modal_link')}
+              </Button>
+            ) : null}
           </Box>
           <Box
             sx={{

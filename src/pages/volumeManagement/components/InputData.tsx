@@ -198,6 +198,23 @@ const InputData: FC<InputDataProps> = ({
             </TableCell>
           </TableRow>
           <TableRow>
+            <TableCell>{t('volume_overview.first_number')}</TableCell>
+            <TableCell>
+              <TextField
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
+                size="small"
+                value={volumeState.firstNumber}
+                disabled={!canEdit}
+                onChange={(event) =>
+                  volumeActions.setFirstNumber(event.target.value)
+                }
+              />
+            </TableCell>
+          </TableRow>
+          <TableRow>
             <TableCell>{t('volume_overview.date_to')}</TableCell>
             <TableCell>
               <DatePicker
@@ -213,23 +230,6 @@ const InputData: FC<InputDataProps> = ({
                     : undefined
                 }
                 onChange={(value) => volumeActions.setDateTo(value)}
-              />
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>{t('volume_overview.first_number')}</TableCell>
-            <TableCell>
-              <TextField
-                sx={{
-                  maxWidth: '200px',
-                  width: '100%',
-                }}
-                size="small"
-                value={volumeState.firstNumber}
-                disabled={!canEdit}
-                onChange={(event) =>
-                  volumeActions.setFirstNumber(event.target.value)
-                }
               />
             </TableCell>
           </TableRow>

@@ -137,14 +137,14 @@ const VolumeOverview = () => {
               </TableCell>
             </TableRow>
             <TableRow>
+              <TableCell>{t('volume_overview.first_number')}</TableCell>
+              <TableCell>{volume.volume.firstNumber}</TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell>{t('volume_overview.date_to')}</TableCell>
               <TableCell>
                 {dayjs(volume.volume.dateTo).format('DD. MMMM YYYY')}
               </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.first_number')}</TableCell>
-              <TableCell>{volume.volume.firstNumber}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t('volume_overview.last_number')}</TableCell>

@@ -300,9 +300,19 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
         {volumeStats.specimens
           .filter((s) => s.numMissing)
           .map((s) => (
-            <Typography variant="body2" key={s.id}>
-              {dayjs(s.publicationDate).format('DD.MM.YYYY')}
-            </Typography>
+            <Box
+              key={s.name}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '45%',
+              }}
+            >
+              <Typography variant="body2">{s.number}</Typography>
+              <Typography variant="body2" key={s.id}>
+                {dayjs(s.publicationDate).format('DD.MM.YYYY')}
+              </Typography>
+            </Box>
           ))}
       </Box>
       <Box

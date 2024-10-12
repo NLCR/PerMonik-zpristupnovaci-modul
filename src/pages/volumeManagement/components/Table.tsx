@@ -581,7 +581,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
-        return canEdit ? (
+        return (
           <Box
             sx={{
               display: 'flex',
@@ -606,7 +606,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
               />
             )}
           </Box>
-        ) : null
+        )
       },
     })
   }
