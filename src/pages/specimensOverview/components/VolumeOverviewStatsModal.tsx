@@ -61,6 +61,21 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
     [volumeStats?.specimens]
   )
 
+  const atypicNumbers = useMemo(
+    () =>
+      volumeStats?.specimens
+        .filter(
+          (s) =>
+            s.numExists &&
+            !s.isAttachment &&
+            s.number?.length &&
+            !isFinite(Number(s.number)) &&
+            /^[0-9]+[a-zA-Z]+$/.test(s.number)
+        )
+        .map((s) => s.number) || [],
+    [volumeStats?.specimens]
+  )
+
   const attachmentNumbers = useMemo(
     () =>
       volumeStats?.specimens
@@ -72,6 +87,21 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
             isFinite(Number(s.attachmentNumber))
         )
         .map((s) => Number(s.attachmentNumber)) || [],
+    [volumeStats?.specimens]
+  )
+
+  const atypicAttachmentNumbers = useMemo(
+    () =>
+      volumeStats?.specimens
+        .filter(
+          (s) =>
+            s.numExists &&
+            s.isAttachment &&
+            s.attachmentNumber?.length &&
+            !isFinite(Number(s.attachmentNumber)) &&
+            /^[0-9]+[a-zA-Z]+$/.test(s.attachmentNumber)
+        )
+        .map((s) => s.attachmentNumber) || [],
     [volumeStats?.specimens]
   )
 
@@ -213,6 +243,8 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
               {Math.min(...numbers)} - {Math.max(...numbers)}
             </>
           ) : null}
+          {numbers.length && atypicNumbers.length ? ' | ' : null}
+          {atypicNumbers.length ? <>{atypicNumbers.join(', ')}</> : null}
         </Typography>
       </Box>
       <Box
@@ -229,6 +261,12 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
               {Math.min(...attachmentNumbers)} -{' '}
               {Math.max(...attachmentNumbers)}
             </>
+          ) : null}
+          {attachmentNumbers.length && atypicAttachmentNumbers.length
+            ? ' | '
+            : null}
+          {atypicAttachmentNumbers.length ? (
+            <>{atypicAttachmentNumbers.join(', ')}</>
           ) : null}
         </Typography>
       </Box>
@@ -392,7 +430,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
             (s) =>
               s.damageTypes?.includes('PP') &&
               Number(s.number) >= 0 &&
-              !s.numMissing
+              s.numExists
           )
           .map((s) => (
             <Box
@@ -421,7 +459,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
           {t('volume_overview.notes')}:
         </Typography>
         {volumeStats.specimens
-          .filter((s) => s.note.length)
+          .filter((s) => s.note.length && s.numExists)
           .map((s) => (
             <Box
               key={s.name}
