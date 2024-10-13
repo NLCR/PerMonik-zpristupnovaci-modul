@@ -52,18 +52,23 @@ export const initialState: TVariablesState = {
   },
   specimensState: [],
   periodicityGenerationUsed: false,
+  stateHasUnsavedData: false,
 }
 
 interface TVariablesState {
   volumeState: TEditableVolume
   specimensState: TEditableSpecimen[]
   periodicityGenerationUsed: boolean
+  stateHasUnsavedData: boolean
 }
 
 interface TState extends TVariablesState {
   setInitialState: () => void
   volumeActions: {
-    setVolumeState: (value: TEditableVolume) => void
+    setVolumeState: (
+      value: TEditableVolume,
+      stateHasUnsavedData: boolean
+    ) => void
     setMetaTitle: (id: string, name: string) => void
     setMutationId: (value: string) => void
     setMutationMark: (value: string) => void
@@ -89,9 +94,13 @@ interface TState extends TVariablesState {
     setPeriodicityState: (periodicity: TEditableVolumePeriodicity[]) => void
   }
   specimensActions: {
-    setSpecimensState: (value: TEditableSpecimen[]) => void
+    setSpecimensState: (
+      value: TEditableSpecimen[],
+      stateHasUnsavedData: boolean
+    ) => void
     setSpecimen: (value: TEditableSpecimen) => void
   }
+  setStateHasUnsavedData: (value: boolean) => void
 }
 
 export const useVolumeManagementStore = create<TState>()((set) => ({
@@ -102,13 +111,17 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
         state.volumeState = initialState.volumeState
         state.specimensState = initialState.specimensState
         state.periodicityGenerationUsed = initialState.periodicityGenerationUsed
+        state.stateHasUnsavedData = false
       })
     ),
   volumeActions: {
-    setVolumeState: (value) =>
-      set(() => ({
-        volumeState: value,
-      })),
+    setVolumeState: (value, stateHasUnsavedData) =>
+      set(
+        produce((state: TState) => {
+          state.volumeState = value
+          state.stateHasUnsavedData = stateHasUnsavedData
+        })
+      ),
     setMetaTitle: (id, name) =>
       set(
         produce((state: TState) => {
@@ -116,36 +129,42 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
           state.volumeState.periodicity = state.volumeState.periodicity.map(
             (p) => ({ ...p, name: name })
           )
+          state.stateHasUnsavedData = true
         })
       ),
     setMutationId: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.mutationId = value
+          state.stateHasUnsavedData = true
         })
       ),
     setMutationMark: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.mutationMark = value
+          state.stateHasUnsavedData = true
         })
       ),
     setBarCode: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.barCode = value.trim()
+          state.stateHasUnsavedData = true
         })
       ),
     setSignature: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.signature = value
+          state.stateHasUnsavedData = true
         })
       ),
     setYear: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.year = value.replace(/\D/g, '')
+          state.stateHasUnsavedData = true
         })
       ),
     setDateFrom: (value) =>
@@ -154,6 +173,7 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
           if (value?.isValid()) {
             state.volumeState.dateFrom = value.format('YYYY-MM-DD')
             state.volumeState.dateTo = value.endOf('month').format('YYYY-MM-DD')
+            state.stateHasUnsavedData = true
           } else {
             state.volumeState.dateFrom = ''
             state.volumeState.dateTo = ''
@@ -163,39 +183,47 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
     setDateTo: (value) =>
       set(
         produce((state: TState) => {
-          state.volumeState.dateTo = value?.isValid()
-            ? value.format('YYYY-MM-DD')
-            : ''
+          if (value?.isValid()) {
+            state.volumeState.dateTo = value.format('YYYY-MM-DD')
+            state.stateHasUnsavedData = true
+          } else {
+            state.volumeState.dateTo = ''
+          }
         })
       ),
     setFirstNumber: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.firstNumber = value.replace(/\D/g, '')
+          state.stateHasUnsavedData = true
         })
       ),
     setLastNumber: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.lastNumber = value.replace(/\D/g, '')
+          state.stateHasUnsavedData = true
         })
       ),
     setOwnerId: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.ownerId = value
+          state.stateHasUnsavedData = true
         })
       ),
     setNote: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.note = value
+          state.stateHasUnsavedData = true
         })
       ),
     setShowAttachmentsAtTheEnd: (value) =>
       set(
         produce((state: TState) => {
           state.volumeState.showAttachmentsAtTheEnd = value
+          state.stateHasUnsavedData = true
         })
       ),
   },
@@ -215,12 +243,14 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
       set(
         produce((state: TState) => {
           state.volumeState.periodicity[index].numExists = value
+          state.stateHasUnsavedData = true
         })
       ),
     setEditionId: (value: string | null, index: number) =>
       set(
         produce((state: TState) => {
           state.volumeState.periodicity[index].editionId = value
+          state.stateHasUnsavedData = true
         })
       ),
     setPagesCount: (value: string, index: number) =>
@@ -230,44 +260,59 @@ export const useVolumeManagementStore = create<TState>()((set) => ({
             /\D/g,
             ''
           )
+          state.stateHasUnsavedData = true
         })
       ),
     setName: (value: string, index: number) =>
       set(
         produce((state: TState) => {
           state.volumeState.periodicity[index].name = value
+          state.stateHasUnsavedData = true
         })
       ),
     setSubName: (value: string, index: number) =>
       set(
         produce((state: TState) => {
           state.volumeState.periodicity[index].subName = value
+          state.stateHasUnsavedData = true
         })
       ),
     setPeriodicityGenerationUsed: (value: boolean) =>
       set(
         produce((state: TState) => {
           state.periodicityGenerationUsed = value
+          state.stateHasUnsavedData = true
         })
       ),
     setPeriodicityState: (periodicity: TEditableVolumePeriodicity[]) =>
       set(
         produce((state: TState) => {
           state.volumeState.periodicity = periodicity
+          state.stateHasUnsavedData = true
         })
       ),
   },
   specimensActions: {
-    setSpecimensState: (value) =>
-      set(() => ({
-        specimensState: value,
-      })),
+    setSpecimensState: (value, stateHasUnsavedData) =>
+      set(
+        produce((state: TState) => {
+          state.specimensState = value
+          state.stateHasUnsavedData = stateHasUnsavedData
+        })
+      ),
     setSpecimen: (value) =>
       set(
         produce((state: TState) => {
           const index = state.specimensState.findIndex((s) => s.id === value.id)
-          if (index >= 0) state.specimensState[index] = filterSpecimen(value)
+          if (index >= 0) {
+            state.specimensState[index] = filterSpecimen(value)
+            state.stateHasUnsavedData = true
+          }
         })
       ),
   },
+  setStateHasUnsavedData: (value) =>
+    set(() => ({
+      stateHasUnsavedData: value,
+    })),
 }))

@@ -58,7 +58,7 @@ const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
       })
     }
 
-    specimensActions.setSpecimensState(specimensClone)
+    specimensActions.setSpecimensState(specimensClone, true)
   }
 
   const doAction = () => {

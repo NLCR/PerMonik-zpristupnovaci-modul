@@ -14,6 +14,7 @@ import Button from '@mui/material/Button'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import clone from 'lodash/clone'
+import isEqual from 'lodash/isEqual'
 import dayjs from 'dayjs'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { useLanguageCode } from '../../../utils/helperHooks'
@@ -29,7 +30,6 @@ import {
 } from '../../../schema/specimen'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import { isEqual } from 'lodash-es'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import useSortedSpecimensNamesAndSubNames from '../../../hooks/useSortedSpecimensNamesAndSubNames'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -189,7 +189,7 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, editions }) => {
     })
 
     dayjs.locale(i18n.resolvedLanguage)
-    specimensActions.setSpecimensState(specimens)
+    specimensActions.setSpecimensState(specimens, true)
     volumePeriodicityActions.setPeriodicityGenerationUsed(true)
     toast.success(t('volume_overview.specimens_generated_successfully'))
     setPeriodicityModalVisible(false)

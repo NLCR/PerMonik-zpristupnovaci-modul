@@ -189,8 +189,8 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
           searchParams.get(BACK_META_TITLE_ID) || ''
         )
       )
-      specimensActions.setSpecimensState(duplicatedSpecimens)
-      volumeActions.setVolumeState(duplicatedVolume)
+      specimensActions.setSpecimensState(duplicatedSpecimens, true)
+      volumeActions.setVolumeState(duplicatedVolume, true)
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)

@@ -1,6 +1,12 @@
-import React, { Suspense } from 'react'
+import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Route, Routes, Navigate } from 'react-router-dom'
+import {
+  Route,
+  Navigate,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+} from 'react-router-dom'
 import Container from '@mui/material/Container'
 import NotFound from '../pages/NotFound'
 import Home from '../pages/Home'
@@ -8,24 +14,34 @@ import Loader from './Loader'
 import SpecimensOverview from '../pages/specimensOverview/SpecimensOverview'
 import { useMeQuery } from '../api/user'
 import { APP_WITH_EDITING_ENABLED } from '../utils/constants'
+import Administration from '../pages/administration/Administration'
+import VolumeManagement from '../pages/volumeManagement/VolumeManagement'
+import VolumeOverview from '../pages/volumeOverview/VolumeOverview'
+import Users from '../pages/administration/Users'
+import Owners from '../pages/administration/Owners'
+import MetaTitles from '../pages/administration/MetaTitles'
+import Editions from '../pages/administration/Editions'
+import Mutations from '../pages/administration/Mutations'
+import Layout from './Layout'
 
-const Administration = React.lazy(
-  () => import('../pages/administration/Administration')
-)
-const Users = React.lazy(() => import('../pages/administration/Users'))
-const Owners = React.lazy(() => import('../pages/administration/Owners'))
-const MetaTitles = React.lazy(
-  () => import('../pages/administration/MetaTitles')
-)
-const Editions = React.lazy(() => import('../pages/administration/Editions'))
-const Mutations = React.lazy(() => import('../pages/administration/Mutations'))
-
-const VolumeOverview = React.lazy(
-  () => import('../pages/volumeOverview/VolumeOverview')
-)
-const VolumeManagement = React.lazy(
-  () => import('../pages/volumeManagement/VolumeManagement')
-)
+// TODO: fix react-router suspense loading
+// const Administration = React.lazy(
+//   () => import('../pages/administration/Administration')
+// )
+// const Users = React.lazy(() => import('../pages/administration/Users'))
+// const Owners = React.lazy(() => import('../pages/administration/Owners'))
+// const MetaTitles = React.lazy(
+//   () => import('../pages/administration/MetaTitles')
+// )
+// const Editions = React.lazy(() => import('../pages/administration/Editions'))
+// const Mutations = React.lazy(() => import('../pages/administration/Mutations'))
+//
+// const VolumeOverview = React.lazy(
+//   () => import('../pages/volumeOverview/VolumeOverview')
+// )
+// const VolumeManagement = React.lazy(
+//   () => import('../pages/volumeManagement/VolumeManagement')
+// )
 
 const SuspenseLoader = () => {
   return (
@@ -45,9 +61,9 @@ const RoutesManager = () => {
     return <Loader />
   }
 
-  return (
-    <Suspense fallback={<SuspenseLoader />}>
-      <Routes>
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="/:lang" element={<Home />} />
         <Route
@@ -89,9 +105,11 @@ const RoutesManager = () => {
           </Route>
         ) : null}
         <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
+      </Route>
+    )
   )
+
+  return <RouterProvider router={router} fallbackElement={<SuspenseLoader />} />
 }
 
 export default RoutesManager

@@ -140,7 +140,9 @@
     "delete_volume_caption": "Potvrdenie vymazania",
     "delete_volume_text": "Naozaj chcete odstrániť celý balík?",
     "delete_volume_text2": "Nechcete si to rozmyslieť?",
-    "back_to_specimens_overview": "Späť na tabuľku"
+    "back_to_specimens_overview": "Späť na tabuľku",
+    "unsaved_changes": "Máte neuložené zmeny",
+    "unsaved_changes_text": "Chcete aj napriek tomu opustiť túto stránku?"
   },
   "table": {
     "mutations": "Mutácie",

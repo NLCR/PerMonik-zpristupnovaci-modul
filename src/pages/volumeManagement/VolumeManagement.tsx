@@ -1,8 +1,15 @@
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import {
+  type BlockerFunction,
+  Link,
+  useBlocker,
+  useParams,
+  useSearchParams,
+  useBeforeUnload,
+} from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import React, { FC, useEffect, useMemo, useState } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import SaveIcon from '@mui/icons-material/Save'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
@@ -61,6 +68,30 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
   const volumeRegenerated = useVolumeManagementStore(
     (state) => state.periodicityGenerationUsed
   )
+  const stateHasUnsavedData = useVolumeManagementStore(
+    (state) => state.stateHasUnsavedData
+  )
+
+  useBeforeUnload((event) => {
+    if (stateHasUnsavedData) {
+      event.preventDefault()
+      event.returnValue = t('volume_overview.unsaved_changes')
+    }
+  })
+
+  const shouldBlockNavigationChange = useCallback<BlockerFunction>(
+    ({ currentLocation, nextLocation }) =>
+      stateHasUnsavedData && currentLocation.pathname !== nextLocation.pathname,
+    [stateHasUnsavedData]
+  )
+
+  const blocker = useBlocker(shouldBlockNavigationChange)
+
+  useEffect(() => {
+    if (blocker.state === 'blocked' && !stateHasUnsavedData) {
+      blocker.reset()
+    }
+  }, [blocker, stateHasUnsavedData])
 
   const {
     data: mutations,
@@ -107,8 +138,8 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
 
   useEffect(() => {
     if (volume?.volume) {
-      volumeActions.setVolumeState(volume.volume)
-      specimensActions.setSpecimensState(volume.specimens)
+      volumeActions.setVolumeState(volume.volume, false)
+      specimensActions.setSpecimensState(volume.specimens, false)
       volumePeriodicityActions.setPeriodicityGenerationUsed(false)
     }
   }, [specimensActions, volume, volumeActions, volumePeriodicityActions])
@@ -478,6 +509,28 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
         closeButton={{ callback: () => setVolumeStatsModalOpened(false) }}
       >
         <VolumeOverviewStatsModal volumeId={volumeId} />
+      </ModalContainer>
+      <ModalContainer
+        header={t('volume_overview.unsaved_changes')}
+        opened={blocker.state === 'blocked'}
+        onClose={() => blocker.reset?.()}
+        closeButton={{
+          callback: () => blocker.reset?.(),
+          text: t('common.no'),
+        }}
+        acceptButton={{
+          callback: () => blocker.proceed?.(),
+          text: t('common.yes'),
+        }}
+        style="fitted"
+      >
+        <Typography
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
+          {t('volume_overview.unsaved_changes_text')}
+        </Typography>
       </ModalContainer>
     </Box>
   )

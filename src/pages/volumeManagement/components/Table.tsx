@@ -229,7 +229,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
 
       if (originalSpecimenIndex >= 0) {
         specimensStateClone.splice(originalSpecimenIndex + 1, 0, copiedSpecimen)
-        specimenActions.setSpecimensState(specimensStateClone)
+        specimenActions.setSpecimensState(specimensStateClone, true)
       }
     },
     [specimenActions, specimensState]
@@ -242,7 +242,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
 
       if (specimenIndex >= 0) {
         specimensStateClone.splice(specimenIndex, 1)
-        specimenActions.setSpecimensState(specimensStateClone)
+        specimenActions.setSpecimensState(specimensStateClone, true)
       }
     },
     [specimenActions, specimensState]

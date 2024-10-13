@@ -140,7 +140,9 @@
     "delete_volume_caption": "Potvrdit smazání",
     "delete_volume_text": "Chcete opravdu smazat celý svazek?",
     "delete_volume_text2": "Nechcete si to ještě rozmyslet?",
-    "back_to_specimens_overview": "Zpět na tabulku"
+    "back_to_specimens_overview": "Zpět na tabulku",
+    "unsaved_changes": "Máte neuložené změny",
+    "unsaved_changes_text": "Chcete i přesto opustit tuto stránku?"
   },
   "table": {
     "mutations": "Mutace",

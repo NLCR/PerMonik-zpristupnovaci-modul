@@ -14,7 +14,7 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import i18next from './i18next'
 import { queryClient } from './api'
-import { WrappedApp } from './App'
+import App from './App'
 import 'react-toastify/dist/ReactToastify.css'
 import theme from './theme'
 import './styles.css'
@@ -60,7 +60,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <I18nextProvider i18n={i18next}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <WrappedApp />
+          <App />
         </ThemeProvider>
       </I18nextProvider>
       <ReactQueryDevtools buttonPosition="bottom-left" />
