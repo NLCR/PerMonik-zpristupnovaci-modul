@@ -10,7 +10,7 @@ import { useOwnerListQuery } from '../../../api/owner'
 import { useMutationListQuery } from '../../../api/mutation'
 import { useEditionListQuery } from '../../../api/edition'
 import { useLanguageCode } from '../../../utils/helperHooks'
-import isNumber from 'lodash-es/isNumber'
+import isFinite from 'lodash/isFinite'
 
 const bolderTextStyle = {
   fontWeight: '600',
@@ -55,7 +55,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
             s.numExists &&
             !s.isAttachment &&
             s.number?.length &&
-            isNumber(Number(s.number))
+            isFinite(Number(s.number))
         )
         .map((s) => Number(s.number)) || [],
     [volumeStats?.specimens]
@@ -69,7 +69,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
             s.numExists &&
             s.isAttachment &&
             s.attachmentNumber?.length &&
-            isNumber(Number(s.attachmentNumber))
+            isFinite(Number(s.attachmentNumber))
         )
         .map((s) => Number(s.attachmentNumber)) || [],
     [volumeStats?.specimens]
@@ -208,7 +208,11 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
           {t('volume_overview.numbers')}:
         </Typography>
         <Typography variant="body2">
-          {Math.min(...numbers)} - {Math.max(...numbers)}
+          {numbers.length ? (
+            <>
+              {Math.min(...numbers)} - {Math.max(...numbers)}
+            </>
+          ) : null}
         </Typography>
       </Box>
       <Box
@@ -220,7 +224,12 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
           {t('volume_overview.attachment_numbers')}:
         </Typography>
         <Typography variant="body2">
-          {Math.min(...attachmentNumbers)} - {Math.max(...attachmentNumbers)}
+          {attachmentNumbers.length ? (
+            <>
+              {Math.min(...attachmentNumbers)} -{' '}
+              {Math.max(...attachmentNumbers)}
+            </>
+          ) : null}
         </Typography>
       </Box>
       <Box
