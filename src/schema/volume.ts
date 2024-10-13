@@ -98,8 +98,6 @@ const VolumeOverviewStatsSchema = z.object({
   barCode: z.string(),
   publicationDayMin: z.string().nullable(),
   publicationDayMax: z.string().nullable(),
-  numberMin: z.string().nullable(),
-  numberMax: z.string().nullable(),
   pagesCount: z.string().nullable(),
   mutationIds: SpecimenFacetSchema.array(),
   mutationMarks: SpecimenFacetSchema.array(),
