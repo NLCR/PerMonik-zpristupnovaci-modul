@@ -292,7 +292,16 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, editions }) => {
                     <Autocomplete
                       freeSolo
                       renderInput={(params) => (
-                        <TextField {...params} label="" />
+                        <TextField
+                          {...params}
+                          label=""
+                          onBlur={(event) =>
+                            volumePeriodicityActions.setName(
+                              event.target.value,
+                              index
+                            )
+                          }
+                        />
                       )}
                       sx={{
                         minWidth: '200px',
@@ -313,7 +322,16 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, editions }) => {
                     <Autocomplete
                       freeSolo
                       renderInput={(params) => (
-                        <TextField {...params} label="" />
+                        <TextField
+                          {...params}
+                          label=""
+                          onBlur={(event) =>
+                            volumePeriodicityActions.setSubName(
+                              event.target.value,
+                              index
+                            )
+                          }
+                        />
                       )}
                       sx={{
                         minWidth: '200px',
