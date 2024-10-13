@@ -140,7 +140,9 @@
     "delete_volume_caption": "Confirm deletion",
     "delete_volume_text": "Do you really want to delete the whole volume?",
     "delete_volume_text2": "Don't you want to change your mind?",
-    "back_to_specimens_overview": "Back to table"
+    "back_to_specimens_overview": "Back to table",
+    "unsaved_changes": "You have unsaved changes",
+    "unsaved_changes_text": "Still want to leave this page?"
   },
   "table": {
     "mutations": "Mutations",

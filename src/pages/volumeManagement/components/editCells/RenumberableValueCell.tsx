@@ -88,7 +88,7 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
       }
     }
 
-    specimensActions.setSpecimensState(specimensClone)
+    specimensActions.setSpecimensState(specimensClone, true)
     toast.success(
       t('volume_overview.renumbered_correctly', {
         willBeRenumbered,

@@ -17,6 +17,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["./.eslintrc.cjs", "src", "node_modules/vitest/globals.d.ts"],
+  "include": ["./.eslintrc.cjs", "src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
