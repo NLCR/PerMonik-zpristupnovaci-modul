@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import { useVolumeOverviewStatsQuery } from '../../../api/volume'
@@ -10,6 +10,7 @@ import { useOwnerListQuery } from '../../../api/owner'
 import { useMutationListQuery } from '../../../api/mutation'
 import { useEditionListQuery } from '../../../api/edition'
 import { useLanguageCode } from '../../../utils/helperHooks'
+import isNumber from 'lodash-es/isNumber'
 
 const bolderTextStyle = {
   fontWeight: '600',
@@ -45,6 +46,34 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
     isLoading: volumeStatsLoading,
     isError: volumeStatsError,
   } = useVolumeOverviewStatsQuery(volumeId)
+
+  const numbers = useMemo(
+    () =>
+      volumeStats?.specimens
+        .filter(
+          (s) =>
+            s.numExists &&
+            !s.isAttachment &&
+            s.number?.length &&
+            isNumber(Number(s.number))
+        )
+        .map((s) => Number(s.number)) || [],
+    [volumeStats?.specimens]
+  )
+
+  const attachmentNumbers = useMemo(
+    () =>
+      volumeStats?.specimens
+        .filter(
+          (s) =>
+            s.numExists &&
+            s.isAttachment &&
+            s.attachmentNumber?.length &&
+            isNumber(Number(s.attachmentNumber))
+        )
+        .map((s) => Number(s.attachmentNumber)) || [],
+    [volumeStats?.specimens]
+  )
 
   if (
     volumeStatsLoading ||
@@ -177,9 +206,21 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
       >
         <Typography sx={bolderTextStyle}>
           {t('volume_overview.numbers')}:
-        </Typography>{' '}
+        </Typography>
         <Typography variant="body2">
-          {volumeStats.numberMin} - {volumeStats.numberMax}
+          {Math.min(...numbers)} - {Math.max(...numbers)}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          marginBottom: '10px',
+        }}
+      >
+        <Typography sx={bolderTextStyle}>
+          {t('volume_overview.attachment_numbers')}:
+        </Typography>
+        <Typography variant="body2">
+          {Math.min(...attachmentNumbers)} - {Math.max(...attachmentNumbers)}
         </Typography>
       </Box>
       <Box
@@ -324,7 +365,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
           {t('volume_overview.physical_condition')}:
         </Typography>
         <Typography variant="body2">
-          {volumeStats.damageTypes.findIndex((s) => s.name !== 'OK')
+          {volumeStats.damageTypes.find((s) => s.name !== 'OK')
             ? t('volume_overview.state_not_ok')
             : t('volume_overview.state_ok')}
         </Typography>
