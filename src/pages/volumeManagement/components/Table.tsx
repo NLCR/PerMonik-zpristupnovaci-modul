@@ -21,9 +21,6 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { blue } from '@mui/material/colors'
 import {
-  checkAttachmentChange,
-  copySpecimen,
-  filterSpecimen,
   TEditableSpecimen,
   TSpecimenDamageTypes,
 } from '../../../schema/specimen'
@@ -39,6 +36,11 @@ import { useSearchParams } from 'react-router-dom'
 import { JUMP_TO_SPECIMEN_WITH_ID } from '../../../utils/constants'
 import { useLanguageCode } from '../../../hooks/useLanguageCode'
 import { useMuiTableLang } from '../../../hooks/useMuiTableLang'
+import {
+  checkAttachmentChange,
+  copySpecimen,
+  filterSpecimen,
+} from '../../../utils/specimen'
 
 const ODD_OPACITY = 0.2
 

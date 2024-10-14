@@ -1,12 +1,10 @@
 import { z } from 'zod'
-import { v4 as uuid } from 'uuid'
 import {
-  SpecimenSchema,
-  SpecimenFacetSchema,
   SpecimenDamageTypesFacet,
+  SpecimenFacetSchema,
+  SpecimenSchema,
 } from './specimen'
-import { TEdition } from './edition'
-import { AuditableSchema, copyAuditable } from './common'
+import { AuditableSchema } from './common'
 
 export const VolumePeriodicityDaysSchema = z.enum([
   'Monday',
@@ -117,57 +115,3 @@ export type TEditableVolume = z.infer<typeof EditableVolumeSchema>
 export type TCreatableVolume = z.infer<typeof CreatableVolumeSchema>
 export type TVolumeDetail = z.infer<typeof VolumeDetailSchema>
 export type TVolumeOverviewStats = z.infer<typeof VolumeOverviewStatsSchema>
-
-export const repairVolume = (
-  volume: TEditableVolume,
-  editions: TEdition[]
-): TVolume => {
-  return {
-    ...copyAuditable(volume),
-    id: volume.id.length ? volume.id : uuid(),
-    barCode: volume.barCode.trim() || '',
-    dateFrom: volume.dateFrom ?? '',
-    dateTo: volume.dateTo ?? '',
-    metaTitleId: volume.metaTitleId ?? '',
-    mutationId: volume.mutationId ?? '',
-    periodicity:
-      volume.periodicity.map((p) => ({
-        numExists: p.numExists ?? false,
-        isAttachment: p.isAttachment ?? false,
-        editionId:
-          p.editionId ?? editions.find((pub) => pub.isDefault)?.id ?? '',
-        day: p.day,
-        pagesCount: Number(p.pagesCount) ?? 0,
-        name: p.name.trim() ?? '',
-        subName: p.subName.trim() ?? '',
-      })) ?? [],
-    firstNumber: Number(volume.firstNumber) ?? -1,
-    lastNumber: Number(volume.lastNumber),
-    note: volume.note.trim() ?? '',
-    showAttachmentsAtTheEnd: volume.showAttachmentsAtTheEnd ?? false,
-    signature: volume.signature.trim() ?? '',
-    ownerId: volume.ownerId ?? '',
-    year: Number(volume.year) ?? -1,
-    mutationMark: volume.mutationMark.trim() ?? '',
-  }
-}
-
-export const duplicateVolume = (volume: TVolume): TEditableVolume => {
-  return {
-    id: uuid(),
-    barCode: '',
-    dateFrom: volume.dateFrom,
-    dateTo: volume.dateTo,
-    metaTitleId: volume.metaTitleId,
-    mutationId: volume.mutationId,
-    periodicity: volume.periodicity,
-    firstNumber: volume.firstNumber,
-    lastNumber: volume.lastNumber,
-    note: '',
-    showAttachmentsAtTheEnd: volume.showAttachmentsAtTheEnd,
-    signature: volume.signature,
-    ownerId: volume.ownerId,
-    year: volume.year,
-    mutationMark: '',
-  }
-}
