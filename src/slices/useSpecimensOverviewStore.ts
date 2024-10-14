@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
 import { Dayjs } from 'dayjs'
 
 export type TParams = {
@@ -50,39 +51,41 @@ interface TState extends TVariablesState {
   setSliderRange: (value: [number, number]) => void
 }
 
-export const useSpecimensOverviewStore = create<TState>()((set) => ({
-  params: initialParams,
-  pagination: { pageIndex: 0, pageSize: 100 },
-  barCodeInput: '',
-  view: 'calendar',
-  synchronizeYearsBetweenViews: true,
-  calendarDate: null,
-  calendarMinDate: null,
-  lastViewedMetaTitleId: '',
-  sliderRange: null,
-  setParams: (values) =>
-    set((state) => ({
-      params: values,
-      pagination: { ...state.pagination, pageIndex: 0 },
-    })),
-  setBarCodeInput: (value) =>
-    set((state) => ({
-      barCodeInput: value,
-      pagination: { ...state.pagination, pageIndex: 0 },
-    })),
-  setPagination: (value) => set(() => ({ pagination: value })),
-  resetAll: () =>
-    set((state) => ({
-      barCodeInput: '',
-      params: initialParams,
-      pagination: { ...state.pagination, pageIndex: 0 },
-    })),
-  setView: (value) => set(() => ({ view: value })),
-  setSynchronizeYearsBetweenViews: (value) =>
-    set(() => ({ synchronizeYearsBetweenViews: value })),
-  setCalendarDate: (value) => set(() => ({ calendarDate: value })),
-  setCalendarMinDate: (value) => set(() => ({ calendarMinDate: value })),
-  setLastViewedMetaTitleId: (value) =>
-    set(() => ({ lastViewedMetaTitleId: value })),
-  setSliderRange: (value) => set(() => ({ sliderRange: value })),
-}))
+export const useSpecimensOverviewStore = create<TState>()(
+  devtools((set) => ({
+    params: initialParams,
+    pagination: { pageIndex: 0, pageSize: 100 },
+    barCodeInput: '',
+    view: 'calendar',
+    synchronizeYearsBetweenViews: true,
+    calendarDate: null,
+    calendarMinDate: null,
+    lastViewedMetaTitleId: '',
+    sliderRange: null,
+    setParams: (values) =>
+      set((state) => ({
+        params: values,
+        pagination: { ...state.pagination, pageIndex: 0 },
+      })),
+    setBarCodeInput: (value) =>
+      set((state) => ({
+        barCodeInput: value,
+        pagination: { ...state.pagination, pageIndex: 0 },
+      })),
+    setPagination: (value) => set(() => ({ pagination: value })),
+    resetAll: () =>
+      set((state) => ({
+        barCodeInput: '',
+        params: initialParams,
+        pagination: { ...state.pagination, pageIndex: 0 },
+      })),
+    setView: (value) => set(() => ({ view: value })),
+    setSynchronizeYearsBetweenViews: (value) =>
+      set(() => ({ synchronizeYearsBetweenViews: value })),
+    setCalendarDate: (value) => set(() => ({ calendarDate: value })),
+    setCalendarMinDate: (value) => set(() => ({ calendarMinDate: value })),
+    setLastViewedMetaTitleId: (value) =>
+      set(() => ({ lastViewedMetaTitleId: value })),
+    setSliderRange: (value) => set(() => ({ sliderRange: value })),
+  }))
+)

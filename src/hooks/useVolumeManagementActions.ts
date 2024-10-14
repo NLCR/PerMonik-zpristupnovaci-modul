@@ -35,16 +35,16 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
     status: regeneratedUpdateStatus,
   } = useUpdateRegeneratedVolumeWithSpecimensMutation()
 
-  const volumeState = useVolumeManagementStore((state) => state.volumeState)
-  const specimensState = useVolumeManagementStore(
-    (state) => state.specimensState
-  )
   const volumeActions = useVolumeManagementStore((state) => state.volumeActions)
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
 
   const doValidation = () => {
+    //get state when is necessary → this approach doesn't cause rerender of functions and whole hook
+    const volumeState = useVolumeManagementStore.getState().volumeState
+    const specimensState = useVolumeManagementStore.getState().specimensState
+
     const volumeClone = clone(volumeState)
     const specimensClone = clone(specimensState)
 

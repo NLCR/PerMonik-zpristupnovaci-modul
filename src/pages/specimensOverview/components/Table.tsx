@@ -22,7 +22,7 @@ import { damageTypes } from '../../../utils/constants'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { generateVolumeUrlWithParams } from '../../../utils/helperFunctions'
 import DriveFileMoveOutlinedIcon from '@mui/icons-material/DriveFileMoveOutlined'
-import VolumeOverviewStatsModal from './VolumeOverviewStatsModal'
+import VolumeOverviewStatsModalContent from './VolumeOverviewStatsModalContent'
 import ModalContainer from '../../../components/ModalContainer'
 
 const getSpecimenState = (sp: TSpecimen, t: TFunction) => {
@@ -304,7 +304,7 @@ const Table: FC<Props> = ({ metaTitle }) => {
         opened={!!modalData}
         header={`${t('specimens_overview.volume_overview_modal_link')} ${modalData?.barCode}`}
       >
-        <VolumeOverviewStatsModal volumeId={modalData?.volumeId} />
+        <VolumeOverviewStatsModalContent volumeId={modalData?.volumeId} />
       </ModalContainer>
     </>
   )

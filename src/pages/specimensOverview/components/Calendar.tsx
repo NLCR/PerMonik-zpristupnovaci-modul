@@ -29,7 +29,7 @@ import { useLanguageCode } from '../../../utils/helperHooks'
 import Loader from '../../../components/Loader'
 import { useSpecimenListQuery } from '../../../api/specimen'
 import ShowError from '../../../components/ShowError'
-import VolumeOverviewStatsModal from './VolumeOverviewStatsModal'
+import VolumeOverviewStatsModalContent from './VolumeOverviewStatsModalContent'
 import { useEditionListQuery } from '../../../api/edition'
 import { useOwnerListQuery } from '../../../api/owner'
 import ModalContainer from '../../../components/ModalContainer'
@@ -349,7 +349,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         opened={!!subModalData}
         header={`${t('specimens_overview.volume_overview_modal_link')} ${subModalData?.barCode}`}
       >
-        <VolumeOverviewStatsModal volumeId={subModalData?.volumeId} />
+        <VolumeOverviewStatsModalContent volumeId={subModalData?.volumeId} />
       </ModalContainer>
       {specimensInDay.map((day) => (
         <Box

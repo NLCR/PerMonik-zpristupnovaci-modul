@@ -17,12 +17,12 @@ const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
   canEdit,
 }) => {
   const { t } = useTranslation()
-  const specimens = useVolumeManagementStore((state) => state.specimensState)
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
 
   const handleDamageChange = () => {
+    const specimens = useVolumeManagementStore.getState().specimensState
     let specimensClone = clone(specimens)
     const specimensWithSelectedDamage = specimens.filter(
       (sp) => sp.numExists && sp.damageTypes?.includes(field)
@@ -90,5 +90,7 @@ const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
     </Box>
   )
 }
+
+// HeaderWithColumnAction.whyDidYouRender = true
 
 export default HeaderWithColumnAction

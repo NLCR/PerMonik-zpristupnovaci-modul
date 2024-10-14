@@ -19,10 +19,8 @@ import SpecimenDayDetailExampleImage from '../../assets/images/specimen-day-deta
 import Facets from './components/Facets'
 import Calendar from './components/Calendar'
 import CalendarToolbar from './components/CalendarToolbar'
-import Switch from '@mui/material/Switch'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import useSynchronizeYearsBetweenViews from '../../hooks/useSynchronizeYearsBetweenViews'
 import ModalContainer from '../../components/ModalContainer'
+import SynchronizeYearsSwitch from './components/SynchronizeYearsSwitch'
 
 const Table = React.lazy(() => import('./components/Table'))
 
@@ -31,15 +29,7 @@ const SpecimensOverview = () => {
   const [modalOpened, setModalOpened] = useState(false)
   const { t } = useTranslation()
   const view = useSpecimensOverviewStore((state) => state.view)
-  const synchronizeYearsBetweenViews = useSpecimensOverviewStore(
-    (state) => state.synchronizeYearsBetweenViews
-  )
   const setView = useSpecimensOverviewStore((state) => state.setView)
-  const setSynchronizeYearsBetweenViews = useSpecimensOverviewStore(
-    (state) => state.setSynchronizeYearsBetweenViews
-  )
-
-  useSynchronizeYearsBetweenViews(metaTitleId)
 
   const {
     data: metaTitle,
@@ -191,25 +181,7 @@ const SpecimensOverview = () => {
               </Button>
             ) : null}
           </Box>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={synchronizeYearsBetweenViews}
-                onChange={(event) => {
-                  setSynchronizeYearsBetweenViews(event.target.checked)
-                }}
-              />
-            }
-            label={
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: t(
-                    'specimens_overview.synchronize_years_between_views'
-                  ),
-                }}
-              />
-            }
-          />
+          <SynchronizeYearsSwitch />
         </Box>
         {view === 'calendar' ? (
           <Calendar metaTitle={metaTitle} />
@@ -222,5 +194,7 @@ const SpecimensOverview = () => {
     </Box>
   )
 }
+
+// SpecimensOverview.whyDidYouRender = true
 
 export default SpecimensOverview

@@ -20,7 +20,9 @@ type TProps = {
   volumeId?: string
 }
 
-const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
+const VolumeOverviewStatsModalContent: FC<TProps> = ({
+  volumeId = undefined,
+}) => {
   const { t } = useTranslation()
 
   const { languageCode } = useLanguageCode()
@@ -61,7 +63,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
     [volumeStats?.specimens]
   )
 
-  const atypicNumbers = useMemo(
+  const atypicalNumbers = useMemo(
     () =>
       volumeStats?.specimens
         .filter(
@@ -90,7 +92,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
     [volumeStats?.specimens]
   )
 
-  const atypicAttachmentNumbers = useMemo(
+  const atypicalAttachmentNumbers = useMemo(
     () =>
       volumeStats?.specimens
         .filter(
@@ -183,7 +185,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
               justifyContent: 'space-between',
               width: '45%',
             }}
-            key={m.name}
+            key={`mutationIds-${m.name}`}
           >
             <Typography variant="body2">
               {mutations.find((mk) => mk.id === m.name)?.name[languageCode]}
@@ -207,7 +209,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
               justifyContent: 'space-between',
               width: '45%',
             }}
-            key={d.name}
+            key={`publicationDayRanges-${d.name}`}
           >
             <Typography variant="body2">
               {dayjs(d.name).format('YYYY')}
@@ -243,8 +245,8 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
               {Math.min(...numbers)} - {Math.max(...numbers)}
             </>
           ) : null}
-          {numbers.length && atypicNumbers.length ? ' | ' : null}
-          {atypicNumbers.length ? <>{atypicNumbers.join(', ')}</> : null}
+          {numbers.length && atypicalNumbers.length ? ' | ' : null}
+          {atypicalNumbers.length ? <>{atypicalNumbers.join(', ')}</> : null}
         </Typography>
       </Box>
       <Box
@@ -262,11 +264,11 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
               {Math.max(...attachmentNumbers)}
             </>
           ) : null}
-          {attachmentNumbers.length && atypicAttachmentNumbers.length
+          {attachmentNumbers.length && atypicalAttachmentNumbers.length
             ? ' | '
             : null}
-          {atypicAttachmentNumbers.length ? (
-            <>{atypicAttachmentNumbers.join(', ')}</>
+          {atypicalAttachmentNumbers.length ? (
+            <>{atypicalAttachmentNumbers.join(', ')}</>
           ) : null}
         </Typography>
       </Box>
@@ -290,7 +292,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
         </Typography>
         {volumeStats.mutationMarks.map((pm) => (
           <Box
-            key={pm.name}
+            key={`mutationMarks-${pm.name}`}
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -314,7 +316,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
         </Typography>
         {volumeStats.editionIds.map((p) => (
           <Box
-            key={p.name}
+            key={`editionIds-${p.name}`}
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -363,7 +365,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
           .filter((s) => s.name !== 'OK')
           .map((s) => (
             <Box
-              key={s.name}
+              key={`damageTypes-${s.name}`}
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -386,10 +388,10 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
           {t('volume_overview.missing_numbers')}:
         </Typography>
         {volumeStats.specimens
-          .filter((s) => s.numMissing)
+          .filter((s) => s.numMissing && !s.isAttachment)
           .map((s) => (
             <Box
-              key={s.name}
+              key={`missingNumbers-${s.id}`}
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -397,7 +399,36 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
               }}
             >
               <Typography variant="body2">{s.number}</Typography>
-              <Typography variant="body2" key={s.id}>
+              <Typography variant="body2" key={`missingNumbers-child-${s.id}`}>
+                {dayjs(s.publicationDate).format('DD.MM.YYYY')}
+              </Typography>
+            </Box>
+          ))}
+      </Box>
+      <Box
+        sx={{
+          marginBottom: '10px',
+        }}
+      >
+        <Typography sx={bolderTextStyle}>
+          {t('volume_overview.missing_attachment_numbers')}:
+        </Typography>
+        {volumeStats.specimens
+          .filter((s) => s.numMissing && s.isAttachment)
+          .map((s) => (
+            <Box
+              key={`missingAttachmentNumbers-${s.id}`}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '45%',
+              }}
+            >
+              <Typography variant="body2">{s.attachmentNumber}</Typography>
+              <Typography
+                variant="body2"
+                key={`missingAttachmentNumbers-child-${s.id}`}
+              >
                 {dayjs(s.publicationDate).format('DD.MM.YYYY')}
               </Typography>
             </Box>
@@ -434,7 +465,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
           )
           .map((s) => (
             <Box
-              key={s.name}
+              key={`damagedNumbers-${s.id}'`}
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -462,7 +493,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
           .filter((s) => s.note.length && s.numExists)
           .map((s) => (
             <Box
-              key={s.name}
+              key={`notes-${s.id}`}
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -489,4 +520,4 @@ const VolumeOverviewStatsModal: FC<TProps> = ({ volumeId = undefined }) => {
   )
 }
 
-export default VolumeOverviewStatsModal
+export default VolumeOverviewStatsModalContent
