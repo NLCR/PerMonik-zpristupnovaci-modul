@@ -19,14 +19,10 @@ import dayjs from 'dayjs'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { TEdition } from '../../../schema/edition'
 import {
-  repairVolume,
   TEditableVolumePeriodicity,
   VolumeSchema,
 } from '../../../schema/volume'
-import {
-  repairOrCreateSpecimen,
-  TEditableSpecimen,
-} from '../../../schema/specimen'
+import { TEditableSpecimen } from '../../../schema/specimen'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -34,6 +30,8 @@ import useSortedSpecimensNamesAndSubNames from '../../../hooks/useSortedSpecimen
 import Autocomplete from '@mui/material/Autocomplete'
 import ModalContainer from '../../../components/ModalContainer'
 import { useLanguageCode } from '../../../hooks/useLanguageCode'
+import { repairOrCreateSpecimen } from '../../../utils/specimen'
+import { repairVolume } from '../../../utils/volume'
 
 const getDaysArray = (start: string, end: string): string[] => {
   const arr: string[] = []

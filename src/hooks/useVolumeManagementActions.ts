@@ -3,13 +3,8 @@ import { toast } from 'react-toastify'
 import clone from 'lodash/clone'
 import { useTranslation } from 'react-i18next'
 import { useVolumeManagementStore } from '../slices/useVolumeManagementStore'
-import { duplicateVolume, repairVolume, VolumeSchema } from '../schema/volume'
-import {
-  duplicateSpecimen,
-  repairOrCreateSpecimen,
-  SpecimenSchema,
-  TEditableSpecimen,
-} from '../schema/specimen'
+import { VolumeSchema } from '../schema/volume'
+import { SpecimenSchema, TEditableSpecimen } from '../schema/specimen'
 import {
   useCreateVolumeWithSpecimensMutation,
   useDeleteVolumeWithSpecimensMutation,
@@ -19,6 +14,8 @@ import {
 import { TEdition } from '../schema/edition'
 import { BACK_META_TITLE_ID } from '../utils/constants'
 import { generateVolumeUrlWithParams } from '../utils/generateVolumeUrlWithParams'
+import { duplicateSpecimen, repairOrCreateSpecimen } from '../utils/specimen'
+import { duplicateVolume, repairVolume } from '../utils/volume'
 
 const useVolumeManagementActions = (editions: TEdition[]) => {
   const { t, i18n } = useTranslation()

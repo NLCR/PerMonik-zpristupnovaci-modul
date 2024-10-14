@@ -8,8 +8,9 @@ import {
   TEditableVolumePeriodicity,
   TVolumePeriodicityDays,
 } from '../schema/volume'
-import { filterSpecimen, TEditableSpecimen } from '../schema/specimen'
+import { TEditableSpecimen } from '../schema/specimen'
 import { TEdition } from '../schema/edition'
+import { filterSpecimen } from '../utils/specimen'
 
 const periodicityDays: TVolumePeriodicityDays[] = [
   'Monday',
