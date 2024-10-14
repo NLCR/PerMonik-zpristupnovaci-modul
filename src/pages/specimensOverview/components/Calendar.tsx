@@ -168,7 +168,6 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         }}
         opened={!!mainModalData}
         header={metaTitle.name}
-        style="fitted"
       >
         <Box
           sx={{
