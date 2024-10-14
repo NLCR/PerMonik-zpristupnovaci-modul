@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      react(),
+      react({ jsxImportSource: '@welldone-software/why-did-you-render' }),
       eslintPlugin(),
       sentryVitePlugin({
         url: process.env.SENTRY_URL,

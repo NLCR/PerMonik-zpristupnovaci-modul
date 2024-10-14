@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { create } from 'zustand'
 import { produce } from 'immer'
+import { devtools } from 'zustand/middleware'
 import dayjs, { Dayjs } from 'dayjs'
 import {
   TEditableVolume,
@@ -103,216 +104,223 @@ interface TState extends TVariablesState {
   setStateHasUnsavedData: (value: boolean) => void
 }
 
-export const useVolumeManagementStore = create<TState>()((set) => ({
-  ...initialState,
-  setInitialState: () =>
-    set(
-      produce((state: TState) => {
-        state.volumeState = initialState.volumeState
-        state.specimensState = initialState.specimensState
-        state.periodicityGenerationUsed = initialState.periodicityGenerationUsed
-        state.stateHasUnsavedData = false
-      })
-    ),
-  volumeActions: {
-    setVolumeState: (value, stateHasUnsavedData) =>
+export const useVolumeManagementStore = create<TState>()(
+  devtools((set) => ({
+    ...initialState,
+    setInitialState: () =>
       set(
         produce((state: TState) => {
-          state.volumeState = value
-          state.stateHasUnsavedData = stateHasUnsavedData
+          state.volumeState = initialState.volumeState
+          state.specimensState = initialState.specimensState
+          state.periodicityGenerationUsed =
+            initialState.periodicityGenerationUsed
+          state.stateHasUnsavedData = false
         })
       ),
-    setMetaTitle: (id, name) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.metaTitleId = id
-          state.volumeState.periodicity = state.volumeState.periodicity.map(
-            (p) => ({ ...p, name: name })
-          )
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setMutationId: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.mutationId = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setMutationMark: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.mutationMark = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setBarCode: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.barCode = value.trim()
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setSignature: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.signature = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setYear: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.year = value.replace(/\D/g, '')
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setDateFrom: (value) =>
-      set(
-        produce((state: TState) => {
-          if (value?.isValid()) {
-            state.volumeState.dateFrom = value.format('YYYY-MM-DD')
-            state.volumeState.dateTo = value.endOf('month').format('YYYY-MM-DD')
+    volumeActions: {
+      setVolumeState: (value, stateHasUnsavedData) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState = value
+            state.stateHasUnsavedData = stateHasUnsavedData
+          })
+        ),
+      setMetaTitle: (id, name) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.metaTitleId = id
+            state.volumeState.periodicity = state.volumeState.periodicity.map(
+              (p) => ({ ...p, name: name })
+            )
             state.stateHasUnsavedData = true
-          } else {
-            state.volumeState.dateFrom = ''
-            state.volumeState.dateTo = ''
-          }
-        })
-      ),
-    setDateTo: (value) =>
-      set(
-        produce((state: TState) => {
-          if (value?.isValid()) {
-            state.volumeState.dateTo = value.format('YYYY-MM-DD')
+          })
+        ),
+      setMutationId: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.mutationId = value
             state.stateHasUnsavedData = true
-          } else {
-            state.volumeState.dateTo = ''
-          }
-        })
-      ),
-    setFirstNumber: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.firstNumber = value.replace(/\D/g, '')
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setLastNumber: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.lastNumber = value.replace(/\D/g, '')
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setOwnerId: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.ownerId = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setNote: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.note = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setShowAttachmentsAtTheEnd: (value) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.showAttachmentsAtTheEnd = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-  },
-  volumePeriodicityActions: {
-    setDefaultPeriodicityEdition: (values: TEdition[]) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.periodicity = state.volumeState.periodicity.map(
-            (p) => ({
-              ...p,
-              editionId: values.find((pub) => pub.isDefault)?.id || '',
-            })
-          )
-        })
-      ),
-    setNumExists: (value: boolean, index: number) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.periodicity[index].numExists = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setEditionId: (value: string | null, index: number) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.periodicity[index].editionId = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setPagesCount: (value: string, index: number) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.periodicity[index].pagesCount = value.replace(
-            /\D/g,
-            ''
-          )
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setName: (value: string, index: number) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.periodicity[index].name = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setSubName: (value: string, index: number) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.periodicity[index].subName = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setPeriodicityGenerationUsed: (value: boolean) =>
-      set(
-        produce((state: TState) => {
-          state.periodicityGenerationUsed = value
-          state.stateHasUnsavedData = true
-        })
-      ),
-    setPeriodicityState: (periodicity: TEditableVolumePeriodicity[]) =>
-      set(
-        produce((state: TState) => {
-          state.volumeState.periodicity = periodicity
-          state.stateHasUnsavedData = true
-        })
-      ),
-  },
-  specimensActions: {
-    setSpecimensState: (value, stateHasUnsavedData) =>
-      set(
-        produce((state: TState) => {
-          state.specimensState = value
-          state.stateHasUnsavedData = stateHasUnsavedData
-        })
-      ),
-    setSpecimen: (value) =>
-      set(
-        produce((state: TState) => {
-          const index = state.specimensState.findIndex((s) => s.id === value.id)
-          if (index >= 0) {
-            state.specimensState[index] = filterSpecimen(value)
+          })
+        ),
+      setMutationMark: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.mutationMark = value
             state.stateHasUnsavedData = true
-          }
-        })
-      ),
-  },
-  setStateHasUnsavedData: (value) =>
-    set(() => ({
-      stateHasUnsavedData: value,
-    })),
-}))
+          })
+        ),
+      setBarCode: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.barCode = value.trim()
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setSignature: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.signature = value
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setYear: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.year = value.replace(/\D/g, '')
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setDateFrom: (value) =>
+        set(
+          produce((state: TState) => {
+            if (value?.isValid()) {
+              state.volumeState.dateFrom = value.format('YYYY-MM-DD')
+              state.volumeState.dateTo = value
+                .endOf('month')
+                .format('YYYY-MM-DD')
+              state.stateHasUnsavedData = true
+            } else {
+              state.volumeState.dateFrom = ''
+              state.volumeState.dateTo = ''
+            }
+          })
+        ),
+      setDateTo: (value) =>
+        set(
+          produce((state: TState) => {
+            if (value?.isValid()) {
+              state.volumeState.dateTo = value.format('YYYY-MM-DD')
+              state.stateHasUnsavedData = true
+            } else {
+              state.volumeState.dateTo = ''
+            }
+          })
+        ),
+      setFirstNumber: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.firstNumber = value.replace(/\D/g, '')
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setLastNumber: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.lastNumber = value.replace(/\D/g, '')
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setOwnerId: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.ownerId = value
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setNote: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.note = value
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setShowAttachmentsAtTheEnd: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.showAttachmentsAtTheEnd = value
+            state.stateHasUnsavedData = true
+          })
+        ),
+    },
+    volumePeriodicityActions: {
+      setDefaultPeriodicityEdition: (values: TEdition[]) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.periodicity = state.volumeState.periodicity.map(
+              (p) => ({
+                ...p,
+                editionId: values.find((pub) => pub.isDefault)?.id || '',
+              })
+            )
+          })
+        ),
+      setNumExists: (value: boolean, index: number) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.periodicity[index].numExists = value
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setEditionId: (value: string | null, index: number) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.periodicity[index].editionId = value
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setPagesCount: (value: string, index: number) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.periodicity[index].pagesCount = value.replace(
+              /\D/g,
+              ''
+            )
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setName: (value: string, index: number) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.periodicity[index].name = value
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setSubName: (value: string, index: number) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.periodicity[index].subName = value
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setPeriodicityGenerationUsed: (value: boolean) =>
+        set(
+          produce((state: TState) => {
+            state.periodicityGenerationUsed = value
+            state.stateHasUnsavedData = value
+          })
+        ),
+      setPeriodicityState: (periodicity: TEditableVolumePeriodicity[]) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.periodicity = periodicity
+            state.stateHasUnsavedData = true
+          })
+        ),
+    },
+    specimensActions: {
+      setSpecimensState: (value, stateHasUnsavedData) =>
+        set(
+          produce((state: TState) => {
+            state.specimensState = value
+            state.stateHasUnsavedData = stateHasUnsavedData
+          })
+        ),
+      setSpecimen: (value) =>
+        set(
+          produce((state: TState) => {
+            const index = state.specimensState.findIndex(
+              (s) => s.id === value.id
+            )
+            if (index >= 0) {
+              state.specimensState[index] = filterSpecimen(value)
+              state.stateHasUnsavedData = true
+            }
+          })
+        ),
+    },
+    setStateHasUnsavedData: (value) =>
+      set(() => ({
+        stateHasUnsavedData: value,
+      })),
+  }))
+)

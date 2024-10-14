@@ -19,7 +19,7 @@ import { useOwnerListQuery } from '../../api/owner'
 import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
 import Button from '@mui/material/Button'
-import VolumeOverviewStatsModal from '../specimensOverview/components/VolumeOverviewStatsModal'
+import VolumeOverviewStatsModalContent from '../specimensOverview/components/VolumeOverviewStatsModalContent'
 import React, { useState } from 'react'
 import ModalContainer from '../../components/ModalContainer'
 
@@ -170,7 +170,7 @@ const VolumeOverview = () => {
             callback: () => setModalOpened(false),
           }}
         >
-          <VolumeOverviewStatsModal volumeId={volumeId} />
+          <VolumeOverviewStatsModalContent volumeId={volumeId} />
         </ModalContainer>
         <Button
           sx={{

@@ -24,13 +24,14 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
   type,
 }) => {
   const { t } = useTranslation()
-  const specimens = useVolumeManagementStore((state) => state.specimensState)
+
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
   const [modalOpened, setModalOpened] = useState(false)
 
   const getWillBeRenumbered = (renumberType: 'number' | 'attachmentNumber') => {
+    const specimens = useVolumeManagementStore.getState().specimensState
     const specimenIndex = specimens.findIndex((sp) => sp.id === row.id)
     const max = specimens.length
     let willBeRenumbered = 0
@@ -55,6 +56,7 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
   }
 
   const doRenumber = (renumberType: 'number' | 'attachmentNumber') => {
+    const specimens = useVolumeManagementStore.getState().specimensState
     const specimenIndex = specimens.findIndex((sp) => sp.id === row.id)
     const max = specimens.length
     let firstNumber = -1
@@ -143,5 +145,7 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
     </>
   ) : null
 }
+
+// RenumberableValueCell.whyDidYouRender = true
 
 export default RenumberableValueCell

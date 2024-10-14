@@ -1,3 +1,4 @@
+import './wdyr'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { I18nextProvider } from 'react-i18next'
@@ -27,7 +28,7 @@ const getEnvironment = () => {
   const hostname = window.location.hostname
 
   if (hostname.includes('permonik')) {
-    environment = 'test'
+    environment = 'prod'
   }
   if (hostname.includes('permonik-test')) {
     environment = 'test'

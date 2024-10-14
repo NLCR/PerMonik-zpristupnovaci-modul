@@ -110,6 +110,7 @@
     "verified": "Ověřeno",
     "damage_types_overview": "Přehled typů poškození",
     "missing_numbers": "Chybějící čísla",
+    "missing_attachment_numbers": "Chybějící čísla příloh",
     "state_ok": "Vyhovující",
     "state_not_ok": "Poškozený",
     "physical_condition": "Fyzický stav",

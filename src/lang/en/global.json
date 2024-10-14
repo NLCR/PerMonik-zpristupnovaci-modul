@@ -110,6 +110,7 @@
     "verified": "Verified",
     "damage_types_overview": "Damage types overview",
     "missing_numbers": "Missing numbers",
+    "missing_attachment_numbers": "Missing attachment numbers",
     "state_ok": "Satisfactory",
     "state_not_ok": "Damaged",
     "physical_condition": "Physical condition",
