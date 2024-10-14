@@ -11,13 +11,13 @@ import { styled } from '@mui/material/styles'
 import { LoadingButton } from '@mui/lab'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
-import { useLanguageCode } from '../../utils/helperHooks'
 import { EditableEditionSchema, TEditableEdition } from '../../schema/edition'
 import {
   useCreateEditionMutation,
   useEditionListQuery,
   useUpdateEditionMutation,
 } from '../../api/edition'
+import { useLanguageCode } from '../../hooks/useLanguageCode'
 
 const Container = styled('div')(() => ({
   position: 'relative',

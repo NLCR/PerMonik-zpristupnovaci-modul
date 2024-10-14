@@ -17,8 +17,8 @@ import {
   useUpdateVolumeWithSpecimensMutation,
 } from '../api/volume'
 import { TEdition } from '../schema/edition'
-import { generateVolumeUrlWithParams } from '../utils/helperFunctions'
 import { BACK_META_TITLE_ID } from '../utils/constants'
+import { generateVolumeUrlWithParams } from '../utils/generateVolumeUrlWithParams'
 
 const useVolumeManagementActions = (editions: TEdition[]) => {
   const { t, i18n } = useTranslation()

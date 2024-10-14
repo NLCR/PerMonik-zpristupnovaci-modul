@@ -13,15 +13,15 @@ import { usePublicVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
 import ShowInfoMessage from '../../components/ShowInfoMessage'
-import { useLanguageCode } from '../../utils/helperHooks'
 import { useMutationListQuery } from '../../api/mutation'
 import { useOwnerListQuery } from '../../api/owner'
 import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
 import Button from '@mui/material/Button'
-import VolumeOverviewStatsModalContent from '../specimensOverview/components/VolumeOverviewStatsModalContent'
+import VolumeStatsModalContent from '../../components/VolumeStatsModalContent'
 import React, { useState } from 'react'
 import ModalContainer from '../../components/ModalContainer'
+import { useLanguageCode } from '../../hooks/useLanguageCode'
 
 const VolumeOverview = () => {
   const { volumeId } = useParams()
@@ -170,7 +170,7 @@ const VolumeOverview = () => {
             callback: () => setModalOpened(false),
           }}
         >
-          <VolumeOverviewStatsModalContent volumeId={volumeId} />
+          <VolumeStatsModalContent volumeId={volumeId} />
         </ModalContainer>
         <Button
           sx={{

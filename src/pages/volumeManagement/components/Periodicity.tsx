@@ -17,7 +17,6 @@ import clone from 'lodash/clone'
 import isEqual from 'lodash/isEqual'
 import dayjs from 'dayjs'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
-import { useLanguageCode } from '../../../utils/helperHooks'
 import { TEdition } from '../../../schema/edition'
 import {
   repairVolume,
@@ -34,6 +33,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import useSortedSpecimensNamesAndSubNames from '../../../hooks/useSortedSpecimensNamesAndSubNames'
 import Autocomplete from '@mui/material/Autocomplete'
 import ModalContainer from '../../../components/ModalContainer'
+import { useLanguageCode } from '../../../hooks/useLanguageCode'
 
 const getDaysArray = (start: string, end: string): string[] => {
   const arr: string[] = []

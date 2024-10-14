@@ -27,7 +27,6 @@ import {
   TEditableSpecimen,
   TSpecimenDamageTypes,
 } from '../../../schema/specimen'
-import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useVolumeManagementStore } from '../../../slices/useVolumeManagementStore'
 import { TMutation } from '../../../schema/mutation'
 import { TEdition } from '../../../schema/edition'
@@ -38,6 +37,8 @@ import RenumberableValueCell from './editCells/RenumberableValueCell'
 import HeaderWithColumnAction from './editCells/HeaderWithColumnAction'
 import { useSearchParams } from 'react-router-dom'
 import { JUMP_TO_SPECIMEN_WITH_ID } from '../../../utils/constants'
+import { useLanguageCode } from '../../../hooks/useLanguageCode'
+import { useMuiTableLang } from '../../../hooks/useMuiTableLang'
 
 const ODD_OPACITY = 0.2
 
