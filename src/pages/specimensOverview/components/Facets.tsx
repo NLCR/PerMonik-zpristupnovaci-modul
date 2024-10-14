@@ -12,7 +12,6 @@ import FacetGroup from './FacetGroup'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { useMutationListQuery } from '../../../api/mutation'
 import { useEditionListQuery } from '../../../api/edition'
-import { useLanguageCode } from '../../../utils/helperHooks'
 import { useOwnerListQuery } from '../../../api/owner'
 import {
   useSpecimenFacetsQuery,
@@ -25,6 +24,7 @@ import { TSpecimenDamageTypes } from '../../../schema/specimen'
 import Loader from '../../../components/Loader'
 import ControlledSlider from './ControlledSlider'
 import ControlledBarCodeInput from './ControlledBarCodeInput'
+import { useLanguageCode } from '../../../hooks/useLanguageCode'
 
 type TProps = {
   metaTitle: TMetaTitle

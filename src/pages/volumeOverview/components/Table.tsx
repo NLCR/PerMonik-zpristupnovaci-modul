@@ -11,9 +11,10 @@ import CheckIcon from '@mui/icons-material/Check'
 import Box from '@mui/material/Box'
 import { TEditableSpecimen, TSpecimen } from '../../../schema/specimen'
 import { TVolumeDetail } from '../../../schema/volume'
-import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useMutationListQuery } from '../../../api/mutation'
 import { useEditionListQuery } from '../../../api/edition'
+import { useLanguageCode } from '../../../hooks/useLanguageCode'
+import { useMuiTableLang } from '../../../hooks/useMuiTableLang'
 
 type TProps = {
   volume?: TVolumeDetail

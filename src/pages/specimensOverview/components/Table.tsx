@@ -12,7 +12,6 @@ import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import { blue, green, grey, orange, red } from '@mui/material/colors'
 import { TFunction } from 'i18next'
 import { TMetaTitle } from '../../../schema/metaTitle'
-import { useLanguageCode, useMuiTableLang } from '../../../utils/helperHooks'
 import { useMutationListQuery } from '../../../api/mutation'
 import { useEditionListQuery } from '../../../api/edition'
 import { useOwnerListQuery } from '../../../api/owner'
@@ -20,10 +19,12 @@ import { useSpecimenListQuery } from '../../../api/specimen'
 import { TSpecimen } from '../../../schema/specimen'
 import { damageTypes } from '../../../utils/constants'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
-import { generateVolumeUrlWithParams } from '../../../utils/helperFunctions'
 import DriveFileMoveOutlinedIcon from '@mui/icons-material/DriveFileMoveOutlined'
-import VolumeOverviewStatsModalContent from './VolumeOverviewStatsModalContent'
+import VolumeStatsModalContent from '../../../components/VolumeStatsModalContent'
 import ModalContainer from '../../../components/ModalContainer'
+import { useLanguageCode } from '../../../hooks/useLanguageCode'
+import { useMuiTableLang } from '../../../hooks/useMuiTableLang'
+import { generateVolumeUrlWithParams } from '../../../utils/generateVolumeUrlWithParams'
 
 const getSpecimenState = (sp: TSpecimen, t: TFunction) => {
   if (sp.damageTypes) {
@@ -304,7 +305,7 @@ const Table: FC<Props> = ({ metaTitle }) => {
         opened={!!modalData}
         header={`${t('specimens_overview.volume_overview_modal_link')} ${modalData?.barCode}`}
       >
-        <VolumeOverviewStatsModalContent volumeId={modalData?.volumeId} />
+        <VolumeStatsModalContent volumeId={modalData?.volumeId} />
       </ModalContainer>
     </>
   )

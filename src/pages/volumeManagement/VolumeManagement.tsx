@@ -25,7 +25,7 @@ import useVolumeManagementActions from '../../hooks/useVolumeManagementActions'
 import Button from '@mui/material/Button'
 import { BACK_META_TITLE_ID } from '../../utils/constants'
 import ModalContainer from '../../components/ModalContainer'
-import VolumeOverviewStatsModalContent from '../specimensOverview/components/VolumeOverviewStatsModalContent'
+import VolumeStatsModalContent from '../../components/VolumeStatsModalContent'
 import Periodicity from './components/Periodicity'
 import { validate as uuidValidate } from 'uuid'
 import UnsavedChangesModal from './components/UnsavedChangesModal'
@@ -478,7 +478,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
         onClose={() => setVolumeStatsModalOpened(false)}
         closeButton={{ callback: () => setVolumeStatsModalOpened(false) }}
       >
-        <VolumeOverviewStatsModalContent volumeId={volumeId} />
+        <VolumeStatsModalContent volumeId={volumeId} />
       </ModalContainer>
       <UnsavedChangesModal />
     </Box>

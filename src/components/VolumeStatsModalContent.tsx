@@ -3,14 +3,14 @@ import Typography from '@mui/material/Typography'
 import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import { useVolumeOverviewStatsQuery } from '../../../api/volume'
-import Loader from '../../../components/Loader'
-import ShowError from '../../../components/ShowError'
-import { useOwnerListQuery } from '../../../api/owner'
-import { useMutationListQuery } from '../../../api/mutation'
-import { useEditionListQuery } from '../../../api/edition'
-import { useLanguageCode } from '../../../utils/helperHooks'
+import { useVolumeOverviewStatsQuery } from '../api/volume'
+import Loader from './Loader'
+import ShowError from './ShowError'
+import { useOwnerListQuery } from '../api/owner'
+import { useMutationListQuery } from '../api/mutation'
+import { useEditionListQuery } from '../api/edition'
 import isFinite from 'lodash/isFinite'
+import { useLanguageCode } from '../hooks/useLanguageCode'
 
 const bolderTextStyle = {
   fontWeight: '600',
@@ -20,9 +20,7 @@ type TProps = {
   volumeId?: string
 }
 
-const VolumeOverviewStatsModalContent: FC<TProps> = ({
-  volumeId = undefined,
-}) => {
+const VolumeStatsModalContent: FC<TProps> = ({ volumeId = undefined }) => {
   const { t } = useTranslation()
 
   const { languageCode } = useLanguageCode()
@@ -520,4 +518,4 @@ const VolumeOverviewStatsModalContent: FC<TProps> = ({
   )
 }
 
-export default VolumeOverviewStatsModalContent
+export default VolumeStatsModalContent

@@ -19,20 +19,17 @@ import { blue } from '@mui/material/colors'
 import { TSpecimen } from '../../../schema/specimen'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { TMetaTitle } from '../../../schema/metaTitle'
-import {
-  generateVolumeUrlWithParams,
-  getFirstMondayOfMonth,
-} from '../../../utils/helperFunctions'
 import ShowInfoMessage from '../../../components/ShowInfoMessage'
 import { useMutationListQuery } from '../../../api/mutation'
-import { useLanguageCode } from '../../../utils/helperHooks'
 import Loader from '../../../components/Loader'
 import { useSpecimenListQuery } from '../../../api/specimen'
 import ShowError from '../../../components/ShowError'
-import VolumeOverviewStatsModalContent from './VolumeOverviewStatsModalContent'
+import VolumeStatsModalContent from '../../../components/VolumeStatsModalContent'
 import { useEditionListQuery } from '../../../api/edition'
 import { useOwnerListQuery } from '../../../api/owner'
 import ModalContainer from '../../../components/ModalContainer'
+import { useLanguageCode } from '../../../hooks/useLanguageCode'
+import { generateVolumeUrlWithParams } from '../../../utils/generateVolumeUrlWithParams'
 
 type TProps = {
   metaTitle: TMetaTitle
@@ -43,6 +40,20 @@ type TSpecimensDay = {
   isPreviousMonth: boolean
   specimens: TSpecimen[][]
 }[]
+
+const getFirstMondayOfMonth = (date: Date | null) => {
+  if (!date) return null
+  const year = date.getFullYear()
+  const month = date.getMonth()
+
+  // Find the first Monday in the month
+  let firstMonday = dayjs().year(year).month(month).date(1)
+  while (firstMonday.day() !== 1) {
+    firstMonday = firstMonday.add(1, 'day')
+  }
+
+  return firstMonday
+}
 
 const Calendar: FC<TProps> = ({ metaTitle }) => {
   const { t, i18n } = useTranslation()
@@ -349,7 +360,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         opened={!!subModalData}
         header={`${t('specimens_overview.volume_overview_modal_link')} ${subModalData?.barCode}`}
       >
-        <VolumeOverviewStatsModalContent volumeId={subModalData?.volumeId} />
+        <VolumeStatsModalContent volumeId={subModalData?.volumeId} />
       </ModalContainer>
       {specimensInDay.map((day) => (
         <Box
