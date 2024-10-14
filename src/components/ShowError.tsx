@@ -4,6 +4,7 @@ import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
+import isFunction from 'lodash/isFunction'
 
 type TShowErrorProps = {
   error?: string
@@ -34,7 +35,7 @@ const ShowError: FC<TShowErrorProps> = ({
       <Box component="span">
         {error || t('common.error_occurred_when_loading_data')}
       </Box>
-      {onRetry ? (
+      {isFunction(onRetry) ? (
         <Button
           sx={{
             marginTop: '30px',

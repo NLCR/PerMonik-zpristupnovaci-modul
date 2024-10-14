@@ -23,6 +23,7 @@ import MetaTitles from '../pages/administration/MetaTitles'
 import Editions from '../pages/administration/Editions'
 import Mutations from '../pages/administration/Mutations'
 import Layout from './Layout'
+import ShowError from './ShowError'
 
 // TODO: fix react-router suspense loading
 // const Administration = React.lazy(
@@ -52,13 +53,22 @@ const SuspenseLoader = () => {
 }
 
 const RoutesManager = () => {
-  const { t } = useTranslation('global', { keyPrefix: 'urls' })
-  const { data: me, isLoading: meLoading } = useMeQuery()
+  const { t } = useTranslation()
+  const { data: me, isLoading, isError, refetch } = useMeQuery()
 
   const canUseEditing = APP_WITH_EDITING_ENABLED && !!me
 
-  if (meLoading) {
+  if (isLoading) {
     return <Loader />
+  }
+
+  if (isError) {
+    return (
+      <ShowError
+        error={t('common.error_occurred_somewhere')}
+        onRetry={refetch}
+      />
+    )
   }
 
   const router = createBrowserRouter(
@@ -67,41 +77,41 @@ const RoutesManager = () => {
         <Route index element={<Home />} />
         <Route path="/:lang" element={<Home />} />
         <Route
-          path={`/:lang/${t('specimens_overview')}/:metaTitleId`}
+          path={`/:lang/${t('urls.specimens_overview')}/:metaTitleId`}
           element={<SpecimensOverview />}
         />
         {canUseEditing ? (
           <>
             <Route
-              path={`/:lang/${t('volume_overview')}`}
+              path={`/:lang/${t('urls.volume_overview')}`}
               element={<VolumeManagement />}
             />
             <Route
-              path={`/:lang/${t('volume_overview')}/duplicated`}
+              path={`/:lang/${t('urls.volume_overview')}/duplicated`}
               element={<VolumeManagement duplicated={true} />}
             />
             <Route
-              path={`/:lang/${t('volume_overview')}/:volumeId`}
+              path={`/:lang/${t('urls.volume_overview')}/:volumeId`}
               element={<VolumeManagement />}
             />
           </>
         ) : (
           <Route
-            path={`/:lang/${t('volume_overview')}/:volumeId`}
+            path={`/:lang/${t('urls.volume_overview')}/:volumeId`}
             element={<VolumeOverview />}
           />
         )}
         {canUseEditing && me?.role?.includes('admin') ? (
           <Route
-            path={`/:lang/${t('administration')}`}
+            path={`/:lang/${t('urls.administration')}`}
             element={<Administration />}
           >
-            <Route index element={<Navigate to={t('users')} />} />
-            <Route path={t('users')} element={<Users me={me} />} />
-            <Route path={t('owners')} element={<Owners />} />
-            <Route path={t('meta_titles')} element={<MetaTitles />} />
-            <Route path={t('editions')} element={<Editions />} />
-            <Route path={t('mutations')} element={<Mutations />} />
+            <Route index element={<Navigate to={t('urls.users')} />} />
+            <Route path={t('urls.users')} element={<Users me={me} />} />
+            <Route path={t('urls.owners')} element={<Owners />} />
+            <Route path={t('urls.meta_titles')} element={<MetaTitles />} />
+            <Route path={t('urls.editions')} element={<Editions />} />
+            <Route path={t('urls.mutations')} element={<Mutations />} />
           </Route>
         ) : null}
         <Route path="*" element={<NotFound />} />
