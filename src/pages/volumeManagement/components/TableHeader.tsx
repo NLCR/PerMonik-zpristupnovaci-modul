@@ -1,17 +1,31 @@
 import Typography from '@mui/material/Typography'
 import { blue } from '@mui/material/colors'
 import Box from '@mui/material/Box'
-import React from 'react'
+import React, { FC, MutableRefObject, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useManagedVolumeDetailQuery } from '../../../api/volume'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
+import { GridApiPro, GridEventListener } from '@mui/x-data-grid-pro'
 
-const TableHeader = () => {
+type TableHeaderProps = {
+  apiRef: MutableRefObject<GridApiPro>
+}
+
+const TableHeader: FC<TableHeaderProps> = ({ apiRef }) => {
   const { volumeId } = useParams()
   const { t } = useTranslation()
 
   const { data } = useManagedVolumeDetailQuery(volumeId)
+
+  const [filteredRowsCount, setFilteredRowsCount] = useState(0)
+
+  useEffect(() => {
+    const handleFilterChange: GridEventListener<'stateChange'> = (params) => {
+      setFilteredRowsCount(params.pagination.rowCount)
+    }
+    return apiRef.current.subscribeEvent('stateChange', handleFilterChange)
+  }, [apiRef])
 
   return (
     <Box
@@ -35,12 +49,27 @@ const TableHeader = () => {
         sx={{
           display: 'flex',
           gap: '20px',
-          alignItems: 'flex-end',
         }}
       >
-        <Typography>
-          {`${t('volume_overview.rows_count')}: ${data?.specimens.length}`}
-        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            gap: '2px',
+            paddingRight: '8px',
+          }}
+        >
+          <Typography>
+            {`${t('volume_overview.rows_count')}: ${data?.specimens.length}`}
+          </Typography>
+          {filteredRowsCount !== data?.specimens.length ? (
+            <Typography>
+              {`${t('volume_overview.filtered_rows_count')}: ${filteredRowsCount}`}
+            </Typography>
+          ) : null}
+        </Box>
+
         <Box
           sx={{
             display: 'flex',

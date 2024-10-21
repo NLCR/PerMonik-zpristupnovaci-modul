@@ -146,7 +146,8 @@
     "unsaved_changes_text": "Chcete i přesto opustit tuto stránku?",
     "volume_created_at": "Svazek vytvořen",
     "volume_updated_at": "Svazek upraven",
-    "rows_count": "Počet řádků"
+    "rows_count": "Počet řádků",
+    "filtered_rows_count": "Počet vyfiltrovaných řádků"
   },
   "table": {
     "mutations": "Mutace",

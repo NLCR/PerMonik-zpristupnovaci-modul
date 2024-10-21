@@ -664,7 +664,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
 
   return (
     <>
-      <TableHeader />
+      <TableHeader apiRef={apiRef} />
       <StripedDataGrid
         apiRef={apiRef}
         localeText={MuiTableLocale}
