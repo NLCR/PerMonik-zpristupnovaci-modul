@@ -11,6 +11,7 @@ import {
 import { TEditableSpecimen } from '../schema/specimen'
 import { TEdition } from '../schema/edition'
 import { filterSpecimen } from '../utils/specimen'
+import clone from 'lodash/clone'
 
 const periodicityDays: TVolumePeriodicityDays[] = [
   'Monday',
@@ -43,6 +44,7 @@ export const initialState: TVariablesState = {
     firstNumber: '',
     lastNumber: '',
     metaTitleId: '',
+    subName: '',
     mutationId: '',
     note: '',
     ownerId: '',
@@ -72,6 +74,7 @@ interface TState extends TVariablesState {
       stateHasUnsavedData: boolean
     ) => void
     setMetaTitle: (id: string, name: string) => void
+    setSubName: (value: string) => void
     setMutationId: (value: string) => void
     setMutationMark: (value: string) => void
     setBarCode: (value: string) => void
@@ -100,6 +103,7 @@ interface TState extends TVariablesState {
       value: TEditableSpecimen[],
       stateHasUnsavedData: boolean
     ) => void
+    setSpecimensById: (specimens: TEditableSpecimen[]) => void
     setSpecimen: (value: TEditableSpecimen) => void
   }
   setStateHasUnsavedData: (value: boolean) => void
@@ -132,6 +136,16 @@ export const useVolumeManagementStore = create<TState>()(
             state.volumeState.metaTitleId = id
             state.volumeState.periodicity = state.volumeState.periodicity.map(
               (p) => ({ ...p, name: name })
+            )
+            state.stateHasUnsavedData = true
+          })
+        ),
+      setSubName: (value) =>
+        set(
+          produce((state: TState) => {
+            state.volumeState.subName = value
+            state.volumeState.periodicity = state.volumeState.periodicity.map(
+              (p) => ({ ...p, subName: value })
             )
             state.stateHasUnsavedData = true
           })
@@ -304,6 +318,25 @@ export const useVolumeManagementStore = create<TState>()(
           produce((state: TState) => {
             state.specimensState = value
             state.stateHasUnsavedData = stateHasUnsavedData
+          })
+        ),
+      setSpecimensById: (values) =>
+        set(
+          produce((state: TState) => {
+            const specimensClone = clone(state.specimensState)
+            let dataChanged = false
+
+            values.forEach((value) => {
+              const index = specimensClone.findIndex((s) => s.id === value.id)
+              if (index >= 0) {
+                specimensClone[index] = value
+                dataChanged = true
+              }
+            })
+            if (dataChanged) {
+              state.specimensState = specimensClone
+              state.stateHasUnsavedData = true
+            }
           })
         ),
       setSpecimen: (value) =>

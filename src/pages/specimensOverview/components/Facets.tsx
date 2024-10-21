@@ -320,12 +320,13 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
               ? facets.ownerIds.map((m) => ({
                   name: m.name,
                   count: m.count,
-                  displayedName: owners?.find((mc) => mc.id === m.name)?.name,
+                  displayedName: owners?.find((mc) => mc.id === m.name)
+                    ?.shorthand,
                 }))
               : params.ownerIds.map((p) => ({
                   name: p,
                   count: 0,
-                  displayedName: owners?.find((mc) => mc.id === p)?.name,
+                  displayedName: owners?.find((mc) => mc.id === p)?.shorthand,
                 }))
           }
           header={t('specimens_overview.owner')}

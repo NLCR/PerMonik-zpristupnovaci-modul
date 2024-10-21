@@ -232,7 +232,7 @@ const Users = ({ me }: { me: TMe }) => {
                   >
                     {owners.map((o) => (
                       <MenuItem key={o.id} value={o.id}>
-                        {o.name}
+                        {o.shorthand}
                       </MenuItem>
                     ))}
                   </Select>

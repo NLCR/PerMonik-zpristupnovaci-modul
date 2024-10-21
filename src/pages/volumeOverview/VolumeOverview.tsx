@@ -153,7 +153,7 @@ const VolumeOverview = () => {
             <TableRow>
               <TableCell>{t('volume_overview.owner')}</TableCell>
               <TableCell>
-                {owners.find((o) => o.id === volume.volume.ownerId)?.name}
+                {owners.find((o) => o.id === volume.volume.ownerId)?.shorthand}
               </TableCell>
             </TableRow>
             <TableRow>

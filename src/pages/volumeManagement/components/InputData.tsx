@@ -18,6 +18,8 @@ import { TOwner } from '../../../schema/owner'
 import { TMetaTitle } from '../../../schema/metaTitle'
 import MutationMarkSelectorModal from './editCells/MutationMarkSelectorModal'
 import { useLanguageCode } from '../../../hooks/useLanguageCode'
+import Periodicity from './Periodicity'
+import { TEdition } from '../../../schema/edition'
 
 interface InputDataProps {
   canEdit: boolean
@@ -25,6 +27,7 @@ interface InputDataProps {
   mutations: TMutation[]
   owners: TOwner[]
   metaTitles: TMetaTitle[]
+  editions: TEdition[]
 }
 
 const InputData: FC<InputDataProps> = ({
@@ -33,6 +36,7 @@ const InputData: FC<InputDataProps> = ({
   mutations,
   owners,
   metaTitles,
+  editions,
 }) => {
   const { t } = useTranslation()
   const { languageCode } = useLanguageCode()
@@ -49,7 +53,12 @@ const InputData: FC<InputDataProps> = ({
         overflowY: 'auto',
       }}
     >
-      <Table size="small">
+      <Table
+        size="small"
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         <TableHead>
           <TableRow>
             <TableCell>{t('volume_overview.name')}</TableCell>
@@ -110,6 +119,23 @@ const InputData: FC<InputDataProps> = ({
             </TableCell>
           </TableRow>
           <TableRow>
+            <TableCell>{t('volume_overview.sub_name')}</TableCell>
+            <TableCell>
+              <TextField
+                sx={{
+                  maxWidth: '200px',
+                  width: '100%',
+                }}
+                size="small"
+                value={volumeState.subName}
+                disabled={!canEdit}
+                onChange={(event) =>
+                  volumeActions.setSubName(event.target.value)
+                }
+              />
+            </TableCell>
+          </TableRow>
+          <TableRow>
             <TableCell>{t('volume_overview.mutation_mark')}</TableCell>
             <TableCell>
               <TextField
@@ -122,16 +148,14 @@ const InputData: FC<InputDataProps> = ({
                 size="small"
                 onClick={() => setMutationMarksModalOpened(true)}
               />
-              {mutationMarksModalOpened ? (
-                <MutationMarkSelectorModal
-                  row={volumeState}
-                  open={mutationMarksModalOpened}
-                  onClose={() => setMutationMarksModalOpened(false)}
-                  onSave={(data) =>
-                    volumeActions.setMutationMark(data.mutationMark)
-                  }
-                />
-              ) : null}
+              <MutationMarkSelectorModal
+                row={volumeState}
+                open={mutationMarksModalOpened}
+                onClose={() => setMutationMarksModalOpened(false)}
+                onSave={(data) =>
+                  volumeActions.setMutationMark(data.mutationMark)
+                }
+              />
             </TableCell>
           </TableRow>
           <TableRow>
@@ -269,14 +293,14 @@ const InputData: FC<InputDataProps> = ({
                 {me.role === 'super_admin'
                   ? owners.map((o) => (
                       <MenuItem key={o.id} value={o.id}>
-                        {o.name}
+                        {o.shorthand}
                       </MenuItem>
                     ))
                   : owners
                       .filter((o) => me.owners?.includes(o.id))
                       .map((o) => (
                         <MenuItem key={o.id} value={o.id}>
-                          {o.name}
+                          {o.shorthand}
                         </MenuItem>
                       ))}
               </Select>
@@ -299,6 +323,7 @@ const InputData: FC<InputDataProps> = ({
           </TableRow>
         </TableBody>
       </Table>
+      <Periodicity canEdit={canEdit} editions={editions} />
     </Box>
   )
 }

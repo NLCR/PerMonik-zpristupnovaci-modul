@@ -99,7 +99,7 @@
       "Saturday": "Saturday",
       "Sunday": "Sunday"
     },
-    "volume_description": "Volume description",
+    "volume_description": "Detailed volume description",
     "date": "Date",
     "missing_number": "Missing number",
     "number": "Number",
@@ -116,9 +116,9 @@
     "physical_condition": "Physical condition",
     "damaged_numbers": "Damaged numbers",
     "notes": "Notes",
-    "volume_information": "Volume information",
-    "periodicity": "Periodicity",
-    "edit_periodicity": "Edit periodicity",
+    "volume_information": "Editing of input data",
+    "periodicity": "Daily releases table",
+    "edit_periodicity": "Daily releases tab.",
     "show_attachments_at_the_end": "Show attachments at the end of the volume",
     "volume_input_data_validation_error": "The input data of the volume is incorrect (validation error)",
     "specimens_validation_error": "Specimens contain invalid data (validation error)",
@@ -143,7 +143,9 @@
     "delete_volume_text2": "Don't you want to change your mind?",
     "back_to_specimens_overview": "Back to table",
     "unsaved_changes": "You have unsaved changes",
-    "unsaved_changes_text": "Still want to leave this page?"
+    "unsaved_changes_text": "Still want to leave this page?",
+    "volume_created_at": "Volume created",
+    "volume_updated_at": "Volume updated"
   },
   "table": {
     "mutations": "Mutations",

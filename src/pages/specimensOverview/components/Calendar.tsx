@@ -259,7 +259,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                         },
                       }}
                     >
-                      {owners?.find((o) => o.id === s.ownerId)?.name}{' '}
+                      {owners?.find((o) => o.id === s.ownerId)?.shorthand}{' '}
                       <OpenInNewIcon
                         sx={{
                           marginLeft: '3px',

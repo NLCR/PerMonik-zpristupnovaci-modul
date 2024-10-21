@@ -234,7 +234,7 @@ const Table: FC<Props> = ({ metaTitle }) => {
             .map((o) => ({
               field: `owner${o.id}`,
               flex: 1,
-              headerName: o.name,
+              headerName: o.shorthand,
               renderCell: (params: GridRenderCellParams<TSpecimen>) => {
                 const { row } = params
                 return (

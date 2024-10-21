@@ -1,4 +1,10 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react'
+import React, {
+  FC,
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
@@ -8,6 +14,7 @@ import {
   DataGridPro,
   GridColumnHeaderParams,
   useGridApiRef,
+  GridApiPro,
 } from '@mui/x-data-grid-pro'
 import Box from '@mui/material/Box'
 import { alpha, styled } from '@mui/material/styles'
@@ -41,6 +48,8 @@ import {
   copySpecimen,
   filterSpecimen,
 } from '../../../utils/specimen'
+import { validate as uuidValidate } from 'uuid'
+import TableHeader from './TableHeader'
 
 const ODD_OPACITY = 0.2
 
@@ -125,7 +134,8 @@ const renderRenumberableValue = (
   row: TEditableSpecimen,
   show: boolean,
   canEdit: boolean,
-  type: 'number' | 'attachmentNumber'
+  type: 'number' | 'attachmentNumber',
+  apiRef: MutableRefObject<GridApiPro>
 ) => {
   return (
     <RenumberableValueCell
@@ -133,15 +143,19 @@ const renderRenumberableValue = (
       show={show}
       canEdit={canEdit}
       type={type}
+      apiRef={apiRef}
     />
   )
 }
 
 const renderHeaderWithColumnAction = (
   field: TSpecimenDamageTypes,
-  canEdit: boolean
+  canEdit: boolean,
+  apiRef: MutableRefObject<GridApiPro>
 ) => {
-  return <HeaderWithColumnAction field={field} canEdit={canEdit} />
+  return (
+    <HeaderWithColumnAction field={field} canEdit={canEdit} apiRef={apiRef} />
+  )
 }
 
 const renderDamagedAndMissingPagesEditCell = (
@@ -178,10 +192,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
 
   const scrolledToRow = useRef<boolean>(false)
 
-  const showAttachmentsAtTheEnd = useVolumeManagementStore(
-    (state) => state.volumeState.showAttachmentsAtTheEnd
-  )
-
   const specimensState = useVolumeManagementStore(
     (state) => state.specimensState
   )
@@ -194,7 +204,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     if (
       !scrolledToRow.current &&
       apiRef.current &&
-      searchParams.get(JUMP_TO_SPECIMEN_WITH_ID)?.length
+      uuidValidate(searchParams.get(JUMP_TO_SPECIMEN_WITH_ID) || '')
     ) {
       const rowIndex = specimensState.findIndex(
         (s) => s.id === searchParams.get(JUMP_TO_SPECIMEN_WITH_ID)
@@ -209,18 +219,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     }
     return () => clearTimeout(timeout)
   }, [apiRef, searchParams, specimensState])
-
-  const sortedSpecimensState = useMemo(() => {
-    const clonedSpecimens = clone(specimensState)
-    if (showAttachmentsAtTheEnd) {
-      clonedSpecimens.sort((a, b) => {
-        if (a.isAttachment && !b.isAttachment) return 1
-        if (!a.isAttachment && b.isAttachment) return -1
-        return 0 // Keep the original order if both are attachments or both are not
-      })
-    }
-    return clonedSpecimens
-  }, [specimensState, showAttachmentsAtTheEnd])
 
   const duplicateRow = useCallback(
     (row: TEditableSpecimen) => {
@@ -257,6 +255,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('table.publication_date'),
       flex: 1,
       minWidth: 120,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(
@@ -271,6 +270,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('volume_overview.is_in_volume'),
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(row.numExists, true, canEdit)
@@ -281,6 +281,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('volume_overview.missing_number'),
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(row.numMissing, true, canEdit)
@@ -290,13 +291,15 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       field: 'number',
       headerName: t('volume_overview.number'),
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderRenumberableValue(
           row,
           (row.numExists || row.numMissing) && !row.isAttachment,
           canEdit,
-          'number'
+          'number',
+          apiRef
         )
       },
     },
@@ -304,13 +307,15 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       field: 'attachmentNumber',
       headerName: t('volume_overview.attachment_number'),
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderRenumberableValue(
           row,
           (row.numExists || row.numMissing) && row.isAttachment,
           canEdit,
-          'attachmentNumber'
+          'attachmentNumber',
+          apiRef
         )
       },
       // renderEditCell: renderAttachmentNumberEditCell,
@@ -374,6 +379,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     {
       field: 'pagesCount',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(row.pagesCount, row.numExists, canEdit)
@@ -398,11 +404,13 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
         const { field } = params
         return renderHeaderWithColumnAction(
           field as TSpecimenDamageTypes,
-          canEdit
+          canEdit,
+          apiRef
         )
       },
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -419,6 +427,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('facet_states.PP'),
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -435,11 +444,13 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
         const { field } = params
         return renderHeaderWithColumnAction(
           field as TSpecimenDamageTypes,
-          canEdit
+          canEdit,
+          apiRef
         )
       },
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -455,6 +466,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('facet_states.ChS'),
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -470,6 +482,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('facet_states.ChPag'),
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -485,6 +498,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('facet_states.ChDatum'),
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -500,6 +514,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('facet_states.ChCis'),
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -515,6 +530,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('facet_states.ChSv'),
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -531,11 +547,13 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
         const { field } = params
         return renderHeaderWithColumnAction(
           field as TSpecimenDamageTypes,
-          canEdit
+          canEdit,
+          apiRef
         )
       },
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -551,6 +569,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('facet_states.Cz'),
       type: 'boolean',
       editable: canEdit,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -571,6 +590,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       },
       headerName: t('volume_overview.note'),
       editable: canEdit,
+      filterable: false,
     },
   ]
 
@@ -643,28 +663,32 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
   }
 
   return (
-    <StripedDataGrid
-      apiRef={apiRef}
-      localeText={MuiTableLocale}
-      getRowClassName={(params) => {
-        let classes =
-          params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
-        if (params.row.isAttachment) {
-          classes += ' attachment'
-        }
-        return classes
-      }}
-      rows={sortedSpecimensState}
-      columns={columns}
-      initialState={{
-        density: 'compact',
-        pinnedColumns: { left: ['publicationDate'] },
-      }}
-      disableRowSelectionOnClick
-      disableColumnSorting
-      isCellEditable={isCellEditable}
-      processRowUpdate={handleUpdate}
-    />
+    <>
+      <TableHeader />
+      <StripedDataGrid
+        apiRef={apiRef}
+        localeText={MuiTableLocale}
+        getRowClassName={(params) => {
+          let classes =
+            params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
+          if (params.row.isAttachment) {
+            classes += ' attachment'
+          }
+          return classes
+        }}
+        rows={specimensState}
+        columns={columns}
+        initialState={{
+          density: 'compact',
+          pinnedColumns: { left: ['publicationDate'] },
+        }}
+        disableRowSelectionOnClick
+        disableColumnSorting
+        isCellEditable={isCellEditable}
+        processRowUpdate={handleUpdate}
+        hideFooter
+      />
+    </>
   )
 }
 

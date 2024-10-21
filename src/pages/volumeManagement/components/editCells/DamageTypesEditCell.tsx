@@ -27,7 +27,7 @@ const DamageTypesEditCell = (
     <Checkbox
       color={field === 'OK' ? 'success' : 'primary'}
       onChange={handleChange}
-      checked={row.damageTypes?.some((dt) => dt === field)}
+      checked={!!row.damageTypes?.some((dt) => dt === field)}
     />
   )
 }
