@@ -145,7 +145,8 @@
     "unsaved_changes": "Máte neuložené zmeny",
     "unsaved_changes_text": "Chcete aj napriek tomu opustiť túto stránku?",
     "volume_created_at": "Zväzok vytvorený",
-    "volume_updated_at": "Zväzok upravený"
+    "volume_updated_at": "Zväzok upravený",
+    "rows_count": "Počet riadkov"
   },
   "table": {
     "mutations": "Mutácie",
