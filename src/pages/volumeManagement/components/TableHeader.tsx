@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useManagedVolumeDetailQuery } from '../../../api/volume'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
-import { GridApiPro, GridEventListener } from '@mui/x-data-grid-pro'
+import { GridApiPro, GridEventListener, GridState } from '@mui/x-data-grid-pro'
 
 type TableHeaderProps = {
   apiRef: MutableRefObject<GridApiPro>
@@ -18,11 +18,16 @@ const TableHeader: FC<TableHeaderProps> = ({ apiRef }) => {
 
   const { data } = useManagedVolumeDetailQuery(volumeId)
 
-  const [filteredRowsCount, setFilteredRowsCount] = useState(0)
+  const [filter, setFilter] = useState({ rowCount: 0, active: false })
 
   useEffect(() => {
-    const handleFilterChange: GridEventListener<'stateChange'> = (params) => {
-      setFilteredRowsCount(params.pagination.rowCount)
+    const handleFilterChange: GridEventListener<'stateChange'> = (
+      params: GridState
+    ) => {
+      setFilter({
+        rowCount: params.pagination.rowCount,
+        active: !!params.filter.filterModel.items.length,
+      })
     }
     return apiRef.current.subscribeEvent('stateChange', handleFilterChange)
   }, [apiRef])
@@ -63,11 +68,9 @@ const TableHeader: FC<TableHeaderProps> = ({ apiRef }) => {
           <Typography>
             {`${t('volume_overview.rows_count')}: ${data?.specimens.length}`}
           </Typography>
-          {filteredRowsCount !== data?.specimens.length ? (
-            <Typography>
-              {`${t('volume_overview.filtered_rows_count')}: ${filteredRowsCount}`}
-            </Typography>
-          ) : null}
+          <Typography>
+            {`${t('volume_overview.filtered_rows_count')}: ${filter.active ? filter.rowCount : '---'} `}
+          </Typography>
         </Box>
 
         <Box
