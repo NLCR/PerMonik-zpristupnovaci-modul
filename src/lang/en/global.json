@@ -145,7 +145,8 @@
     "unsaved_changes": "You have unsaved changes",
     "unsaved_changes_text": "Still want to leave this page?",
     "volume_created_at": "Volume created",
-    "volume_updated_at": "Volume updated"
+    "volume_updated_at": "Volume updated",
+    "rows_count": "Rows count"
   },
   "table": {
     "mutations": "Mutations",
