@@ -118,7 +118,7 @@
     "notes": "Notes",
     "volume_information": "Editing of input data",
     "periodicity": "Daily releases table",
-    "edit_periodicity": "Daily releases tab.",
+    "edit_periodicity": "Daily releases table",
     "show_attachments_at_the_end": "Show attachments at the end of the volume",
     "volume_input_data_validation_error": "The input data of the volume is incorrect (validation error)",
     "specimens_validation_error": "Specimens contain invalid data (validation error)",
