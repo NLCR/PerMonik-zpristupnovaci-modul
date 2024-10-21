@@ -118,7 +118,7 @@
     "notes": "Poznámky",
     "volume_information": "Editace vstupních dat",
     "periodicity": "Tabulka denních vydání",
-    "edit_periodicity": "Tab. denních vydání",
+    "edit_periodicity": "Tabulka denních vydání",
     "show_attachments_at_the_end": "Zobrazit přílohy na konci svazku",
     "volume_input_data_validation_error": "Vstupní data svazku jsou nesprávná (chyba validace)",
     "specimens_validation_error": "Exempáře obsahují neplatná data (chyba validace)",
