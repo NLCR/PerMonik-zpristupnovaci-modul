@@ -145,7 +145,7 @@ const VolumeStatsModalContent: FC<TProps> = ({ volumeId = undefined }) => {
           {t('volume_overview.owner')}:
         </Typography>
         <Typography variant="body2">
-          {owners.find((o) => o.id === volumeStats.ownerId)?.name}
+          {owners.find((o) => o.id === volumeStats.ownerId)?.shorthand}
         </Typography>
       </Box>
       <Box

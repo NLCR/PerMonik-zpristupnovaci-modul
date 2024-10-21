@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import clone from 'lodash/clone'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import { GridRenderEditCellParams } from '@mui/x-data-grid/models/params/gridCellParams'
 import {
@@ -11,6 +10,8 @@ import {
   TSpecimenDamageTypes,
 } from '../../../../schema/specimen'
 import ModalContainer from '../../../../components/ModalContainer'
+import IconButton from '@mui/material/IconButton'
+import EditIcon from '@mui/icons-material/Edit'
 
 function createArrayOfNumbers(n: number): number[] {
   // TODO: when changing pagesCount, watch for damaged and missing pages with number larger then pagesCount and delete them
@@ -156,7 +157,6 @@ const DamagedAndMissingPagesEditCell = (
   props: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
   const { field, row, api } = props
-  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
   const handleSave = (updatedRow: TEditableSpecimen) => {
@@ -165,9 +165,14 @@ const DamagedAndMissingPagesEditCell = (
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
-        {t('administration.update')}
-      </Button>
+      <Checkbox
+        readOnly
+        disabled
+        checked={!!row.damageTypes?.some((dt) => dt === field)}
+      />
+      <IconButton color="primary" onClick={() => setOpen(true)}>
+        <EditIcon />
+      </IconButton>
       <DamagedPagesAndMissingPagesEditModal
         field={field as TSpecimenDamageTypes}
         open={open}

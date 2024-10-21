@@ -26,7 +26,6 @@ import Button from '@mui/material/Button'
 import { BACK_META_TITLE_ID } from '../../utils/constants'
 import ModalContainer from '../../components/ModalContainer'
 import VolumeStatsModalContent from '../../components/VolumeStatsModalContent'
-import Periodicity from './components/Periodicity'
 import { validate as uuidValidate } from 'uuid'
 import UnsavedChangesModal from './components/UnsavedChangesModal'
 
@@ -315,6 +314,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
           mutations={mutations}
           owners={owners}
           metaTitles={metaTitles}
+          editions={editions}
         />
       </Box>
       <Box
@@ -329,16 +329,6 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
           // boxShadow: theme.shadows[1],
         }}
       >
-        <Typography
-          sx={{
-            marginBottom: '8px',
-            color: blue['900'],
-            fontWeight: 'bold',
-            fontSize: '24px',
-          }}
-        >
-          {t('volume_overview.volume_description')}
-        </Typography>
         <SpecimensTable
           canEdit={canEdit}
           mutations={mutations}
@@ -388,7 +378,6 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
           >
             {canEdit ? (
               <>
-                <Periodicity canEdit={canEdit} editions={editions} />
                 {actions.map((action) => (
                   <Button
                     variant="contained"

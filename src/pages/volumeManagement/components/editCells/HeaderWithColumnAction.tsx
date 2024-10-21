@@ -1,20 +1,29 @@
 import Box from '@mui/material/Box'
-import React, { FC } from 'react'
+import React, { FC, MutableRefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import IconButton from '@mui/material/IconButton'
 import clone from 'lodash/clone'
-import { TSpecimenDamageTypes } from '../../../../schema/specimen'
+import {
+  TEditableSpecimen,
+  TSpecimenDamageTypes,
+} from '../../../../schema/specimen'
 import { useVolumeManagementStore } from '../../../../slices/useVolumeManagementStore'
+import {
+  GridApiPro,
+  gridExpandedSortedRowEntriesSelector,
+} from '@mui/x-data-grid-pro'
 
 type HeaderWithColumnActionProps = {
   field: TSpecimenDamageTypes
   canEdit: boolean
+  apiRef: MutableRefObject<GridApiPro>
 }
 
 const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
   field,
   canEdit,
+  apiRef,
 }) => {
   const { t } = useTranslation()
   const specimensActions = useVolumeManagementStore(
@@ -22,12 +31,16 @@ const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
   )
 
   const handleDamageChange = () => {
-    const specimens = useVolumeManagementStore.getState().specimensState
-    let specimensClone = clone(specimens)
-    const specimensWithSelectedDamage = specimens.filter(
+    const filteredSpecimens = gridExpandedSortedRowEntriesSelector(apiRef).map(
+      (row) => row.model
+    ) as TEditableSpecimen[]
+    let specimensClone = clone(filteredSpecimens)
+    const specimensWithSelectedDamage = specimensClone.filter(
       (sp) => sp.numExists && sp.damageTypes?.includes(field)
     ).length
-    const specimensThatExists = specimens.filter((sp) => sp.numExists).length
+    const specimensThatExists = specimensClone.filter(
+      (sp) => sp.numExists
+    ).length
 
     if (
       !specimensWithSelectedDamage ||
@@ -58,7 +71,7 @@ const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
       })
     }
 
-    specimensActions.setSpecimensState(specimensClone, true)
+    specimensActions.setSpecimensById(specimensClone)
   }
 
   const doAction = () => {

@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import React, { FC, useState } from 'react'
+import React, { FC, MutableRefObject, useState } from 'react'
 import clone from 'lodash/clone'
 import { toast } from 'react-toastify'
 import { useTranslation } from 'react-i18next'
@@ -9,12 +9,17 @@ import { useVolumeManagementStore } from '../../../../slices/useVolumeManagement
 import { TEditableSpecimen } from '../../../../schema/specimen'
 import ModalContainer from '../../../../components/ModalContainer'
 import Box from '@mui/material/Box'
+import {
+  GridApiPro,
+  gridExpandedSortedRowEntriesSelector,
+} from '@mui/x-data-grid-pro'
 
 type RenumberableValueCellProps = {
   row: TEditableSpecimen
   show: boolean
   canEdit: boolean
   type: 'number' | 'attachmentNumber'
+  apiRef: MutableRefObject<GridApiPro>
 }
 
 const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
@@ -22,6 +27,7 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
   show,
   canEdit,
   type,
+  apiRef,
 }) => {
   const { t } = useTranslation()
 
@@ -31,20 +37,22 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
   const [modalOpened, setModalOpened] = useState(false)
 
   const getWillBeRenumbered = (renumberType: 'number' | 'attachmentNumber') => {
-    const specimens = useVolumeManagementStore.getState().specimensState
-    const specimenIndex = specimens.findIndex((sp) => sp.id === row.id)
-    const max = specimens.length
+    const filteredSpecimens = gridExpandedSortedRowEntriesSelector(apiRef).map(
+      (row) => row.model
+    ) as TEditableSpecimen[]
+    const specimenIndex = filteredSpecimens.findIndex((sp) => sp.id === row.id)
+    const max = filteredSpecimens.length
     let willBeRenumbered = 0
 
     for (let i = specimenIndex; i < max; i += 1) {
-      if (specimens[i]) {
-        if (specimens[i].numExists || specimens[i].numMissing) {
-          if (renumberType === 'number' && !specimens[i].isAttachment) {
+      if (filteredSpecimens[i]) {
+        if (filteredSpecimens[i].numExists || filteredSpecimens[i].numMissing) {
+          if (renumberType === 'number' && !filteredSpecimens[i].isAttachment) {
             willBeRenumbered += 1
           }
           if (
             renumberType === 'attachmentNumber' &&
-            specimens[i].isAttachment
+            filteredSpecimens[i].isAttachment
           ) {
             willBeRenumbered += 1
           }
@@ -56,31 +64,36 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
   }
 
   const doRenumber = (renumberType: 'number' | 'attachmentNumber') => {
-    const specimens = useVolumeManagementStore.getState().specimensState
-    const specimenIndex = specimens.findIndex((sp) => sp.id === row.id)
-    const max = specimens.length
+    const filteredSpecimens = gridExpandedSortedRowEntriesSelector(apiRef).map(
+      (row) => row.model
+    ) as TEditableSpecimen[]
+    const specimenIndex = filteredSpecimens.findIndex((sp) => sp.id === row.id)
+    const max = filteredSpecimens.length
     let firstNumber = -1
     let currentNumber =
       renumberType === 'number'
-        ? Number(specimens[specimenIndex].number || 0)
-        : Number(specimens[specimenIndex].attachmentNumber || 0)
+        ? Number(filteredSpecimens[specimenIndex].number || 0)
+        : Number(filteredSpecimens[specimenIndex].attachmentNumber || 0)
     const willBeRenumbered = getWillBeRenumbered(renumberType)
 
-    const specimensClone = clone(specimens)
+    const specimensClone = clone(filteredSpecimens)
 
     for (let i = specimenIndex; i < max; i += 1) {
-      if (specimens[i].numExists || specimens[i].numMissing) {
+      if (filteredSpecimens[i].numExists || filteredSpecimens[i].numMissing) {
         if (firstNumber < 0) {
           firstNumber = currentNumber
         }
-        if (renumberType === 'number' && !specimens[i].isAttachment) {
+        if (renumberType === 'number' && !filteredSpecimens[i].isAttachment) {
           specimensClone[i] = {
             ...specimensClone[i],
             number: currentNumber.toString(),
           }
           currentNumber += 1
         }
-        if (renumberType === 'attachmentNumber' && specimens[i].isAttachment) {
+        if (
+          renumberType === 'attachmentNumber' &&
+          filteredSpecimens[i].isAttachment
+        ) {
           specimensClone[i] = {
             ...specimensClone[i],
             attachmentNumber: currentNumber.toString(),
@@ -90,7 +103,7 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
       }
     }
 
-    specimensActions.setSpecimensState(specimensClone, true)
+    specimensActions.setSpecimensById(specimensClone)
     toast.success(
       t('volume_overview.renumbered_correctly', {
         willBeRenumbered,

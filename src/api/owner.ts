@@ -16,6 +16,7 @@ export const useUpdateOwnerMutation = () =>
     mutationFn: (owner: TEditableOwner) => {
       const ownerClone = clone(owner)
       ownerClone.name = ownerClone.name.trim()
+      ownerClone.shorthand = ownerClone.shorthand.trim()
       ownerClone.sigla = ownerClone.sigla.trim()
 
       return api()
@@ -32,6 +33,8 @@ export const useCreateOwnerMutation = () =>
     mutationFn: (owner: TEditableOwner) => {
       const ownerClone = clone(owner)
       ownerClone.name = ownerClone.name.trim()
+      ownerClone.shorthand = ownerClone.shorthand.trim()
+      ownerClone.sigla = ownerClone.sigla.trim()
 
       return api().post(`owner`, { json: ownerClone }).json<void>()
     },

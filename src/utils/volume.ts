@@ -14,6 +14,7 @@ export const repairVolume = (
     dateFrom: volume.dateFrom ?? '',
     dateTo: volume.dateTo ?? '',
     metaTitleId: volume.metaTitleId ?? '',
+    subName: volume.subName.trim() ?? '',
     mutationId: volume.mutationId ?? '',
     periodicity:
       volume.periodicity.map((p) => ({
@@ -43,6 +44,7 @@ export const duplicateVolume = (volume: TVolume): TEditableVolume => {
     dateFrom: volume.dateFrom,
     dateTo: volume.dateTo,
     metaTitleId: volume.metaTitleId,
+    subName: volume.subName,
     mutationId: volume.mutationId,
     periodicity: volume.periodicity,
     firstNumber: volume.firstNumber,
