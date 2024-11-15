@@ -54,7 +54,7 @@ import Tooltip from '@mui/material/Tooltip'
 
 const ODD_OPACITY = 0.2
 
-const StripedDataGrid = styled(DataGridPro)(({ theme }) => ({
+export const StripedDataGrid = styled(DataGridPro)(({ theme }) => ({
   [`& .${gridClasses.row}.even`]: {
     backgroundColor: theme.palette.grey[100],
     '&:hover': {
@@ -486,6 +486,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
           />
         </Tooltip>
       ),
+      width: 50,
       editable: canEdit,
       filterable: false,
       disableColumnMenu: true,
@@ -494,7 +495,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
         const { row } = params
         return renderValue(row.pagesCount, row.numExists, canEdit)
       },
-      width: 50,
     },
     {
       /* bug fix, with the right name it hasn't updated value */
@@ -530,11 +530,11 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
           t('facet_states_short.OK_tooltip')
         )
       },
+      width: 52,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
       disableColumnMenu: true,
-      width: 52,
       headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params

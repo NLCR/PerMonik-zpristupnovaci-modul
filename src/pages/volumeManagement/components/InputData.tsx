@@ -186,7 +186,7 @@ const InputData: FC<InputDataProps> = ({
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t('volume_overview.mutation_mark')}</TableCell>
+                <TableCell>{t('specimens_overview.mutation_mark')}</TableCell>
                 <TableCell>
                   <TextField
                     sx={{

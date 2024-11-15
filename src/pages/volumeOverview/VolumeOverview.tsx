@@ -2,12 +2,6 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import Table from '@mui/material/Table'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import TableCell from '@mui/material/TableCell'
-import TableBody from '@mui/material/TableBody'
-import dayjs from 'dayjs'
 import { blue } from '@mui/material/colors'
 import { usePublicVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
@@ -17,17 +11,11 @@ import { useMutationListQuery } from '../../api/mutation'
 import { useOwnerListQuery } from '../../api/owner'
 import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
-import Button from '@mui/material/Button'
-import VolumeStatsModalContent from '../../components/VolumeStatsModalContent'
-import React, { useState } from 'react'
-import ModalContainer from '../../components/ModalContainer'
-import { useLanguageCode } from '../../hooks/useLanguageCode'
+import InputData from './components/InputData'
 
 const VolumeOverview = () => {
   const { volumeId } = useParams()
   const { t } = useTranslation()
-
-  const [modalOpened, setModalOpened] = useState(false)
 
   const {
     data: mutations,
@@ -39,7 +27,7 @@ const VolumeOverview = () => {
     isLoading: ownersLoading,
     isError: ownersError,
   } = useOwnerListQuery()
-  const { languageCode } = useLanguageCode()
+
   const {
     data: volume,
     isLoading: volumeLoading,
@@ -66,122 +54,13 @@ const VolumeOverview = () => {
         width: '100%',
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '380px',
-          padding: '16px',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          // boxShadow: theme.shadows[1],
-          flexShrink: 0,
-        }}
-      >
-        <Typography
-          sx={{
-            marginBottom: '8px',
-            color: blue['900'],
-            fontWeight: 'bold',
-            fontSize: '24px',
-          }}
-        >
-          {t('volume_overview.volume_information')}
-        </Typography>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>{t('volume_overview.name')}</TableCell>
-              <TableCell>{t('volume_overview.value')}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell>{t('volume_overview.meta_title')}</TableCell>
-              <TableCell>
-                {
-                  metaTitles.find((m) => m.id === volume.volume.metaTitleId)
-                    ?.name
-                }
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.mutation')}</TableCell>
-              <TableCell>
-                {
-                  mutations.find((m) => m.id === volume.volume.mutationId)
-                    ?.name[languageCode]
-                }
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.mutation_mark')}</TableCell>
-              <TableCell>{volume.volume.mutationMark}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.bar_code')}</TableCell>
-              <TableCell>{volume.volume.barCode}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.signature')}</TableCell>
-              <TableCell>{volume.volume.signature}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.year')}</TableCell>
-              <TableCell>{volume.volume.year}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.date_from')}</TableCell>
-              <TableCell>
-                {dayjs(volume.volume.dateFrom).format('DD. MMMM YYYY')}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.first_number')}</TableCell>
-              <TableCell>{volume.volume.firstNumber}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.date_to')}</TableCell>
-              <TableCell>
-                {dayjs(volume.volume.dateTo).format('DD. MMMM YYYY')}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.last_number')}</TableCell>
-              <TableCell>{volume.volume.lastNumber}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.owner')}</TableCell>
-              <TableCell>
-                {owners.find((o) => o.id === volume.volume.ownerId)?.shorthand}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('volume_overview.note')}</TableCell>
-              <TableCell>{volume.volume.note}</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-        <ModalContainer
-          onClose={() => setModalOpened(false)}
-          header={t('specimens_overview.volume_overview_modal_link')}
-          opened={modalOpened}
-          closeButton={{
-            callback: () => setModalOpened(false),
-          }}
-        >
-          <VolumeStatsModalContent volumeId={volumeId} />
-        </ModalContainer>
-        <Button
-          sx={{
-            marginTop: '10px',
-          }}
-          variant="contained"
-          onClick={() => setModalOpened(true)}
-        >
-          {t('specimens_overview.volume_overview_modal_link')}
-        </Button>
-      </Box>
+      <InputData
+        volume={volume}
+        volumeId={volumeId}
+        mutations={mutations}
+        owners={owners}
+        metaTitles={metaTitles}
+      />
       <Box
         sx={{
           display: 'flex',

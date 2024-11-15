@@ -2,11 +2,7 @@
 import React, { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import {
-  GridColDef,
-  GridRenderCellParams,
-  DataGridPro,
-} from '@mui/x-data-grid-pro'
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid-pro'
 import CheckIcon from '@mui/icons-material/Check'
 import Box from '@mui/material/Box'
 import { TEditableSpecimen, TSpecimen } from '../../../schema/specimen'
@@ -15,6 +11,8 @@ import { useMutationListQuery } from '../../../api/mutation'
 import { useEditionListQuery } from '../../../api/edition'
 import { useLanguageCode } from '../../../hooks/useLanguageCode'
 import { useMuiTableLang } from '../../../hooks/useMuiTableLang'
+import Tooltip from '@mui/material/Tooltip'
+import { StripedDataGrid } from '../../volumeManagement/components/Table'
 
 type TProps = {
   volume?: TVolumeDetail
@@ -55,15 +53,28 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       {
         field: 'publicationDate',
         headerName: t('table.publication_date'),
-        flex: 1,
-        minWidth: 120,
+        width: 110,
+        filterable: false,
+        headerAlign: 'center',
         valueFormatter: (value) => {
           return dayjs(value).format('dd DD.MM.YYYY')
         },
       },
       {
         field: 'numExists',
-        headerName: t('volume_overview.is_in_volume'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.is_in_volume')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.is_in_volume_short'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 50,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(row.numExists)
@@ -71,7 +82,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'numMissing',
-        headerName: t('volume_overview.missing_number'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.missing_number')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.missing_number_short'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 50,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(row.numMissing)
@@ -79,7 +102,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'number',
-        headerName: t('volume_overview.number'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.number')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.number_short'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 50,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return renderValue(
@@ -90,7 +125,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'attachmentNumber',
-        headerName: t('volume_overview.attachment_number'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.attachment_number')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.attachment_number_short'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 60,
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
           return renderValue(
@@ -101,7 +148,17 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'mutationId',
-        headerName: t('volume_overview.mutation'),
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.mutation')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.mutation_short'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 60,
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
           return renderValue(
@@ -112,7 +169,17 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'editionId',
-        headerName: t('volume_overview.edition'),
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.edition')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.edition_short'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 50,
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
           return renderValue(
@@ -123,7 +190,16 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'name',
-        headerName: t('volume_overview.name'),
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.name')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.name_short'),
+              }}
+            />
+          </Tooltip>
+        ),
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
           return renderValue(row.name, row.numExists)
@@ -131,7 +207,16 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'subName',
-        headerName: t('volume_overview.sub_name'),
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.sub_name')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.sub_name_short'),
+              }}
+            />
+          </Tooltip>
+        ),
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
           return renderValue(row.subName, row.numExists)
@@ -139,7 +224,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'pagesCount',
-        headerName: t('volume_overview.pages_count'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.pages_count')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.pages_count_short'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 50,
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
           return renderValue(row.pagesCount, row.numExists)
@@ -147,7 +244,17 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'mutationMark',
-        headerName: t('volume_overview.mutation_mark'),
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('volume_overview.mutation_mark')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('volume_overview.mutation_mark_short'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 60,
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
           return renderValue(row.mutationMark, row.numExists)
@@ -155,7 +262,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'damageTypes-reviewed',
-        headerName: t('facet_states.OK'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.OK_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.OK'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -165,7 +284,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'damageTypes-damaged_pages',
-        headerName: t('facet_states.PP'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.PP_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.PP'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -175,7 +306,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'damageTypes-degradation',
-        headerName: t('facet_states.Deg'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.Deg_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.Deg'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -185,7 +328,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'damageTypes-missing_pages',
-        headerName: t('facet_states.ChS'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.ChS_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.ChS'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -195,7 +350,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'damageTypes-bad_pagination',
-        headerName: t('facet_states.ChPag'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.ChPag_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.ChPag'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -205,7 +372,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'damageTypes-bad_date',
-        headerName: t('facet_states.ChDatum'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.ChDatum_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.ChDatum'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -215,7 +394,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'damageTypes-bad_numbering',
-        headerName: t('facet_states.ChCis'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.ChCis_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.ChCis'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -225,7 +416,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'damageTypes-bad_bound',
-        headerName: t('facet_states.ChSv'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.ChSv_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.ChSv'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -235,7 +438,19 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'damageTypes-unreadable_bound',
-        headerName: t('facet_states.NS'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.NS_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.NS'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -244,8 +459,20 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
         },
       },
       {
-        field: 'damageTypes-cenzured',
-        headerName: t('facet_states.Cz'),
+        field: 'damageTypes-censored',
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
+        renderHeader: () => (
+          <Tooltip title={t('facet_states_short.Cz_tooltip')}>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: t('facet_states_short.Cz'),
+              }}
+            />
+          </Tooltip>
+        ),
+        width: 52,
         renderCell: (params: GridRenderCellParams<TSpecimen>) => {
           const { row } = params
           return CenteredIcon(
@@ -255,9 +482,10 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
       },
       {
         field: 'note',
-        flex: 1,
-        minWidth: 180,
         headerName: t('volume_overview.note'),
+        filterable: false,
+        disableColumnMenu: true,
+        headerAlign: 'center',
         renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
           const { row } = params
           return renderValue(row.note, row.numExists)
@@ -267,7 +495,16 @@ const Table: FC<TProps> = ({ volume = undefined }) => {
   }, [languageCode, mutations, editions, t])
 
   return (
-    <DataGridPro
+    <StripedDataGrid
+      columnHeaderHeight={60}
+      getRowClassName={(params) => {
+        let classes =
+          params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
+        if (params.row.isAttachment) {
+          classes += ' attachment'
+        }
+        return classes
+      }}
       localeText={MuiTableLocale}
       rows={volume?.specimens}
       columns={columns}
