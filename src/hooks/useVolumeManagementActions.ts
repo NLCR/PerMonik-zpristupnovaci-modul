@@ -16,6 +16,8 @@ import { BACK_META_TITLE_ID } from '../utils/constants'
 import { generateVolumeUrlWithParams } from '../utils/generateVolumeUrlWithParams'
 import { duplicateSpecimen, repairOrCreateSpecimen } from '../utils/specimen'
 import { duplicateVolume, repairVolume } from '../utils/volume'
+import { waitFor } from '../utils/waitFor'
+import i18next from '../i18next'
 
 const useVolumeManagementActions = (editions: TEdition[]) => {
   const { t, i18n } = useTranslation()
@@ -36,8 +38,11 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
+  const setStateHasUnsavedData = useVolumeManagementStore(
+    (state) => state.setStateHasUnsavedData
+  )
 
-  const doValidation = () => {
+  const doValidation = (useMinSpecimensCount = true) => {
     //get state when is necessary → this approach doesn't cause rerender of functions and whole hook
     const volumeState = useVolumeManagementStore.getState().volumeState
     const specimensState = useVolumeManagementStore.getState().specimensState
@@ -51,17 +56,20 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
     )
 
     const volumeValidation = VolumeSchema.safeParse(repairedVolume)
-    const specimensValidation =
-      SpecimenSchema.array().safeParse(repairedSpecimens)
+    const specimensValidation = SpecimenSchema.array()
+      .min(useMinSpecimensCount ? 1 : 0, i18next.t('schema.specimens_min'))
+      .safeParse(repairedSpecimens)
 
     if (!volumeValidation.success) {
-      toast.error(t('volume_overview.volume_input_data_validation_error'))
-      // throw for Sentry
+      // toast.error(t('volume_overview.volume_input_data_validation_error'))
+      volumeValidation.error.errors.forEach((e) => toast.error(e.message))
+
       throw new Error(volumeValidation.error.message)
     }
     if (!specimensValidation.success) {
-      toast.error(t('volume_overview.specimens_validation_error'))
-      // throw for Sentry
+      // toast.error(t('volume_overview.specimens_validation_error'))
+      specimensValidation.error.errors.forEach((e) => toast.error(e.message))
+
       throw new Error(specimensValidation.error.message)
     }
 
@@ -100,7 +108,7 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
         toast.success(t('volume_overview.volume_updated_successfully'))
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        toast.error(t('volume_overview.volume_update_error'))
+        // toast.error(t('volume_overview.volume_update_error'))
       }
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -122,7 +130,7 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
         toast.success(t('volume_overview.volume_updated_successfully'))
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        toast.error(t('volume_overview.volume_update_error'))
+        // toast.error(t('volume_overview.volume_update_error'))
       }
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -132,6 +140,9 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
 
   const doCreate = async (setVerified = false) => {
     try {
+      const stateHasUnsavedData =
+        useVolumeManagementStore.getState().stateHasUnsavedData
+
       const data = doValidation()
 
       try {
@@ -141,11 +152,17 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
             ? setSpecimensVerified(data.repairedSpecimens)
             : data.repairedSpecimens,
         })
+        setStateHasUnsavedData(false)
+        await waitFor(
+          () => !useVolumeManagementStore.getState().stateHasUnsavedData
+        )
+
         toast.success(t('volume_overview.volume_created_successfully'))
         navigate(`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${id}`)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        toast.error(t('volume_overview.volume_create_error'))
+        setStateHasUnsavedData(stateHasUnsavedData)
+        // toast.error(t('volume_overview.volume_create_error'))
       }
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -155,15 +172,26 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
 
   const doDelete = async () => {
     try {
-      const data = doValidation()
+      const stateHasUnsavedData =
+        useVolumeManagementStore.getState().stateHasUnsavedData
+
+      const data = doValidation(false)
+      setStateHasUnsavedData(false)
 
       try {
         await callDelete(data.repairedVolume.id)
+        setStateHasUnsavedData(false)
+
+        await waitFor(
+          () => !useVolumeManagementStore.getState().stateHasUnsavedData
+        )
+
         toast.success(t('volume_overview.volume_deleted_successfully'))
         navigate(`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/`)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        toast.error(t('volume_overview.volume_deletion_error'))
+        setStateHasUnsavedData(stateHasUnsavedData)
+        // toast.error(t('volume_overview.volume_deletion_error'))
       }
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -171,9 +199,14 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
     }
   }
 
-  const doDuplicate = () => {
+  const doDuplicate = async () => {
     try {
-      const data = doValidation()
+      const data = doValidation(false)
+      setStateHasUnsavedData(false)
+
+      await waitFor(
+        () => !useVolumeManagementStore.getState().stateHasUnsavedData
+      )
 
       const duplicatedVolume = duplicateVolume(data.repairedVolume)
       const duplicatedSpecimens = data.repairedSpecimens.map((s) =>

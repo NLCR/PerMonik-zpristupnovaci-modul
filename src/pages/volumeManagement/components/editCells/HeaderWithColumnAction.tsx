@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import React, { FC, MutableRefObject } from 'react'
-import { useTranslation } from 'react-i18next'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import IconButton from '@mui/material/IconButton'
 import clone from 'lodash/clone'
@@ -13,19 +12,23 @@ import {
   GridApiPro,
   gridExpandedSortedRowEntriesSelector,
 } from '@mui/x-data-grid-pro'
+import Tooltip from '@mui/material/Tooltip'
 
 type HeaderWithColumnActionProps = {
   field: TSpecimenDamageTypes
   canEdit: boolean
   apiRef: MutableRefObject<GridApiPro>
+  headerName: string
+  description: string
 }
 
 const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
   field,
   canEdit,
   apiRef,
+  headerName,
+  description,
 }) => {
-  const { t } = useTranslation()
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
@@ -91,16 +94,26 @@ const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
   }
 
   return (
-    <Box>
-      <IconButton
-        color="primary"
-        disabled={!canEdit}
-        onClick={() => doAction()}
+    <Tooltip title={description} placement="bottom">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
       >
-        <KeyboardArrowDownIcon />
-      </IconButton>
-      {t(`facet_states.${field}`)}
-    </Box>
+        <Box dangerouslySetInnerHTML={{ __html: headerName }} />
+        <IconButton
+          color="primary"
+          disabled={!canEdit}
+          onClick={() => doAction()}
+          sx={{
+            padding: 0,
+          }}
+        >
+          <KeyboardArrowDownIcon />
+        </IconButton>
+      </Box>
+    </Tooltip>
   )
 }
 

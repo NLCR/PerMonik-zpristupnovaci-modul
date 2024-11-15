@@ -50,6 +50,7 @@ import {
 } from '../../../utils/specimen'
 import { validate as uuidValidate } from 'uuid'
 import TableHeader from './TableHeader'
+import Tooltip from '@mui/material/Tooltip'
 
 const ODD_OPACITY = 0.2
 
@@ -101,6 +102,12 @@ const StripedDataGrid = styled(DataGridPro)(({ theme }) => ({
       },
     },
   },
+  ['& .MuiDataGrid-columnHeader']: {
+    paddingTop: 3,
+    paddingBottom: 3,
+    paddingLeft: 4,
+    paddingRight: 4,
+  },
 })) as typeof DataGridPro
 
 const renderCheckBox = (
@@ -151,10 +158,18 @@ const renderRenumberableValue = (
 const renderHeaderWithColumnAction = (
   field: TSpecimenDamageTypes,
   canEdit: boolean,
-  apiRef: MutableRefObject<GridApiPro>
+  apiRef: MutableRefObject<GridApiPro>,
+  headerName: string,
+  description: string
 ) => {
   return (
-    <HeaderWithColumnAction field={field} canEdit={canEdit} apiRef={apiRef} />
+    <HeaderWithColumnAction
+      field={field}
+      canEdit={canEdit}
+      apiRef={apiRef}
+      headerName={headerName}
+      description={description}
+    />
   )
 }
 
@@ -253,9 +268,9 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     {
       field: 'publicationDate',
       headerName: t('table.publication_date'),
-      flex: 1,
-      minWidth: 120,
+      width: 110,
       filterable: false,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(
@@ -267,10 +282,21 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'numExists',
-      headerName: t('volume_overview.is_in_volume'),
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.is_in_volume')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.is_in_volume_short'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 50,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(row.numExists, true, canEdit)
@@ -278,10 +304,21 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'numMissing',
-      headerName: t('volume_overview.missing_number'),
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.missing_number')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.missing_number_short'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 50,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(row.numMissing, true, canEdit)
@@ -289,9 +326,20 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'number',
-      headerName: t('volume_overview.number'),
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.number')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.number_short'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 50,
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderRenumberableValue(
@@ -305,9 +353,20 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'attachmentNumber',
-      headerName: t('volume_overview.attachment_number'),
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.attachment_number')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.attachment_number_short'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 60,
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderRenumberableValue(
@@ -322,8 +381,18 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'mutationId',
-      headerName: t('volume_overview.mutation'),
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.mutation')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.mutation_short'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 60,
       editable: canEdit,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(
@@ -340,8 +409,18 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'editionId',
-      headerName: t('volume_overview.edition'),
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.edition')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.edition_short'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 50,
       editable: canEdit,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(
@@ -358,40 +437,81 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'name',
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.name')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.name_short'),
+            }}
+          />
+        </Tooltip>
+      ),
       type: 'string',
       editable: canEdit,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(row.name, row.numExists, canEdit)
       },
-      headerName: t('volume_overview.name'),
+      // width: 1,
     },
     {
       field: 'subName',
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.sub_name')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.sub_name_short'),
+            }}
+          />
+        </Tooltip>
+      ),
       type: 'string',
       editable: canEdit,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(row.subName, row.numExists, canEdit)
       },
-      headerName: t('volume_overview.sub_name'),
+      // width: 1,
     },
     {
       field: 'pagesCount',
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.pages_count')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.pages_count_short'),
+            }}
+          />
+        </Tooltip>
+      ),
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(row.pagesCount, row.numExists, canEdit)
       },
-      headerName: t('volume_overview.pages_count'),
+      width: 50,
     },
     {
       /* bug fix, with the right name it hasn't updated value */
       field: 'mutationMark2',
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.mutation_mark')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.mutation_mark_short'),
+            }}
+          />
+        </Tooltip>
+      ),
       type: 'string',
-      headerName: t('volume_overview.mutation_mark'),
+      width: 60,
       editable: canEdit,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(row.mutationMark, row.numExists, canEdit)
@@ -405,12 +525,17 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
         return renderHeaderWithColumnAction(
           field as TSpecimenDamageTypes,
           canEdit,
-          apiRef
+          apiRef,
+          t('facet_states_short.OK'),
+          t('facet_states_short.OK_tooltip')
         )
       },
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      width: 52,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -424,10 +549,21 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'PP',
-      headerName: t('facet_states.PP'),
+      renderHeader: () => (
+        <Tooltip title={t('facet_states_short.PP_tooltip')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('facet_states_short.PP'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 52,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -445,12 +581,17 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
         return renderHeaderWithColumnAction(
           field as TSpecimenDamageTypes,
           canEdit,
-          apiRef
+          apiRef,
+          t('facet_states_short.Deg'),
+          t('facet_states_short.Deg_tooltip')
         )
       },
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      width: 52,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -463,10 +604,21 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChS',
-      headerName: t('facet_states.ChS'),
+      renderHeader: () => (
+        <Tooltip title={t('facet_states_short.ChS_tooltip')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('facet_states_short.ChS'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 52,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -479,10 +631,21 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChPag',
-      headerName: t('facet_states.ChPag'),
+      renderHeader: () => (
+        <Tooltip title={t('facet_states_short.ChPag_tooltip')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('facet_states_short.ChPag'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 52,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -495,10 +658,21 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChDatum',
-      headerName: t('facet_states.ChDatum'),
+      renderHeader: () => (
+        <Tooltip title={t('facet_states_short.ChDatum_tooltip')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('facet_states_short.ChDatum'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 52,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -511,10 +685,21 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChCis',
-      headerName: t('facet_states.ChCis'),
+      renderHeader: () => (
+        <Tooltip title={t('facet_states_short.ChCis_tooltip')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('facet_states_short.ChCis'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 52,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -527,10 +712,21 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChSv',
-      headerName: t('facet_states.ChSv'),
+      renderHeader: () => (
+        <Tooltip title={t('facet_states_short.ChSv_tooltip')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('facet_states_short.ChSv'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 52,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -548,12 +744,17 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
         return renderHeaderWithColumnAction(
           field as TSpecimenDamageTypes,
           canEdit,
-          apiRef
+          apiRef,
+          t('facet_states_short.NS'),
+          t('facet_states_short.NS_tooltip')
         )
       },
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      width: 52,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -566,10 +767,21 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'Cz',
-      headerName: t('facet_states.Cz'),
+      renderHeader: () => (
+        <Tooltip title={t('facet_states_short.Cz_tooltip')}>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: t('facet_states_short.Cz'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 52,
       type: 'boolean',
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderCheckBox(
@@ -583,7 +795,8 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     {
       field: 'note',
       type: 'string',
-      minWidth: 180,
+      // width: 100,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return renderValue(row.note, row.numExists, canEdit)
@@ -591,17 +804,32 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       headerName: t('volume_overview.note'),
       editable: canEdit,
       filterable: false,
+      disableColumnMenu: true,
     },
   ]
 
   if (canEdit) {
     columns.unshift({
       field: 'newRow',
-      headerName: t('volume_overview.new_row'),
-      flex: 1,
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.new_row')}>
+          <Box
+            sx={{
+              cursor: 'pointer',
+            }}
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.new_row_short'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 40,
       hideable: false,
+      pinnable: false,
+      disableColumnMenu: true,
       sortable: false,
       filterable: false,
+      headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
         return (
@@ -666,6 +894,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     <>
       <TableHeader apiRef={apiRef} />
       <StripedDataGrid
+        columnHeaderHeight={65}
         apiRef={apiRef}
         localeText={MuiTableLocale}
         getRowClassName={(params) => {

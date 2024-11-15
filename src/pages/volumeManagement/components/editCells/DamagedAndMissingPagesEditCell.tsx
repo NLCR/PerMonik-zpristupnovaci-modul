@@ -165,11 +165,11 @@ const DamagedAndMissingPagesEditCell = (
 
   return (
     <>
-      <Checkbox
-        readOnly
-        disabled
-        checked={!!row.damageTypes?.some((dt) => dt === field)}
-      />
+      {/* <Checkbox */}
+      {/*   readOnly */}
+      {/*   disabled */}
+      {/*   checked={!!row.damageTypes?.some((dt) => dt === field)} */}
+      {/* /> */}
       <IconButton color="primary" onClick={() => setOpen(true)}>
         <EditIcon />
       </IconButton>

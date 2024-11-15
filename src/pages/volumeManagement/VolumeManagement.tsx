@@ -8,7 +8,6 @@ import SaveAsIcon from '@mui/icons-material/SaveAs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import { blue } from '@mui/material/colors'
 import { useManagedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
@@ -286,37 +285,14 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
           <Loader />
         </Box>
       ) : null}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '380px',
-          padding: '16px',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          // boxShadow: theme.shadows[1],
-          flexShrink: 0,
-        }}
-      >
-        <Typography
-          sx={{
-            marginBottom: '8px',
-            color: blue['900'],
-            fontWeight: 'bold',
-            fontSize: '24px',
-          }}
-        >
-          {t('volume_overview.volume_information')}
-        </Typography>
-        <InputData
-          canEdit={canEdit}
-          me={me}
-          mutations={mutations}
-          owners={owners}
-          metaTitles={metaTitles}
-          editions={editions}
-        />
-      </Box>
+      <InputData
+        canEdit={canEdit}
+        me={me}
+        mutations={mutations}
+        owners={owners}
+        metaTitles={metaTitles}
+        editions={editions}
+      />
       <Box
         sx={{
           display: 'flex',

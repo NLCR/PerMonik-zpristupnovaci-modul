@@ -5,6 +5,7 @@ import {
   SpecimenSchema,
 } from './specimen'
 import { AuditableSchema } from './common'
+import i18next from '../i18next'
 
 export const VolumePeriodicityDaysSchema = z.enum([
   'Monday',
@@ -39,20 +40,20 @@ export const EditableVolumePeriodicitySchema = z.object({
 
 export const VolumeSchema = AuditableSchema.extend({
   id: z.string().length(36),
-  barCode: z.string().min(1),
-  dateFrom: z.string().min(1),
-  dateTo: z.string().min(1),
-  metaTitleId: z.string().length(36),
+  barCode: z.string().min(1, i18next.t('schema.bar_code_min_length')),
+  dateFrom: z.string().min(1, i18next.t('schema.date_from_min_length')),
+  dateTo: z.string().min(1, i18next.t('schema.date_to_min_length')),
+  metaTitleId: z.string().length(36, i18next.t('schema.meta_title_empty')),
   subName: z.string(),
-  mutationId: z.string().length(36),
+  mutationId: z.string().length(36, i18next.t('schema.mutation_empty')),
   periodicity: VolumePeriodicitySchema.array(),
-  firstNumber: z.number().min(0),
-  lastNumber: z.number().min(0),
+  firstNumber: z.number().min(0, i18next.t('schema.first_number_min')),
+  lastNumber: z.number().min(0, i18next.t('schema.last_number_min')),
   note: z.string(),
   showAttachmentsAtTheEnd: z.boolean(),
   signature: z.string(),
-  ownerId: z.string().length(36),
-  year: z.number().min(0),
+  ownerId: z.string().length(36, i18next.t('schema.owner_empty')),
+  year: z.number().min(0, i18next.t('schema.year_min')),
   mutationMark: z.string(),
 })
 

@@ -3,6 +3,7 @@ import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import i18next from '../i18next'
 import { captureException, withScope } from '@sentry/react'
+import { LOGIN_URL } from '../utils/constants'
 
 // Setup queryClient
 export const queryClient = new QueryClient({
@@ -40,22 +41,30 @@ export const queryClient = new QueryClient({
   },
 })
 
+interface SpringError {
+  timestamp: string
+  status: number
+  error: string
+  exception: string
+  message: string
+  path: string
+}
+
+const processError = (error: SpringError) => {
+  if (error.status === 403) {
+    toast.warn(i18next.t('common.session_expired'))
+    window.open(LOGIN_URL, '_blank')
+
+    // queryClient.invalidateQueries({ queryKey: ['me'] })
+  } else if (error.status === 500) {
+    toast.error(`${error.status}: ${error.message}`)
+  }
+}
+
 type BaseOptions = {
   handledCodes?: number[]
   throwErrorFromKy?: boolean
 }
-
-// const processError = (
-//   response: Response,
-//   error: { [key: string]: string[] }
-// ) => {
-//   // if (response.status === 410) {
-//   //   return i18next.t('common.session_expired')
-//   // }
-//   return `${response.status}: ${
-//     Array.isArray(error) ? error[0].join(', ') : error
-//   }`
-// }
 
 const baseApi = ({ handledCodes, throwErrorFromKy = true }: BaseOptions) =>
   ky.extend({
@@ -70,17 +79,13 @@ const baseApi = ({ handledCodes, throwErrorFromKy = true }: BaseOptions) =>
           if (response.ok) return
 
           if (handledCodes?.find((c) => c === response.status)) {
-            // No response with error will be passed into react-query -> cannot use onError function
+            // No response with an error will be passed into react-query -> cannot use onError function
             return
           }
 
           try {
-            // const error = await response.json()
-            if (response.status === 403) {
-              toast.warn(i18next.t('common.session_expired'))
-              queryClient.invalidateQueries({ queryKey: ['me'] })
-            }
-            // toast.warn(processError(response, error))
+            const error = await response.json<SpringError>()
+            processError(error)
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (e) {
             /* empty */

@@ -23,7 +23,7 @@ import English from '../assets/images/united-states.png'
 import { changeAppLanguage, TSupportedLanguages } from '../i18next'
 import { useLogoutMutation, useMeQuery } from '../api/user'
 import { queryClient } from '../api'
-import { APP_WITH_EDITING_ENABLED } from '../utils/constants'
+import { APP_WITH_EDITING_ENABLED, LOGIN_URL } from '../utils/constants'
 
 const HeaderContainer = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -184,7 +184,7 @@ const Header = () => {
                     },
                   })}
                   onClick={() => {
-                    window.location.href = '/login/shibboleth'
+                    window.location.href = LOGIN_URL
                   }}
                 >
                   {t('header.login')}

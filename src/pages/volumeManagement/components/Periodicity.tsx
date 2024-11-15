@@ -109,7 +109,8 @@ const Periodicity: FC<PeriodicityProps> = ({ canEdit, editions }) => {
     const validation = VolumeSchema.safeParse(repairedVolume)
 
     if (!validation.success) {
-      toast.error(t('volume_overview.volume_input_data_validation_error'))
+      validation.error.errors.map((e) => toast.error(e.message))
+      // toast.error(t('volume_overview.volume_input_data_validation_error'))
       return
     }
 

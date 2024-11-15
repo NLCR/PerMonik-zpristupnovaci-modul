@@ -66,7 +66,7 @@ const TableHeader: FC<TableHeaderProps> = ({ apiRef }) => {
           }}
         >
           <Typography>
-            {`${t('volume_overview.rows_count')}: ${data?.specimens.length}`}
+            {`${t('volume_overview.rows_count')}: ${data?.specimens.length ? data.specimens.length : '---'}`}
           </Typography>
           <Typography>
             {`${t('volume_overview.filtered_rows_count')}: ${filter.active ? filter.rowCount : '---'} `}
@@ -83,10 +83,10 @@ const TableHeader: FC<TableHeaderProps> = ({ apiRef }) => {
           }}
         >
           <Typography>
-            {`${t('volume_overview.volume_created_at')}: ${dayjs(data?.volume?.created).isValid() ? dayjs(data?.volume?.created).format('DD.MM.YYYY HH:mm:ss') : '---'}`}
+            {`${t('volume_overview.volume_created_at')}: ${data?.volume?.created?.length && dayjs(data.volume.created).isValid() ? dayjs(data.volume.created).format('DD.MM.YYYY HH:mm:ss') : '---'}`}
           </Typography>
           <Typography>
-            {`${t('volume_overview.volume_updated_at')}: ${dayjs(data?.volume?.updated).isValid() ? dayjs(data?.volume?.updated).format('DD.MM.YYYY HH:mm:ss') : '---'}`}
+            {`${t('volume_overview.volume_updated_at')}: ${data?.volume?.updated?.length && dayjs(data.volume.updated).isValid() ? dayjs(data.volume.updated).format('DD.MM.YYYY HH:mm:ss') : '---'}`}
           </Typography>
         </Box>
       </Box>
