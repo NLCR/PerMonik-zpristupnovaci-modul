@@ -40,7 +40,7 @@ const Home = () => {
         >
           {data.map((mt) => (
             <Box
-              component={ReactLink}
+              component={mt.specimens.matchedSpecimens > 0 ? ReactLink : Box}
               to={`/${i18n.resolvedLanguage}/${t('urls.specimens_overview')}/${
                 mt.id
               }`}

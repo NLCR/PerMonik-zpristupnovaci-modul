@@ -8,13 +8,13 @@ import { SpecimenSchema, TEditableSpecimen } from '../schema/specimen'
 import {
   useCreateVolumeWithSpecimensMutation,
   useDeleteVolumeWithSpecimensMutation,
-  useUpdateRegeneratedVolumeWithSpecimensMutation,
+  useUpdateOvergeneratedVolumeWithSpecimensMutation,
   useUpdateVolumeWithSpecimensMutation,
 } from '../api/volume'
 import { TEdition } from '../schema/edition'
 import { BACK_META_TITLE_ID } from '../utils/constants'
 import { generateVolumeUrlWithParams } from '../utils/generateVolumeUrlWithParams'
-import { duplicateSpecimen, repairOrCreateSpecimen } from '../utils/specimen'
+import { copySpecimen, repairOrCreateSpecimen } from '../utils/specimen'
 import { duplicateVolume, repairVolume } from '../utils/volume'
 import { waitFor } from '../utils/waitFor'
 import i18next from '../i18next'
@@ -30,9 +30,9 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
   const { mutateAsync: callDelete, status: deleteStatus } =
     useDeleteVolumeWithSpecimensMutation()
   const {
-    mutateAsync: callRegeneratedUpdate,
-    status: regeneratedUpdateStatus,
-  } = useUpdateRegeneratedVolumeWithSpecimensMutation()
+    mutateAsync: callOvergeneratedUpdate,
+    status: overgeneratedUpdateStatus,
+  } = useUpdateOvergeneratedVolumeWithSpecimensMutation()
 
   const volumeActions = useVolumeManagementStore((state) => state.volumeActions)
   const specimensActions = useVolumeManagementStore(
@@ -116,12 +116,12 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
     }
   }
 
-  const doRegeneratedUpdate = async (setVerified = false) => {
+  const doOvergeneratedUpdate = async (setVerified = false) => {
     try {
       const data = doValidation()
 
       try {
-        await callRegeneratedUpdate({
+        await callOvergeneratedUpdate({
           volume: data.repairedVolume,
           specimens: setVerified
             ? setSpecimensVerified(data.repairedSpecimens)
@@ -210,7 +210,7 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
 
       const duplicatedVolume = duplicateVolume(data.repairedVolume)
       const duplicatedSpecimens = data.repairedSpecimens.map((s) =>
-        duplicateSpecimen(s, data.repairedVolume)
+        copySpecimen(s, data.repairedVolume)
       )
 
       navigate(
@@ -230,13 +230,13 @@ const useVolumeManagementActions = (editions: TEdition[]) => {
   return {
     doDuplicate,
     doUpdate,
-    doRegeneratedUpdate,
+    doOvergeneratedUpdate,
     doCreate,
     doDelete,
     pendingActions:
       updateStatus === 'pending' ||
       createStatus === 'pending' ||
-      regeneratedUpdateStatus === 'pending' ||
+      overgeneratedUpdateStatus === 'pending' ||
       deleteStatus === 'pending',
   }
 }

@@ -68,11 +68,10 @@ export const repairOrCreateSpecimen = (
     isAttachment: specimen.isAttachment ?? false,
   }
 }
-export const copySpecimen = (
+export const duplicatePartialSpecimen = (
   specimen: Partial<TEditableSpecimen>
 ): TEditableSpecimen => {
   return {
-    ...copyAuditable(specimen),
     id: uuid(),
     metaTitleId: specimen.metaTitleId ?? '',
     volumeId: specimen.volumeId ?? '',
@@ -98,7 +97,7 @@ export const copySpecimen = (
     duplicated: true,
   }
 }
-export const duplicateSpecimen = (
+export const copySpecimen = (
   specimen: TSpecimen,
   volume: TVolume
 ): TEditableSpecimen => {

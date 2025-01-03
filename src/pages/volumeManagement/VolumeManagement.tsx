@@ -57,7 +57,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
-  const volumeRegenerated = useVolumeManagementStore(
+  const volumeOvergenerated = useVolumeManagementStore(
     (state) => state.periodicityGenerationUsed
   )
 
@@ -98,7 +98,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
   const {
     doDuplicate,
     doUpdate,
-    doRegeneratedUpdate,
+    doOvergeneratedUpdate,
     doCreate,
     doDelete,
     pendingActions,
@@ -147,7 +147,7 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
       onClick: () => void
     }[] = []
 
-    if (volumeId && volumeRegenerated) {
+    if (volumeId && volumeOvergenerated) {
       actionsArray.push(
         {
           icon: <ContentCopyIcon />,
@@ -159,17 +159,17 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
           icon: <CheckCircleIcon />,
           name: t('administration.verified'),
           color: 'primary',
-          onClick: () => doRegeneratedUpdate(true),
+          onClick: () => doOvergeneratedUpdate(true),
         },
         {
           icon: <SaveAsIcon />,
           name: t('administration.save'),
           color: 'primary',
-          onClick: () => doRegeneratedUpdate(),
+          onClick: () => doOvergeneratedUpdate(),
         }
       )
     }
-    if (volumeId && !volumeRegenerated) {
+    if (volumeId && !volumeOvergenerated) {
       actionsArray.push(
         {
           icon: <ContentCopyIcon />,
@@ -220,11 +220,11 @@ const VolumeManagement: FC<TVolumeManagementProps> = ({
   }, [
     doDuplicate,
     doCreate,
-    doRegeneratedUpdate,
+    doOvergeneratedUpdate,
     doUpdate,
     t,
     volumeId,
-    volumeRegenerated,
+    volumeOvergenerated,
   ])
 
   if (

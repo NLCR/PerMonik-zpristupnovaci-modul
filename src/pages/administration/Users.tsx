@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
@@ -71,6 +71,8 @@ const Users = ({ me }: { me: TMe }) => {
     userName: '',
   })
 
+  const initialUserSelected = useRef<boolean>(false)
+
   const {
     data: users,
     isLoading: usersLoading,
@@ -86,7 +88,8 @@ const Users = ({ me }: { me: TMe }) => {
     useUpdateUserMutation(me)
 
   useEffect(() => {
-    if (users?.length) {
+    if (users?.length && !initialUserSelected.current) {
+      initialUserSelected.current = true
       setUser(users[0])
     }
   }, [users])

@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import React, { FC } from 'react'
+import React, { FC, ReactNode } from 'react'
 import Modal from '@mui/material/Modal'
 import Backdrop from '@mui/material/Backdrop'
 import { blue } from '@mui/material/colors'
@@ -41,7 +41,7 @@ const scrollableStyle = {
 
 type TModalContainerProps = {
   header: string
-  children: JSX.Element | JSX.Element[]
+  children?: ReactNode
   opened: boolean
   onClose: () => void
   closeButton: {
@@ -53,7 +53,6 @@ type TModalContainerProps = {
     callback: () => void
     text?: string
   }
-  handleCloseButtonAsRegularClose?: boolean
   switchButtons?: boolean
   showButtons?: boolean
   style?: 'fitted' | 'scrollable'
@@ -61,7 +60,7 @@ type TModalContainerProps = {
 
 const ModalContainer: FC<TModalContainerProps> = ({
   header,
-  children,
+  children = null,
   opened,
   onClose,
   closeButton,
@@ -91,6 +90,7 @@ const ModalContainer: FC<TModalContainerProps> = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             marginBottom: '16px',
+            gap: '8px',
           }}
         >
           <Typography

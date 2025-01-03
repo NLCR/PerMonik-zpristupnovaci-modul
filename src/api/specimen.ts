@@ -1,6 +1,6 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import { useQuery, keepPreviousData, useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { api } from './index'
+import { api, queryClient } from './index'
 import {
   TSpecimensPublicationDays,
   TSpecimen,
@@ -134,5 +134,23 @@ export const useGetSpecimenNamesAndSubNames = () => {
       api()
         .get(`specimen/names`)
         .json<{ names: string[]; subNames: string[] }>(),
+  })
+}
+
+type TDeleteSpecimen = {
+  volumeId: string
+  specimenId: string
+}
+
+export const useDeleteSpecimenById = () => {
+  return useMutation<void, unknown, TDeleteSpecimen>({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mutationFn: ({ volumeId, specimenId }) =>
+      api().delete(`specimen/${specimenId}`).json<void>(),
+    onSuccess: (_, editArgs) => {
+      queryClient.invalidateQueries({
+        queryKey: ['volume', 'detail', editArgs.volumeId],
+      })
+    },
   })
 }

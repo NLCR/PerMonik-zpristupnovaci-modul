@@ -1,10 +1,4 @@
-import React, {
-  FC,
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react'
+import React, { FC, MutableRefObject, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
@@ -15,6 +9,7 @@ import {
   GridColumnHeaderParams,
   useGridApiRef,
   GridApiPro,
+  GridAlignment,
 } from '@mui/x-data-grid-pro'
 import Box from '@mui/material/Box'
 import { alpha, styled } from '@mui/material/styles'
@@ -23,9 +18,6 @@ import {
   GridCellParams,
   GridRenderEditCellParams,
 } from '@mui/x-data-grid/models/params/gridCellParams'
-import clone from 'lodash/clone'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { blue } from '@mui/material/colors'
 import {
   TEditableSpecimen,
@@ -43,14 +35,13 @@ import { useSearchParams } from 'react-router-dom'
 import { JUMP_TO_SPECIMEN_WITH_ID } from '../../../utils/constants'
 import { useLanguageCode } from '../../../hooks/useLanguageCode'
 import { useMuiTableLang } from '../../../hooks/useMuiTableLang'
-import {
-  checkAttachmentChange,
-  copySpecimen,
-  filterSpecimen,
-} from '../../../utils/specimen'
+import { checkAttachmentChange, filterSpecimen } from '../../../utils/specimen'
 import { validate as uuidValidate } from 'uuid'
 import TableHeader from './TableHeader'
 import Tooltip from '@mui/material/Tooltip'
+import DuplicationEditCell from './editCells/DuplicationEditCell'
+import DeletionEditCell from './editCells/DeletionEditCell'
+import { useShallow } from 'zustand/shallow'
 
 const ODD_OPACITY = 0.2
 
@@ -191,6 +182,17 @@ const renderMutationMarkEditCell = (
   return <MutationMarkSelectorModalContainer {...params} />
 }
 
+const renderDuplicationEditCell = (
+  row: TEditableSpecimen,
+  canEdit: boolean
+) => {
+  return <DuplicationEditCell row={row} canEdit={canEdit} />
+}
+
+const renderDeletionEditCell = (row: TEditableSpecimen, canEdit: boolean) => {
+  return <DeletionEditCell row={row} canEdit={canEdit} />
+}
+
 interface TableProps {
   canEdit: boolean
   mutations: TMutation[]
@@ -209,6 +211,9 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
 
   const specimensState = useVolumeManagementStore(
     (state) => state.specimensState
+  )
+  const stateHasUnsavedData = useVolumeManagementStore(
+    useShallow((state) => state.stateHasUnsavedData)
   )
   const specimenActions = useVolumeManagementStore(
     (state) => state.specimensActions
@@ -235,35 +240,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     return () => clearTimeout(timeout)
   }, [apiRef, searchParams, specimensState])
 
-  const duplicateRow = useCallback(
-    (row: TEditableSpecimen) => {
-      const specimensStateClone = clone(specimensState)
-      const copiedSpecimen = copySpecimen(row)
-      const originalSpecimenIndex = specimensState.findIndex(
-        (s) => s.id === row.id
-      )
-
-      if (originalSpecimenIndex >= 0) {
-        specimensStateClone.splice(originalSpecimenIndex + 1, 0, copiedSpecimen)
-        specimenActions.setSpecimensState(specimensStateClone, true)
-      }
-    },
-    [specimenActions, specimensState]
-  )
-
-  const removeRow = useCallback(
-    (id: string) => {
-      const specimensStateClone = clone(specimensState)
-      const specimenIndex = specimensState.findIndex((s) => s.id === id)
-
-      if (specimenIndex >= 0) {
-        specimensStateClone.splice(specimenIndex, 1)
-        specimenActions.setSpecimensState(specimensStateClone, true)
-      }
-    },
-    [specimenActions, specimensState]
-  )
-
   const columns: GridColDef<TEditableSpecimen>[] = [
     {
       field: 'publicationDate',
@@ -281,7 +257,64 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       },
     },
     {
+      field: 'newRow',
+      headerName: t('volume_overview.new_row'),
+      renderHeader: () => (
+        <Tooltip title={t('volume_overview.new_row')}>
+          <Box
+            sx={{
+              cursor: 'pointer',
+            }}
+            dangerouslySetInnerHTML={{
+              __html: t('volume_overview.new_row_short'),
+            }}
+          />
+        </Tooltip>
+      ),
+      width: 40,
+      hideable: false,
+      pinnable: false,
+      disableColumnMenu: true,
+      sortable: false,
+      filterable: false,
+      headerAlign: 'center',
+      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+        const { row } = params
+        return renderDuplicationEditCell(row, canEdit)
+      },
+    },
+    ...(!stateHasUnsavedData && specimensState.length
+      ? [
+          {
+            field: 'deleteRow',
+            headerName: t('volume_overview.delete_row'),
+            renderHeader: () => (
+              <Tooltip title={t('volume_overview.delete_row')}>
+                <Box
+                  sx={{
+                    cursor: 'pointer',
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: t('volume_overview.delete_row_short'),
+                  }}
+                />
+              </Tooltip>
+            ),
+            width: 40,
+            pinnable: false,
+            sortable: false,
+            filterable: false,
+            headerAlign: 'center' as GridAlignment,
+            renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
+              const { row } = params
+              return renderDeletionEditCell(row, canEdit)
+            },
+          },
+        ]
+      : []),
+    {
       field: 'numExists',
+      headerName: t('volume_overview.is_in_volume'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.is_in_volume')}>
           <Box
@@ -294,8 +327,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       width: 50,
       type: 'boolean',
       editable: canEdit,
-      filterable: false,
-      disableColumnMenu: true,
       headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
@@ -304,6 +335,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'numMissing',
+      headerName: t('volume_overview.missing_number'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.missing_number')}>
           <Box
@@ -316,8 +348,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       width: 50,
       type: 'boolean',
       editable: canEdit,
-      filterable: false,
-      disableColumnMenu: true,
       headerAlign: 'center',
       renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
         const { row } = params
@@ -326,6 +356,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'number',
+      headerName: t('volume_overview.number'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.number')}>
           <Box
@@ -353,6 +384,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'attachmentNumber',
+      headerName: t('volume_overview.attachment_number'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.attachment_number')}>
           <Box
@@ -381,6 +413,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'mutationId',
+      headerName: t('volume_overview.mutation'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.mutation')}>
           <Box
@@ -409,6 +442,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'editionId',
+      headerName: t('volume_overview.edition'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.edition')}>
           <Box
@@ -437,6 +471,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'name',
+      headerName: t('volume_overview.name'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.name')}>
           <Box
@@ -457,6 +492,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'subName',
+      headerName: t('volume_overview.sub_name'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.sub_name')}>
           <Box
@@ -477,6 +513,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'pagesCount',
+      headerName: t('volume_overview.pages_count'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.pages_count')}>
           <Box
@@ -499,6 +536,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     {
       /* bug fix, with the right name it hasn't updated value */
       field: 'mutationMark2',
+      headerName: t('volume_overview.mutation_mark'),
       renderHeader: () => (
         <Tooltip title={t('volume_overview.mutation_mark')}>
           <Box
@@ -520,6 +558,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'OK',
+      headerName: t('facet_states_short.OK_tooltip'),
       renderHeader: (params: GridColumnHeaderParams<TEditableSpecimen>) => {
         const { field } = params
         return renderHeaderWithColumnAction(
@@ -549,6 +588,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'PP',
+      headerName: t('facet_states_short.PP_tooltip'),
       renderHeader: () => (
         <Tooltip title={t('facet_states_short.PP_tooltip')}>
           <Box
@@ -576,6 +616,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'Deg',
+      headerName: t('facet_states_short.Deg_tooltip'),
       renderHeader: (params: GridColumnHeaderParams<TEditableSpecimen>) => {
         const { field } = params
         return renderHeaderWithColumnAction(
@@ -604,6 +645,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChS',
+      headerName: t('facet_states_short.ChS_tooltip'),
       renderHeader: () => (
         <Tooltip title={t('facet_states_short.ChS_tooltip')}>
           <Box
@@ -631,6 +673,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChPag',
+      headerName: t('facet_states_short.ChPag_tooltip'),
       renderHeader: () => (
         <Tooltip title={t('facet_states_short.ChPag_tooltip')}>
           <Box
@@ -658,6 +701,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChDatum',
+      headerName: t('facet_states_short.ChDatum_tooltip'),
       renderHeader: () => (
         <Tooltip title={t('facet_states_short.ChDatum_tooltip')}>
           <Box
@@ -685,6 +729,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChCis',
+      headerName: t('facet_states_short.ChCis_tooltip'),
       renderHeader: () => (
         <Tooltip title={t('facet_states_short.ChCis_tooltip')}>
           <Box
@@ -712,6 +757,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'ChSv',
+      headerName: t('facet_states_short.ChSv_tooltip'),
       renderHeader: () => (
         <Tooltip title={t('facet_states_short.ChSv_tooltip')}>
           <Box
@@ -739,6 +785,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'NS',
+      headerName: t('facet_states_short.NS_tooltip'),
       renderHeader: (params: GridColumnHeaderParams<TEditableSpecimen>) => {
         const { field } = params
         return renderHeaderWithColumnAction(
@@ -767,6 +814,7 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
     },
     {
       field: 'Cz',
+      headerName: t('facet_states_short.Cz_tooltip'),
       renderHeader: () => (
         <Tooltip title={t('facet_states_short.Cz_tooltip')}>
           <Box
@@ -807,60 +855,6 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
       disableColumnMenu: true,
     },
   ]
-
-  if (canEdit) {
-    columns.unshift({
-      field: 'newRow',
-      renderHeader: () => (
-        <Tooltip title={t('volume_overview.new_row')}>
-          <Box
-            sx={{
-              cursor: 'pointer',
-            }}
-            dangerouslySetInnerHTML={{
-              __html: t('volume_overview.new_row_short'),
-            }}
-          />
-        </Tooltip>
-      ),
-      width: 40,
-      hideable: false,
-      pinnable: false,
-      disableColumnMenu: true,
-      sortable: false,
-      filterable: false,
-      headerAlign: 'center',
-      renderCell: (params: GridRenderCellParams<TEditableSpecimen>) => {
-        const { row } = params
-        return (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-            }}
-          >
-            {row.duplicated ? (
-              <DeleteOutlineIcon
-                onClick={() => removeRow(row.id)}
-                sx={{
-                  cursor: 'pointer',
-                }}
-              />
-            ) : (
-              <AddCircleOutlineIcon
-                onClick={() => duplicateRow(row)}
-                sx={{
-                  cursor: 'pointer',
-                }}
-              />
-            )}
-          </Box>
-        )
-      },
-    })
-  }
 
   const handleUpdate = (newRow: TEditableSpecimen) => {
     const row = checkAttachmentChange(editions, newRow)

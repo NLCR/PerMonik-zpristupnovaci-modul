@@ -39,8 +39,11 @@ export const initialState: TVariablesState = {
   volumeState: {
     id: '',
     barCode: '',
-    dateFrom: dayjs().startOf('year').format('YYYY-MM-DD'),
-    dateTo: dayjs().startOf('year').format('YYYY-MM-DD'),
+    dateFrom: dayjs()
+      .subtract(1, 'month')
+      .startOf('month')
+      .format('YYYY-MM-DD'),
+    dateTo: dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
     firstNumber: '',
     lastNumber: '',
     metaTitleId: '',

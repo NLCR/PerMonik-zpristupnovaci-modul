@@ -121,13 +121,15 @@ const RenumberableValueCell: FC<RenumberableValueCellProps> = ({
         })}
       >
         {type === 'number' ? row.number : row.attachmentNumber}
-        <IconButton
-          color="primary"
-          disabled={!canEdit}
-          onClick={() => setModalOpened(true)}
-        >
-          <KeyboardArrowDownIcon />
-        </IconButton>
+        {row.numExists ? (
+          <IconButton
+            color="primary"
+            disabled={!canEdit}
+            onClick={() => setModalOpened(true)}
+          >
+            <KeyboardArrowDownIcon />
+          </IconButton>
+        ) : null}
       </Box>
       <ModalContainer
         header={t('volume_overview.renumber_header')}

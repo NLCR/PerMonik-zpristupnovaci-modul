@@ -13,7 +13,7 @@ export const useManagedVolumeDetailQuery = (id?: string) =>
 
 export const usePublicVolumeDetailQuery = (id?: string) =>
   useQuery({
-    queryKey: ['volume', 'detail', 'public', id],
+    queryKey: ['volume', 'detail', id, 'public'],
     queryFn: () =>
       api().get(`volume/${id}/detail/public`).json<TVolumeDetail | null>(),
     enabled: !!id,
@@ -73,11 +73,11 @@ export const useUpdateVolumeWithSpecimensMutation = () =>
     },
   })
 
-export const useUpdateRegeneratedVolumeWithSpecimensMutation = () =>
+export const useUpdateOvergeneratedVolumeWithSpecimensMutation = () =>
   useMutation<void, unknown, TUpdatableVolume>({
     mutationFn: (data) => {
       return api()
-        .put(`volume/${data.volume.id}/regenerated`, {
+        .put(`volume/${data.volume.id}/overgenerated`, {
           json: {
             volume: {
               ...data.volume,
