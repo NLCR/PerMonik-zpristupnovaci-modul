@@ -103,7 +103,7 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
   const specimensInDay: TSpecimensDay = []
 
   daysArray.forEach((day) => {
-    const found = groupedSpecimensByDay.find((group) => group.day === day)
+    const found = groupedSpecimensByDay.find((group) => group.day.includes(day))
     if (found) {
       const groupedBySameAttributes = Object.values(
         sortBy(

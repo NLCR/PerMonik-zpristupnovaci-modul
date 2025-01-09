@@ -27,10 +27,8 @@ export const filterSpecimen = (
     mutationMark: specimen.mutationMark.trim(),
     publicationDate: specimen.publicationDate,
     publicationDateString: specimen.publicationDateString,
-    number: specimen.number ? specimen.number.trim() : null,
-    attachmentNumber: specimen.attachmentNumber
-      ? specimen.attachmentNumber.trim()
-      : null,
+    number: specimen.number.trim(),
+    attachmentNumber: specimen.attachmentNumber.trim(),
     pagesCount: Number(
       specimen.pagesCount.toString().replace(/\D/g, '').trim()
     ),
