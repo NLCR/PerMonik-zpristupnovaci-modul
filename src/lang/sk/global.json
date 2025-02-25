@@ -47,6 +47,7 @@
     "edition": "Vydanie",
     "mutation_mark": "Mutačné vydanie",
     "owner": "Vlastník",
+    "damage_types": "Poškodenie",
     "state": "Stav",
     "delete_filters": "Vymazať filtre",
     "without_mark": "Bez označenia",
@@ -153,7 +154,7 @@
     "delete_volume_caption": "Potvrdenie vymazania",
     "delete_volume_text": "Naozaj chcete odstrániť celý zväzok?",
     "delete_volume_text2": "Nechcete si to rozmyslieť?",
-    "delete_specimen_text": "Chcete naozaj zmazať tento exemplár?",
+    "delete_specimen_text": "Chcete naozaj zmazať tento riadok?",
     "back_to_specimens_overview": "Späť na tabuľku",
     "unsaved_changes": "Máte neuložené zmeny",
     "unsaved_changes_text": "Chcete aj napriek tomu opustiť túto stránku?",
@@ -226,6 +227,10 @@
     "Cz_tooltip": "Cenzúrované",
     "NS": "Nečit.",
     "NS_tooltip": "Nečitateľne zviazané"
+  },
+  "boolean_facet_states": {
+    "numMissing": "Number exists",
+    "numExists": "Number missing"
   },
   "header": {
     "home": "Domov",

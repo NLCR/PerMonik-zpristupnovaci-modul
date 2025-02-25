@@ -353,7 +353,7 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
                   displayedName: t(`facet_states.${p as TSpecimenDamageTypes}`),
                 }))
           }
-          header={t('specimens_overview.state')}
+          header={t('specimens_overview.damage_types')}
           onChange={(value) =>
             setParams({
               ...params,

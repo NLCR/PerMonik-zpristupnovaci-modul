@@ -865,23 +865,41 @@ const Table: FC<TableProps> = ({ canEdit, mutations, editions }) => {
 
   const isCellEditable = (params: GridCellParams<TEditableSpecimen>) => {
     const { row, field } = params
-    if (field === 'numExists') {
-      return canEdit && !row.numMissing
-    }
-    if (field === 'numMissing') {
-      return canEdit && !row.numExists
-    }
-    if (field === 'publicationDate' || !row.numExists) {
-      return false
-    }
-    if (field === 'number') {
-      return canEdit && !row.isAttachment
-    }
-    if (field === 'attachmentNumber') {
-      return canEdit && row.isAttachment
+
+    if (!canEdit) return false
+    if (field === 'publicationDate') return false
+
+    const hasNumValue = row.numExists || row.numMissing
+
+    const editableFields: Record<string, boolean> = {
+      numExists: !row.numMissing,
+      numMissing: !row.numExists,
+      number: !row.isAttachment && hasNumValue,
+      attachmentNumber: row.isAttachment && hasNumValue,
     }
 
-    return canEdit
+    return editableFields[field] ?? row.numExists
+
+    // if (field === 'numExists') {
+    //   return canEdit && !row.numMissing
+    // }
+    // if (field === 'numMissing') {
+    //   return canEdit && !row.numExists
+    // }
+    // if (field === 'publicationDate') {
+    //   return false
+    // }
+    // if (field === 'number') {
+    //   return canEdit && !row.isAttachment && (row.numMissing || row.numExists)
+    // }
+    // if (field === 'attachmentNumber') {
+    //   return canEdit && row.isAttachment && (row.numMissing || row.numExists)
+    // }
+    // if (!row.numExists) {
+    //   return false
+    // }
+    //
+    // return canEdit
   }
 
   return (

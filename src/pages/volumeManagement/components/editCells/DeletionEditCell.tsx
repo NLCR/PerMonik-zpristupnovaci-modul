@@ -7,6 +7,7 @@ import { useDeleteSpecimenById } from '../../../../api/specimen'
 import { toast } from 'react-toastify'
 import { useTranslation } from 'react-i18next'
 import ModalContainer from '../../../../components/ModalContainer'
+import theme from '../../../../theme'
 
 type DuplicationCellProps = {
   row: TEditableSpecimen
@@ -39,6 +40,7 @@ const DeletionEditCell: FC<DuplicationCellProps> = ({ row, canEdit }) => {
     }
   }
 
+  // TODO: color grey when cannot edit
   return (
     <Box
       sx={{
@@ -71,6 +73,9 @@ const DeletionEditCell: FC<DuplicationCellProps> = ({ row, canEdit }) => {
               }
               sx={{
                 cursor: 'pointer',
+                color: canEdit
+                  ? theme.palette.grey[900]
+                  : theme.palette.grey[600],
               }}
             />
           )}

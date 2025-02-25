@@ -6,6 +6,7 @@ import { useVolumeManagementStore } from '../../../../slices/useVolumeManagement
 import Box from '@mui/material/Box'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import theme from '../../../../theme'
 
 type DuplicationCellProps = {
   row: TEditableSpecimen
@@ -57,6 +58,7 @@ const DuplicationEditCell: FC<DuplicationCellProps> = ({ row, canEdit }) => {
           onClick={() => (canEdit ? removeRow() : null)}
           sx={{
             cursor: 'pointer',
+            color: canEdit ? theme.palette.grey[900] : theme.palette.grey[600],
           }}
         />
       ) : null}
@@ -64,6 +66,7 @@ const DuplicationEditCell: FC<DuplicationCellProps> = ({ row, canEdit }) => {
         onClick={() => (canEdit ? duplicateRow() : null)}
         sx={{
           cursor: 'pointer',
+          color: canEdit ? theme.palette.grey[900] : theme.palette.grey[600],
         }}
       />
     </Box>

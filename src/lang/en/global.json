@@ -47,6 +47,7 @@
     "edition": "Edition",
     "mutation_mark": "Mutation edition",
     "owner": "Owner",
+    "damage_types": "Damage",
     "state": "State",
     "delete_filters": "Clear filters",
     "without_mark": "Without mark",
@@ -153,7 +154,7 @@
     "delete_volume_caption": "Confirm deletion",
     "delete_volume_text": "Do you really want to delete the whole volume?",
     "delete_volume_text2": "Don't you want to change your mind?",
-    "delete_specimen_text": "Do you really want to delete that specimen?",
+    "delete_specimen_text": "Do you really want to delete that row?",
     "back_to_specimens_overview": "Back to table",
     "unsaved_changes": "You have unsaved changes",
     "unsaved_changes_text": "Still want to leave this page?",
@@ -226,6 +227,10 @@
     "Cz_tooltip": "Censored",
     "NS": "Ill.<br />bound",
     "NS_tooltip": "Bound illegibly"
+  },
+  "boolean_facet_states": {
+    "numMissing": "Number exists",
+    "numExists": "Number missing"
   },
   "header": {
     "home": "Home",

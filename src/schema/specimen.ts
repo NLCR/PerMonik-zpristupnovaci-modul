@@ -27,6 +27,7 @@ export const SpecimenDamageTypesFacet = z.object({
   count: z.number(),
 })
 
+// TODO: kontrolovat, že když číslo chybí, tak že má vyplněné nějaké number, třeba 1, 2 ,3 atd, aby to nebylo prázdné
 export const SpecimenSchema = AuditableSchema.extend({
   id: z.string().length(36),
   metaTitleId: z.string().length(36),
