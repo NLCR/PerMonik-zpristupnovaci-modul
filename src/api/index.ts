@@ -1,14 +1,17 @@
-import ky from 'ky'
+import ky, { HTTPError } from 'ky'
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import i18next from '../i18next'
 import { captureException, withScope } from '@sentry/react'
-import { LOGIN_URL } from '../utils/constants'
 
 // Setup queryClient
 export const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     onError: (err, _variables, _context, mutation) => {
+      if (err instanceof HTTPError && err.response.status === 403) {
+        return
+      }
+
       withScope((scope) => {
         scope.setContext('mutation', {
           mutationId: mutation.mutationId,
@@ -25,6 +28,10 @@ export const queryClient = new QueryClient({
   }),
   queryCache: new QueryCache({
     onError: (err, query) => {
+      if (err instanceof HTTPError && err.response.status === 403) {
+        return
+      }
+
       withScope((scope) => {
         scope.setContext('query', { queryHash: query.queryHash })
         scope.setFingerprint([query.queryHash.replaceAll(/[0-9]/g, '0')])
@@ -53,7 +60,6 @@ interface SpringError {
 const processError = (error: SpringError) => {
   if (error.status === 403) {
     toast.warn(i18next.t('common.session_expired'))
-    window.open(LOGIN_URL, '_blank')
 
     // queryClient.invalidateQueries({ queryKey: ['me'] })
   } else if (error.status === 500) {
