@@ -98,7 +98,7 @@ const MetaTitles = () => {
       toast.success(t('common.saved_successfully'))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      toast.error(t('common.error_occurred_somewhere'))
+      // toast.error(t('common.error_occurred_somewhere'))
     }
   }
 
@@ -181,7 +181,7 @@ const MetaTitles = () => {
               >
                 <TextField
                   size="small"
-                  label={t('administration.name')}
+                  label={t('administration.title')}
                   value={metaTitle.name}
                   onChange={(event) =>
                     setMetaTitle((prevState) => ({

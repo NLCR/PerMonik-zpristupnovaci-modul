@@ -1,49 +1,49 @@
 import Box from '@mui/material/Box'
-import React, { FC } from 'react'
-import { useTranslation } from 'react-i18next'
+import React, { FC, MutableRefObject } from 'react'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import IconButton from '@mui/material/IconButton'
 import clone from 'lodash/clone'
-import { TSpecimenDamageTypes } from '../../../../schema/specimen'
+import {
+  TEditableSpecimen,
+  TSpecimenDamageTypes,
+} from '../../../../schema/specimen'
 import { useVolumeManagementStore } from '../../../../slices/useVolumeManagementStore'
+import {
+  GridApiPro,
+  gridExpandedSortedRowEntriesSelector,
+} from '@mui/x-data-grid-pro'
+import Tooltip from '@mui/material/Tooltip'
 
 type HeaderWithColumnActionProps = {
   field: TSpecimenDamageTypes
   canEdit: boolean
+  apiRef: MutableRefObject<GridApiPro>
+  headerName: string
+  description: string
 }
 
 const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
   field,
   canEdit,
+  apiRef,
+  headerName,
+  description,
 }) => {
-  const { t } = useTranslation()
-  const specimens = useVolumeManagementStore((state) => state.specimensState)
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
 
   const handleDamageChange = () => {
-    let specimensClone = clone(specimens)
-    const specimensWithSelectedDamage = specimens.filter(
+    const filteredSpecimens = gridExpandedSortedRowEntriesSelector(apiRef).map(
+      (row) => row.model
+    ) as TEditableSpecimen[]
+    let specimensClone = clone(filteredSpecimens)
+    const specimensWithSelectedDamage = specimensClone.filter(
       (sp) => sp.numExists && sp.damageTypes?.includes(field)
     ).length
-    const specimensThatExists = specimens.filter((sp) => sp.numExists).length
-
-    if (field === 'OK') {
-      specimensClone = specimensClone.map((sp) => {
-        if (sp.numExists) {
-          const damageTypes = new Set(sp.damageTypes)
-          damageTypes.add(field)
-          return {
-            ...sp,
-            damageTypes: Array.from(damageTypes),
-          }
-        }
-        return sp
-      })
-      specimensActions.setSpecimensState(specimensClone)
-      return
-    }
+    const specimensThatExists = specimensClone.filter(
+      (sp) => sp.numExists
+    ).length
 
     if (
       !specimensWithSelectedDamage ||
@@ -74,7 +74,7 @@ const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
       })
     }
 
-    specimensActions.setSpecimensState(specimensClone)
+    specimensActions.setSpecimensById(specimensClone)
   }
 
   const doAction = () => {
@@ -94,17 +94,29 @@ const HeaderWithColumnAction: FC<HeaderWithColumnActionProps> = ({
   }
 
   return (
-    <Box>
-      <IconButton
-        color="primary"
-        disabled={!canEdit}
-        onClick={() => doAction()}
+    <Tooltip title={description} placement="bottom">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
       >
-        <KeyboardArrowDownIcon />
-      </IconButton>
-      {t(`facet_states.${field}`)}
-    </Box>
+        <Box dangerouslySetInnerHTML={{ __html: headerName }} />
+        <IconButton
+          color="primary"
+          disabled={!canEdit}
+          onClick={() => doAction()}
+          sx={{
+            padding: 0,
+          }}
+        >
+          <KeyboardArrowDownIcon />
+        </IconButton>
+      </Box>
+    </Tooltip>
   )
 }
+
+// HeaderWithColumnAction.whyDidYouRender = true
 
 export default HeaderWithColumnAction

@@ -1,27 +1,26 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import { useVolumeOverviewStatsQuery } from '../../../api/volume'
-import Loader from '../../../components/Loader'
-import ShowError from '../../../components/ShowError'
-import { useOwnerListQuery } from '../../../api/owner'
-import { useMutationListQuery } from '../../../api/mutation'
-import { usePublicationListQuery } from '../../../api/publication'
-import { useLanguageCode } from '../../../utils/helperHooks'
+import { useVolumeOverviewStatsQuery } from '../api/volume'
+import Loader from './Loader'
+import ShowError from './ShowError'
+import { useOwnerListQuery } from '../api/owner'
+import { useMutationListQuery } from '../api/mutation'
+import { useEditionListQuery } from '../api/edition'
+import isFinite from 'lodash/isFinite'
+import { useLanguageCode } from '../hooks/useLanguageCode'
 
 const bolderTextStyle = {
   fontWeight: '600',
 }
 
 type TProps = {
-  volumeBarCode?: string
+  volumeId?: string
 }
 
-const VolumeOverviewStatsModal: FC<TProps> = ({
-  volumeBarCode = undefined,
-}) => {
+const VolumeStatsModalContent: FC<TProps> = ({ volumeId = undefined }) => {
   const { t } = useTranslation()
 
   const { languageCode } = useLanguageCode()
@@ -37,22 +36,80 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
     isError: mutationsError,
   } = useMutationListQuery()
   const {
-    data: publications,
-    isLoading: publicationsLoading,
-    isError: publicationsError,
-  } = usePublicationListQuery()
+    data: editions,
+    isLoading: editionsLoading,
+    isError: editionsError,
+  } = useEditionListQuery()
 
   const {
     data: volumeStats,
     isLoading: volumeStatsLoading,
     isError: volumeStatsError,
-  } = useVolumeOverviewStatsQuery(volumeBarCode)
+  } = useVolumeOverviewStatsQuery(volumeId)
+
+  const numbers = useMemo(
+    () =>
+      volumeStats?.specimens
+        .filter(
+          (s) =>
+            s.numExists &&
+            !s.isAttachment &&
+            s.number?.length &&
+            isFinite(Number(s.number))
+        )
+        .map((s) => Number(s.number)) || [],
+    [volumeStats?.specimens]
+  )
+
+  const atypicalNumbers = useMemo(
+    () =>
+      volumeStats?.specimens
+        .filter(
+          (s) =>
+            s.numExists &&
+            !s.isAttachment &&
+            s.number?.length &&
+            !isFinite(Number(s.number)) &&
+            /^[0-9]+[a-zA-Z]+$/.test(s.number)
+        )
+        .map((s) => s.number) || [],
+    [volumeStats?.specimens]
+  )
+
+  const attachmentNumbers = useMemo(
+    () =>
+      volumeStats?.specimens
+        .filter(
+          (s) =>
+            s.numExists &&
+            s.isAttachment &&
+            s.attachmentNumber?.length &&
+            isFinite(Number(s.attachmentNumber))
+        )
+        .map((s) => Number(s.attachmentNumber)) || [],
+    [volumeStats?.specimens]
+  )
+
+  const atypicalAttachmentNumbers = useMemo(
+    () =>
+      volumeStats?.specimens
+        .filter(
+          (s) =>
+            s.numExists &&
+            s.isAttachment &&
+            s.attachmentNumber?.length &&
+            !isFinite(Number(s.attachmentNumber)) &&
+            /^[0-9]+[a-zA-Z]+$/.test(s.attachmentNumber)
+        )
+        .map((s) => s.attachmentNumber) || [],
+    [volumeStats?.specimens]
+  )
 
   if (
     volumeStatsLoading ||
     ownersLoading ||
     mutationsLoading ||
-    publicationsLoading
+    editionsLoading
   )
     return <Loader />
   if (
@@ -62,8 +119,8 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
     !owners ||
     mutationsError ||
     !mutations ||
-    publicationsError ||
-    !publications
+    editionsError ||
+    !editions
   )
     return <ShowError />
 
@@ -88,7 +145,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
           {t('volume_overview.owner')}:
         </Typography>
         <Typography variant="body2">
-          {owners.find((o) => o.id === volumeStats.ownerId)?.name}
+          {owners.find((o) => o.id === volumeStats.ownerId)?.shorthand}
         </Typography>
       </Box>
       <Box
@@ -126,7 +183,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
               justifyContent: 'space-between',
               width: '45%',
             }}
-            key={m.name}
+            key={`mutationIds-${m.name}`}
           >
             <Typography variant="body2">
               {mutations.find((mk) => mk.id === m.name)?.name[languageCode]}
@@ -150,7 +207,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
               justifyContent: 'space-between',
               width: '45%',
             }}
-            key={d.name}
+            key={`publicationDayRanges-${d.name}`}
           >
             <Typography variant="body2">
               {dayjs(d.name).format('YYYY')}
@@ -179,9 +236,38 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
       >
         <Typography sx={bolderTextStyle}>
           {t('volume_overview.numbers')}:
-        </Typography>{' '}
+        </Typography>
         <Typography variant="body2">
-          {volumeStats.numberMin} - {volumeStats.numberMax}
+          {numbers.length ? (
+            <>
+              {Math.min(...numbers)} - {Math.max(...numbers)}
+            </>
+          ) : null}
+          {numbers.length && atypicalNumbers.length ? ' | ' : null}
+          {atypicalNumbers.length ? <>{atypicalNumbers.join(', ')}</> : null}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          marginBottom: '10px',
+        }}
+      >
+        <Typography sx={bolderTextStyle}>
+          {t('volume_overview.attachment_numbers')}:
+        </Typography>
+        <Typography variant="body2">
+          {attachmentNumbers.length ? (
+            <>
+              {Math.min(...attachmentNumbers)} -{' '}
+              {Math.max(...attachmentNumbers)}
+            </>
+          ) : null}
+          {attachmentNumbers.length && atypicalAttachmentNumbers.length
+            ? ' | '
+            : null}
+          {atypicalAttachmentNumbers.length ? (
+            <>{atypicalAttachmentNumbers.join(', ')}</>
+          ) : null}
         </Typography>
       </Box>
       <Box
@@ -200,11 +286,11 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
         }}
       >
         <Typography sx={bolderTextStyle}>
-          {t('volume_overview.publication_mark')}:
+          {t('volume_overview.mutation_mark')}:
         </Typography>
-        {volumeStats.publicationMark.map((pm) => (
+        {volumeStats.mutationMarks.map((pm) => (
           <Box
-            key={pm.name}
+            key={`mutationMarks-${pm.name}`}
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -224,11 +310,11 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
         }}
       >
         <Typography sx={bolderTextStyle}>
-          {t('volume_overview.publication')}:
+          {t('volume_overview.edition')}:
         </Typography>
-        {volumeStats.publicationIds.map((p) => (
+        {volumeStats.editionIds.map((p) => (
           <Box
-            key={p.name}
+            key={`editionIds-${p.name}`}
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -236,7 +322,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
             }}
           >
             <Typography variant="body2">
-              {publications.find((pk) => pk.id === p.name)?.name[languageCode]}
+              {editions.find((pk) => pk.id === p.name)?.name[languageCode]}
             </Typography>
             <Typography variant="body2">{p.count}x</Typography>
           </Box>
@@ -277,7 +363,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
           .filter((s) => s.name !== 'OK')
           .map((s) => (
             <Box
-              key={s.name}
+              key={`damageTypes-${s.name}`}
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -300,11 +386,50 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
           {t('volume_overview.missing_numbers')}:
         </Typography>
         {volumeStats.specimens
-          .filter((s) => s.numMissing)
+          .filter((s) => s.numMissing && !s.isAttachment)
           .map((s) => (
-            <Typography variant="body2" key={s.id}>
-              {dayjs(s.publicationDate).format('DD.MM.YYYY')}
-            </Typography>
+            <Box
+              key={`missingNumbers-${s.id}`}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '45%',
+              }}
+            >
+              <Typography variant="body2">{s.number}</Typography>
+              <Typography variant="body2" key={`missingNumbers-child-${s.id}`}>
+                {dayjs(s.publicationDate).format('DD.MM.YYYY')}
+              </Typography>
+            </Box>
+          ))}
+      </Box>
+      <Box
+        sx={{
+          marginBottom: '10px',
+        }}
+      >
+        <Typography sx={bolderTextStyle}>
+          {t('volume_overview.missing_attachment_numbers')}:
+        </Typography>
+        {volumeStats.specimens
+          .filter((s) => s.numMissing && s.isAttachment)
+          .map((s) => (
+            <Box
+              key={`missingAttachmentNumbers-${s.id}`}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '45%',
+              }}
+            >
+              <Typography variant="body2">{s.attachmentNumber}</Typography>
+              <Typography
+                variant="body2"
+                key={`missingAttachmentNumbers-child-${s.id}`}
+              >
+                {dayjs(s.publicationDate).format('DD.MM.YYYY')}
+              </Typography>
+            </Box>
           ))}
       </Box>
       <Box
@@ -316,7 +441,7 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
           {t('volume_overview.physical_condition')}:
         </Typography>
         <Typography variant="body2">
-          {volumeStats.damageTypes.findIndex((s) => s.name !== 'OK')
+          {volumeStats.damageTypes.find((s) => s.name !== 'OK')
             ? t('volume_overview.state_not_ok')
             : t('volume_overview.state_ok')}
         </Typography>
@@ -334,11 +459,11 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
             (s) =>
               s.damageTypes?.includes('PP') &&
               Number(s.number) >= 0 &&
-              !s.numMissing
+              s.numExists
           )
           .map((s) => (
             <Box
-              key={s.name}
+              key={`damagedNumbers-${s.id}'`}
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -363,10 +488,10 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
           {t('volume_overview.notes')}:
         </Typography>
         {volumeStats.specimens
-          .filter((s) => s.note.length)
+          .filter((s) => s.note.length && s.numExists)
           .map((s) => (
             <Box
-              key={s.name}
+              key={`notes-${s.id}`}
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -393,4 +518,4 @@ const VolumeOverviewStatsModal: FC<TProps> = ({
   )
 }
 
-export default VolumeOverviewStatsModal
+export default VolumeStatsModalContent

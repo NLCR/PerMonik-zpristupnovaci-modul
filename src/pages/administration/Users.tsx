@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
@@ -71,6 +71,8 @@ const Users = ({ me }: { me: TMe }) => {
     userName: '',
   })
 
+  const initialUserSelected = useRef<boolean>(false)
+
   const {
     data: users,
     isLoading: usersLoading,
@@ -86,7 +88,8 @@ const Users = ({ me }: { me: TMe }) => {
     useUpdateUserMutation(me)
 
   useEffect(() => {
-    if (users?.length) {
+    if (users?.length && !initialUserSelected.current) {
+      initialUserSelected.current = true
       setUser(users[0])
     }
   }, [users])
@@ -103,7 +106,7 @@ const Users = ({ me }: { me: TMe }) => {
       toast.success(t('common.saved_successfully'))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      toast.error(t('common.error_occurred_somewhere'))
+      // toast.error(t('common.error_occurred_somewhere'))
     }
   }
 
@@ -232,7 +235,7 @@ const Users = ({ me }: { me: TMe }) => {
                   >
                     {owners.map((o) => (
                       <MenuItem key={o.id} value={o.id}>
-                        {o.name}
+                        {o.shorthand}
                       </MenuItem>
                     ))}
                   </Select>

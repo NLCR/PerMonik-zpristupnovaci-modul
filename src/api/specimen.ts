@@ -1,6 +1,6 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import { useQuery, keepPreviousData, useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { api } from './index'
+import { api, queryClient } from './index'
 import {
   TSpecimensPublicationDays,
   TSpecimen,
@@ -13,8 +13,8 @@ interface TSpecimensFacets {
   names: TSpecimenFacet[]
   subNames: TSpecimenFacet[]
   mutationIds: TSpecimenFacet[]
-  publicationIds: TSpecimenFacet[]
-  publicationMarks: TSpecimenFacet[]
+  editionIds: TSpecimenFacet[]
+  mutationMarks: TSpecimenFacet[]
   ownerIds: TSpecimenFacet[]
   damageTypes: TSpecimenDamageTypesFacet[]
 }
@@ -51,6 +51,7 @@ export const useSpecimenFacetsQuery = (metaTitleId?: string) => {
 export interface TSpecimenList extends TSpecimensPublicationDays {
   specimens: TSpecimen[]
   count: number
+  owners: string[]
 }
 
 export const useSpecimenListQuery = (metaTitleId?: string) => {
@@ -123,5 +124,33 @@ export const useSpecimensStartDateForCalendar = (metaTitleId?: string) => {
     queryFn: () =>
       api().get(`specimen/${metaTitleId}/start-date`).json<number>(),
     enabled: !!metaTitleId,
+  })
+}
+
+export const useGetSpecimenNamesAndSubNames = () => {
+  return useQuery({
+    queryKey: ['specimen', 'names'],
+    queryFn: () =>
+      api()
+        .get(`specimen/names`)
+        .json<{ names: string[]; subNames: string[] }>(),
+  })
+}
+
+type TDeleteSpecimen = {
+  volumeId: string
+  specimenId: string
+}
+
+export const useDeleteSpecimenById = () => {
+  return useMutation<void, unknown, TDeleteSpecimen>({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mutationFn: ({ volumeId, specimenId }) =>
+      api().delete(`specimen/${specimenId}`).json<void>(),
+    onSuccess: (_, editArgs) => {
+      queryClient.invalidateQueries({
+        queryKey: ['volume', 'detail', editArgs.volumeId],
+      })
+    },
   })
 }

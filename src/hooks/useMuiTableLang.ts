@@ -1,11 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { csCZ, skSK, enUS } from '@mui/x-data-grid/locales'
-import { TSupportedLanguages } from '../i18next'
-
-export const useLanguageCode = () => {
-  const { i18n } = useTranslation()
-  return { languageCode: i18n.resolvedLanguage as TSupportedLanguages }
-}
+import { csCZ, enUS, skSK } from '@mui/x-data-grid-pro/locales'
 
 export const useMuiTableLang = () => {
   const { i18n } = useTranslation()

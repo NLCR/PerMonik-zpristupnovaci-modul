@@ -3,14 +3,15 @@ import React, { useState } from 'react'
 import clone from 'lodash/clone'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import Modal from '@mui/material/Modal'
-import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import { GridRenderEditCellParams } from '@mui/x-data-grid/models/params/gridCellParams'
 import {
   TEditableSpecimen,
   TSpecimenDamageTypes,
 } from '../../../../schema/specimen'
+import ModalContainer from '../../../../components/ModalContainer'
+import IconButton from '@mui/material/IconButton'
+import EditIcon from '@mui/icons-material/Edit'
 
 function createArrayOfNumbers(n: number): number[] {
   // TODO: when changing pagesCount, watch for damaged and missing pages with number larger then pagesCount and delete them
@@ -77,84 +78,78 @@ const DamagedPagesAndMissingPagesEditModal = ({
   }
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box
-        sx={{
-          p: 2,
-          backgroundColor: 'white',
-          borderRadius: 2,
-          maxWidth: 400,
-          mx: 'auto',
-          my: '20%',
-        }}
-      >
-        <Box>
-          {field === 'PP' ? (
-            <>
-              <Typography variant="h6">{t('facet_states.PP')}</Typography>
-              <Typography>
-                {t('common.yes')}
-                <Checkbox
-                  checked={damageTypes.includes('PP')}
-                  onChange={(event) =>
-                    handleDamageTypeChange('PP', event.target.checked)
-                  }
-                />
-              </Typography>
-              <Typography>{t('table.pages')}</Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {createArrayOfNumbers(row.pagesCount).map((page) => {
-                  return (
-                    <Typography key={`damaged-pages-${page}`}>
-                      {page}
-                      <Checkbox
-                        disabled={!damageTypes.some((dt) => dt === 'PP')}
-                        checked={damagedPages.some((dp) => dp === page)}
-                        onChange={(event) =>
-                          handlePagesChange(page, 'PP', event.target.checked)
-                        }
-                      />
-                    </Typography>
-                  )
-                })}
-              </Box>
-            </>
-          ) : null}
-          {field === 'ChS' ? (
-            <>
-              <Typography variant="h6">{t('facet_states.ChS')}</Typography>
-              <Typography>
-                {t('common.yes')}
-                <Checkbox
-                  checked={damageTypes.includes('ChS')}
-                  onChange={(event) =>
-                    handleDamageTypeChange('ChS', event.target.checked)
-                  }
-                />
-              </Typography>
-              <Typography>{t('table.pages')}</Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {createArrayOfNumbers(row.pagesCount).map((page) => {
-                  return (
-                    <Typography key={`missing-pages-${page}`}>
-                      {page}
-                      <Checkbox
-                        disabled={!damageTypes.some((dt) => dt === 'ChS')}
-                        checked={missingPages.some((dp) => dp === page)}
-                        onChange={(event) =>
-                          handlePagesChange(page, 'ChS', event.target.checked)
-                        }
-                      />
-                    </Typography>
-                  )
-                })}
-              </Box>
-            </>
-          ) : null}
-        </Box>
-        <Button onClick={handleSave}>{t('administration.save')}</Button>
-      </Box>
-    </Modal>
+    <ModalContainer
+      header={field === 'PP' ? t('facet_states.PP') : t('facet_states.ChS')}
+      opened={open}
+      onClose={onClose}
+      style="fitted"
+      closeButton={{ callback: () => onClose() }}
+      acceptButton={{
+        callback: () => handleSave(),
+      }}
+    >
+      <>
+        {field === 'PP' ? (
+          <>
+            <Typography>
+              {t('common.yes')}
+              <Checkbox
+                checked={damageTypes.includes('PP')}
+                onChange={(event) =>
+                  handleDamageTypeChange('PP', event.target.checked)
+                }
+              />
+            </Typography>
+            <Typography>{t('table.pages')}</Typography>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {createArrayOfNumbers(row.pagesCount).map((page) => {
+                return (
+                  <Typography key={`damaged-pages-${page}`}>
+                    {page}
+                    <Checkbox
+                      disabled={!damageTypes.some((dt) => dt === 'PP')}
+                      checked={damagedPages.some((dp) => dp === page)}
+                      onChange={(event) =>
+                        handlePagesChange(page, 'PP', event.target.checked)
+                      }
+                    />
+                  </Typography>
+                )
+              })}
+            </Box>
+          </>
+        ) : (
+          <>
+            <Typography>
+              {t('common.yes')}
+              <Checkbox
+                checked={damageTypes.includes('ChS')}
+                onChange={(event) =>
+                  handleDamageTypeChange('ChS', event.target.checked)
+                }
+              />
+            </Typography>
+            <Typography>{t('table.pages')}</Typography>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {createArrayOfNumbers(row.pagesCount).map((page) => {
+                return (
+                  <Typography key={`missing-pages-${page}`}>
+                    {page}
+                    <Checkbox
+                      disabled={!damageTypes.some((dt) => dt === 'ChS')}
+                      checked={missingPages.some((dp) => dp === page)}
+                      onChange={(event) =>
+                        handlePagesChange(page, 'ChS', event.target.checked)
+                      }
+                    />
+                  </Typography>
+                )
+              })}
+            </Box>
+          </>
+        )}
+      </>
+    </ModalContainer>
   )
 }
 
@@ -162,7 +157,6 @@ const DamagedAndMissingPagesEditCell = (
   props: GridRenderEditCellParams<TEditableSpecimen>
 ) => {
   const { field, row, api } = props
-  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
   const handleSave = (updatedRow: TEditableSpecimen) => {
@@ -171,9 +165,14 @@ const DamagedAndMissingPagesEditCell = (
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
-        {t('administration.update')}
-      </Button>
+      {/* <Checkbox */}
+      {/*   readOnly */}
+      {/*   disabled */}
+      {/*   checked={!!row.damageTypes?.some((dt) => dt === field)} */}
+      {/* /> */}
+      <IconButton color="primary" onClick={() => setOpen(true)}>
+        <EditIcon />
+      </IconButton>
       <DamagedPagesAndMissingPagesEditModal
         field={field as TSpecimenDamageTypes}
         open={open}

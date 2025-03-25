@@ -20,7 +20,8 @@ import {
   useMutationListQuery,
   useUpdateMutationMutation,
 } from '../../api/mutation'
-import { useLanguageCode } from '../../utils/helperHooks'
+
+import { useLanguageCode } from '../../hooks/useLanguageCode'
 
 const Container = styled('div')(() => ({
   position: 'relative',
@@ -100,7 +101,7 @@ const Mutations = () => {
       toast.success(t('common.saved_successfully'))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      toast.error(t('common.error_occurred_somewhere'))
+      // toast.error(t('common.error_occurred_somewhere'))
     }
   }
 

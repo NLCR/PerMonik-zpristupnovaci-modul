@@ -1,54 +1,47 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
-import SpeedDial from '@mui/material/SpeedDial'
-import SpeedDialAction from '@mui/material/SpeedDialAction'
-import SpeedDialIcon from '@mui/material/SpeedDialIcon'
 import Typography from '@mui/material/Typography'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import SaveIcon from '@mui/icons-material/Save'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import { blue } from '@mui/material/colors'
-import { useMangedVolumeDetailQuery } from '../../api/volume'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { useManagedVolumeDetailQuery } from '../../api/volume'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
 import ShowInfoMessage from '../../components/ShowInfoMessage'
 import { useMutationListQuery } from '../../api/mutation'
 import { useOwnerListQuery } from '../../api/owner'
-import { usePublicationListQuery } from '../../api/publication'
+import { useEditionListQuery } from '../../api/edition'
 import { useMeQuery } from '../../api/user'
 import SpecimensTable from './components/Table'
 import { useMetaTitleListQuery } from '../../api/metaTitle'
 import { useVolumeManagementStore } from '../../slices/useVolumeManagementStore'
 import InputData from './components/InputData'
-import { useVolumeManagementActions } from '../../hooks/useVolumeManagementActions'
-import Modal from '@mui/material/Modal'
-import Backdrop from '@mui/material/Backdrop'
-import Fade from '@mui/material/Fade'
+import useVolumeManagementActions from '../../hooks/useVolumeManagementActions'
 import Button from '@mui/material/Button'
+import { BACK_META_TITLE_ID } from '../../utils/constants'
+import ModalContainer from '../../components/ModalContainer'
+import VolumeStatsModalContent from '../../components/VolumeStatsModalContent'
+import { validate as uuidValidate } from 'uuid'
+import UnsavedChangesModal from './components/UnsavedChangesModal'
 
-const modalStyle = {
-  overflowY: 'auto',
-  position: 'absolute' as const,
-  maxHeight: '200px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '400px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  p: 4,
+type TVolumeManagementProps = {
+  duplicated?: boolean
 }
 
-const VolumeManagement = () => {
+const VolumeManagement: FC<TVolumeManagementProps> = ({
+  duplicated = false,
+}) => {
   const { volumeId } = useParams()
   const { data: me, isLoading: meLoading, isError: meError } = useMeQuery()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
+  const [searchParams] = useSearchParams()
+
+  const [volumeStatsModalOpened, setVolumeStatsModalOpened] = useState(false)
   const [confirmDeletionModalStage, setConfirmDeletionModalStage] = useState({
     opened: false,
     stage: 1,
@@ -64,7 +57,7 @@ const VolumeManagement = () => {
   const specimensActions = useVolumeManagementStore(
     (state) => state.specimensActions
   )
-  const volumeRegenerated = useVolumeManagementStore(
+  const volumeOvergenerated = useVolumeManagementStore(
     (state) => state.periodicityGenerationUsed
   )
 
@@ -82,37 +75,57 @@ const VolumeManagement = () => {
     data: volume,
     isLoading: volumeLoading,
     isError: volumeError,
-  } = useMangedVolumeDetailQuery(volumeId)
+  } = useManagedVolumeDetailQuery(volumeId)
   const {
-    data: publications,
-    isLoading: publicationsLoading,
-    isError: publicationsError,
-  } = usePublicationListQuery()
+    data: editions,
+    isLoading: editionsLoading,
+    isError: editionsError,
+  } = useEditionListQuery()
   const {
     data: metaTitles,
     isLoading: metaTitlesLoading,
     isError: metaTitlesError,
   } = useMetaTitleListQuery()
 
-  const { doUpdate, doRegeneratedUpdate, doCreate, doDelete, pendingActions } =
-    useVolumeManagementActions(publications || [])
+  const backMetaTitle = useMemo(
+    () =>
+      uuidValidate(searchParams.get(BACK_META_TITLE_ID) || '')
+        ? searchParams.get(BACK_META_TITLE_ID)
+        : volume?.volume.metaTitleId,
+    [searchParams, volume?.volume.metaTitleId]
+  )
+
+  const {
+    doDuplicate,
+    doUpdate,
+    doOvergeneratedUpdate,
+    doCreate,
+    doDelete,
+    pendingActions,
+  } = useVolumeManagementActions(editions || [])
 
   useEffect(() => {
-    if (volume) {
-      volumeActions.setVolumeState(volume.volume)
-      specimensActions.setSpecimensState(volume.specimens)
+    if (volume?.volume) {
+      volumeActions.setVolumeState(volume.volume, false)
+      specimensActions.setSpecimensState(volume.specimens, false)
       volumePeriodicityActions.setPeriodicityGenerationUsed(false)
     }
   }, [specimensActions, volume, volumeActions, volumePeriodicityActions])
 
   useEffect(() => {
-    if (!volumeId) {
+    if (!volumeId && !duplicated) {
       setInitialState()
-      if (publications) {
-        volumePeriodicityActions.setDefaultPeriodicityPublication(publications)
+      if (editions) {
+        volumePeriodicityActions.setDefaultPeriodicityEdition(editions)
       }
     }
-  }, [publications, volumeId, volumePeriodicityActions, setInitialState])
+  }, [
+    editions,
+    volumeId,
+    volumePeriodicityActions,
+    setInitialState,
+    duplicated,
+  ])
 
   const handleDeletion = () => {
     doDelete()
@@ -120,56 +133,103 @@ const VolumeManagement = () => {
 
   const canEdit = useMemo(
     () =>
-      me?.owners?.some((o) => o === volume?.volume.ownerId) ||
+      me?.owners?.some((o) => o === volume?.volume?.ownerId) ||
       !volumeId?.length ||
       me?.role === 'super_admin',
-    [me, volume?.volume.ownerId, volumeId?.length]
+    [me, volume?.volume, volumeId?.length]
   )
 
   const actions = useMemo(() => {
     const actionsArray: {
       icon: JSX.Element
       name: string
+      color: 'primary' | 'secondary' | 'error'
       onClick: () => void
     }[] = []
 
-    if (volumeId && volumeRegenerated) {
-      actionsArray.push({
-        icon: <SaveAsIcon />,
-        // name: t('administration.update'),
-        name: t('administration.save'),
-        onClick: doRegeneratedUpdate,
-      })
+    if (volumeId && volumeOvergenerated) {
+      actionsArray.push(
+        {
+          icon: <ContentCopyIcon />,
+          name: t('administration.duplicate_volume'),
+          color: 'primary',
+          onClick: () => doDuplicate(),
+        },
+        {
+          icon: <CheckCircleIcon />,
+          name: t('administration.verified'),
+          color: 'primary',
+          onClick: () => doOvergeneratedUpdate(true),
+        },
+        {
+          icon: <SaveAsIcon />,
+          name: t('administration.save'),
+          color: 'primary',
+          onClick: () => doOvergeneratedUpdate(),
+        }
+      )
     }
-    if (volumeId && !volumeRegenerated) {
-      actionsArray.push({
-        icon: <SaveAsIcon />,
-        // name: t('administration.update'),
-        name: t('administration.save'),
-        onClick: doUpdate,
-      })
+    if (volumeId && !volumeOvergenerated) {
+      actionsArray.push(
+        {
+          icon: <ContentCopyIcon />,
+          name: t('administration.duplicate_volume'),
+          color: 'primary',
+          onClick: () => doDuplicate(),
+        },
+        {
+          icon: <CheckCircleIcon />,
+          name: t('administration.verified'),
+          color: 'primary',
+          onClick: () => doUpdate(true),
+        },
+        {
+          icon: <SaveAsIcon />,
+          name: t('administration.save'),
+          color: 'primary',
+          onClick: () => doUpdate(),
+        }
+      )
     }
     if (volumeId) {
       actionsArray.push({
         icon: <DeleteForeverIcon />,
         name: t('administration.delete'),
+        color: 'error',
         onClick: () => setConfirmDeletionModalStage({ opened: true, stage: 1 }),
       })
     }
     if (!volumeId) {
-      actionsArray.push({
-        icon: <SaveIcon />,
-        name: t('administration.save'),
-        onClick: doCreate,
-      })
+      actionsArray.push(
+        {
+          icon: <CheckCircleIcon />,
+          name: t('administration.verified'),
+          color: 'primary',
+          onClick: () => doCreate(true),
+        },
+        {
+          icon: <SaveIcon />,
+          name: t('administration.save'),
+          color: 'primary',
+          onClick: () => doCreate(),
+        }
+      )
     }
 
     return actionsArray
-  }, [doCreate, doRegeneratedUpdate, doUpdate, t, volumeId, volumeRegenerated])
+  }, [
+    doDuplicate,
+    doCreate,
+    doOvergeneratedUpdate,
+    doUpdate,
+    t,
+    volumeId,
+    volumeOvergenerated,
+  ])
 
   if (
     volumeLoading ||
-    publicationsLoading ||
+    editionsLoading ||
     mutationsLoading ||
     ownersLoading ||
     metaTitlesLoading ||
@@ -178,7 +238,7 @@ const VolumeManagement = () => {
     return <Loader />
   if (
     volumeError ||
-    publicationsError ||
+    editionsError ||
     mutationsError ||
     ownersError ||
     metaTitlesError ||
@@ -187,7 +247,7 @@ const VolumeManagement = () => {
     return <ShowError />
   if (
     (!volume && volumeId?.length) ||
-    !publications ||
+    !editions ||
     !mutations ||
     !owners ||
     !metaTitles
@@ -225,37 +285,14 @@ const VolumeManagement = () => {
           <Loader />
         </Box>
       ) : null}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '380px',
-          padding: '16px',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          // boxShadow: theme.shadows[1],
-          flexShrink: 0,
-        }}
-      >
-        <Typography
-          sx={{
-            marginBottom: '8px',
-            color: blue['900'],
-            fontWeight: 'bold',
-            fontSize: '24px',
-          }}
-        >
-          {t('volume_overview.volume_information')}
-        </Typography>
-        <InputData
-          canEdit={canEdit}
-          me={me}
-          mutations={mutations}
-          owners={owners}
-          publications={publications}
-          metaTitles={metaTitles}
-        />
-      </Box>
+      <InputData
+        canEdit={canEdit}
+        me={me}
+        mutations={mutations}
+        owners={owners}
+        metaTitles={metaTitles}
+        editions={editions}
+      />
       <Box
         sx={{
           display: 'flex',
@@ -268,142 +305,151 @@ const VolumeManagement = () => {
           // boxShadow: theme.shadows[1],
         }}
       >
-        <Typography
-          sx={{
-            marginBottom: '8px',
-            color: blue['900'],
-            fontWeight: 'bold',
-            fontSize: '24px',
-          }}
-        >
-          {t('volume_overview.volume_description')}
-        </Typography>
         <SpecimensTable
           canEdit={canEdit}
           mutations={mutations}
-          publications={publications}
+          editions={editions}
         />
+        <Box
+          sx={{
+            marginTop: '16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '8px',
+              alignItems: 'center',
+            }}
+          >
+            {backMetaTitle?.length ? (
+              <Button
+                component={Link}
+                variant="outlined"
+                to={`/${i18n.resolvedLanguage}/${t('urls.specimens_overview')}/${backMetaTitle}`}
+              >
+                {t('volume_overview.back_to_specimens_overview')}
+              </Button>
+            ) : null}
+            {volumeId ? (
+              <Button
+                variant="outlined"
+                onClick={() => setVolumeStatsModalOpened(true)}
+              >
+                {t('specimens_overview.volume_overview_modal_link')}
+              </Button>
+            ) : null}
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '8px',
+              alignItems: 'center',
+            }}
+          >
+            {canEdit ? (
+              <>
+                {actions.map((action) => (
+                  <Button
+                    variant="contained"
+                    color={action.color}
+                    key={action.name}
+                    startIcon={action.icon}
+                    onClick={action.onClick}
+                  >
+                    {action.name}
+                  </Button>
+                ))}
+              </>
+            ) : null}
+          </Box>
+        </Box>
       </Box>
-      {canEdit ? (
-        <SpeedDial
-          ariaLabel=""
-          sx={{ position: 'absolute', bottom: 16, right: 16 }}
-          icon={<SpeedDialIcon />}
-        >
-          {actions.map((action) => (
-            <SpeedDialAction
-              key={action.name}
-              icon={action.icon}
-              tooltipTitle={action.name}
-              onClick={action.onClick}
-            />
-          ))}
-        </SpeedDial>
-      ) : null}
-      {confirmDeletionModalStage.opened ? (
-        <Modal
-          open={confirmDeletionModalStage.opened}
-          onClose={() => {
-            setConfirmDeletionModalStage((prevState) => ({
-              ...prevState,
-              opened: false,
-            }))
+      <ModalContainer
+        onClose={() =>
+          setConfirmDeletionModalStage((prevState) => ({
+            ...prevState,
+            opened: false,
+          }))
+        }
+        header={
+          confirmDeletionModalStage.stage === 1
+            ? t('volume_overview.delete_volume_text')
+            : t('volume_overview.delete_volume_text2')
+        }
+        opened={!!volumeId?.length && confirmDeletionModalStage.opened}
+        acceptButton={{
+          callback: () => {
+            if (confirmDeletionModalStage.stage === 1) {
+              setConfirmDeletionModalStage((prevState) => ({
+                ...prevState,
+                opened: false,
+              }))
+            }
+            if (confirmDeletionModalStage.stage === 2) {
+              setConfirmDeletionModalStage((prevState) => ({
+                ...prevState,
+                opened: false,
+              }))
+            }
+          },
+          text:
+            confirmDeletionModalStage.stage === 1
+              ? t('common.no')
+              : t('common.yes'),
+        }}
+        closeButton={{
+          callback: () => {
+            if (confirmDeletionModalStage.stage === 1) {
+              setConfirmDeletionModalStage((prevState) => ({
+                ...prevState,
+                stage: 2,
+              }))
+            }
+            if (confirmDeletionModalStage.stage === 2) {
+              setConfirmDeletionModalStage((prevState) => ({
+                ...prevState,
+                opened: false,
+              }))
+              handleDeletion()
+            }
+          },
+          text:
+            confirmDeletionModalStage.stage === 1
+              ? t('common.yes')
+              : t('common.no'),
+        }}
+        style="fitted"
+        switchButtons={confirmDeletionModalStage.stage === 2}
+      >
+        <Typography
+          sx={{
+            marginBottom: '16px',
           }}
-          closeAfterTransition
-          slots={{ backdrop: Backdrop }}
-          slotProps={{
-            backdrop: {
-              color: '#fff',
-              timeout: 500,
-            },
-          }}
         >
-          <Fade in={confirmDeletionModalStage.opened}>
-            <Box sx={modalStyle}>
-              <Typography
-                sx={{
-                  color: blue['900'],
-                  fontSize: '24px',
-                  fontWeight: 'bold',
-                  marginBottom: '16px',
-                }}
-              >
-                {t('volume_overview.delete_volume_caption')}
-              </Typography>
-              <Typography
-                sx={{
-                  marginBottom: '16px',
-                }}
-              >
-                {confirmDeletionModalStage.stage === 1
-                  ? t('volume_overview.delete_volume_text')
-                  : t('volume_overview.delete_volume_text2')}
-              </Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: '10px',
-                }}
-              >
-                {confirmDeletionModalStage.stage === 1 ? (
-                  <>
-                    <Button
-                      variant="outlined"
-                      onClick={() =>
-                        setConfirmDeletionModalStage((prevState) => ({
-                          ...prevState,
-                          stage: 2,
-                        }))
-                      }
-                    >
-                      {t('common.yes')}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={() =>
-                        setConfirmDeletionModalStage((prevState) => ({
-                          ...prevState,
-                          opened: false,
-                        }))
-                      }
-                    >
-                      {t('common.no')}
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        setConfirmDeletionModalStage((prevState) => ({
-                          ...prevState,
-                          opened: false,
-                        }))
-                        handleDeletion()
-                      }}
-                    >
-                      {t('common.no')}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={() =>
-                        setConfirmDeletionModalStage((prevState) => ({
-                          ...prevState,
-                          opened: false,
-                        }))
-                      }
-                    >
-                      {t('common.yes')}
-                    </Button>
-                  </>
-                )}
-              </Box>
-            </Box>
-          </Fade>
-        </Modal>
-      ) : null}
+          {confirmDeletionModalStage.stage === 1
+            ? t('volume_overview.delete_volume_text')
+            : t('volume_overview.delete_volume_text2')}
+        </Typography>
+      </ModalContainer>
+      <ModalContainer
+        header={t('specimens_overview.volume_overview_modal_link')}
+        opened={volumeStatsModalOpened}
+        onClose={() => setVolumeStatsModalOpened(false)}
+        closeButton={{ callback: () => setVolumeStatsModalOpened(false) }}
+      >
+        <VolumeStatsModalContent volumeId={volumeId} />
+      </ModalContainer>
+      <UnsavedChangesModal />
     </Box>
   )
 }
+
+// VolumeManagement.whyDidYouRender = true
 
 export default VolumeManagement

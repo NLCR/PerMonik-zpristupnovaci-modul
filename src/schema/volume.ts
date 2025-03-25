@@ -1,11 +1,11 @@
 import { z } from 'zod'
-import { v4 as uuid } from 'uuid'
 import {
-  SpecimenSchema,
-  SpecimenFacetSchema,
   SpecimenDamageTypesFacet,
+  SpecimenFacetSchema,
+  SpecimenSchema,
 } from './specimen'
-import { TPublication } from './publication'
+import { AuditableSchema } from './common'
+import i18next from '../i18next'
 
 export const VolumePeriodicityDaysSchema = z.enum([
   'Monday',
@@ -20,7 +20,7 @@ export const VolumePeriodicityDaysSchema = z.enum([
 export const VolumePeriodicitySchema = z.object({
   numExists: z.boolean(),
   isAttachment: z.boolean(),
-  publicationId: z.string().length(36),
+  editionId: z.string().length(36),
   day: VolumePeriodicityDaysSchema,
   pagesCount: z.number(),
   name: z.string(),
@@ -30,37 +30,40 @@ export const VolumePeriodicitySchema = z.object({
 export const EditableVolumePeriodicitySchema = z.object({
   numExists: z.boolean(),
   isAttachment: z.boolean(),
-  publicationId: z.string().nullable(),
+  editionId: z.string().nullable(),
   day: VolumePeriodicityDaysSchema,
   pagesCount: z.number().or(z.string()),
   name: z.string(),
   subName: z.string(),
+  duplicated: z.boolean().optional(),
 })
 
-export const VolumeSchema = z.object({
+export const VolumeSchema = AuditableSchema.extend({
   id: z.string().length(36),
-  barCode: z.string().min(1),
-  dateFrom: z.string().min(1),
-  dateTo: z.string().min(1),
-  metaTitleId: z.string().length(36),
-  mutationId: z.string().length(36),
+  barCode: z.string().min(1, i18next.t('schema.bar_code_min_length')),
+  dateFrom: z.string().min(1, i18next.t('schema.date_from_min_length')),
+  dateTo: z.string().min(1, i18next.t('schema.date_to_min_length')),
+  metaTitleId: z.string().length(36, i18next.t('schema.meta_title_empty')),
+  subName: z.string(),
+  mutationId: z.string().length(36, i18next.t('schema.mutation_empty')),
   periodicity: VolumePeriodicitySchema.array(),
-  firstNumber: z.number().min(0),
-  lastNumber: z.number().min(0),
+  firstNumber: z.number().min(0, i18next.t('schema.first_number_min')),
+  lastNumber: z.number().min(0, i18next.t('schema.last_number_min')),
   note: z.string(),
   showAttachmentsAtTheEnd: z.boolean(),
   signature: z.string(),
-  ownerId: z.string().length(36),
-  year: z.number().min(0),
-  publicationMark: z.string(),
+  ownerId: z.string().length(36, i18next.t('schema.owner_empty')),
+  year: z.number().min(0, i18next.t('schema.year_min')),
+  mutationMark: z.string(),
 })
 
-export const EditableVolumeSchema = z.object({
+export const EditableVolumeSchema = AuditableSchema.extend({
   id: z.string(),
   barCode: z.string(),
   dateFrom: z.string(),
   dateTo: z.string(),
   metaTitleId: z.string(),
+  subName: z.string(),
   mutationId: z.string(),
   periodicity: EditableVolumePeriodicitySchema.array(),
   firstNumber: z.string().or(z.number()).optional(),
@@ -70,7 +73,7 @@ export const EditableVolumeSchema = z.object({
   signature: z.string(),
   ownerId: z.string(),
   year: z.string().or(z.number()).optional(),
-  publicationMark: z.string(),
+  mutationMark: z.string(),
 })
 
 // export const EditableVolumeSchema = VolumeSchema.extend({
@@ -96,12 +99,10 @@ const VolumeOverviewStatsSchema = z.object({
   barCode: z.string(),
   publicationDayMin: z.string().nullable(),
   publicationDayMax: z.string().nullable(),
-  numberMin: z.string().nullable(),
-  numberMax: z.string().nullable(),
   pagesCount: z.string().nullable(),
   mutationIds: SpecimenFacetSchema.array(),
-  publicationMark: SpecimenFacetSchema.array(),
-  publicationIds: SpecimenFacetSchema.array(),
+  mutationMarks: SpecimenFacetSchema.array(),
+  editionIds: SpecimenFacetSchema.array(),
   damageTypes: SpecimenDamageTypesFacet.array(),
   publicationDayRanges: SpecimenFacetSchema.array(),
   specimens: SpecimenSchema.array(),
@@ -117,38 +118,3 @@ export type TEditableVolume = z.infer<typeof EditableVolumeSchema>
 export type TCreatableVolume = z.infer<typeof CreatableVolumeSchema>
 export type TVolumeDetail = z.infer<typeof VolumeDetailSchema>
 export type TVolumeOverviewStats = z.infer<typeof VolumeOverviewStatsSchema>
-
-export const repairVolume = (
-  volume: TEditableVolume,
-  publications: TPublication[]
-): TVolume => {
-  return {
-    id: volume.id ?? uuid(),
-    barCode: volume.barCode.trim() || '',
-    dateFrom: volume.dateFrom ?? '',
-    dateTo: volume.dateTo ?? '',
-    metaTitleId: volume.metaTitleId ?? '',
-    mutationId: volume.mutationId ?? '',
-    periodicity:
-      volume.periodicity.map((p) => ({
-        numExists: p.numExists ?? false,
-        isAttachment: p.isAttachment ?? false,
-        publicationId:
-          p.publicationId ??
-          publications.find((pub) => pub.isDefault)?.id ??
-          '',
-        day: p.day,
-        pagesCount: Number(p.pagesCount) ?? 0,
-        name: p.name.trim() ?? '',
-        subName: p.subName.trim() ?? '',
-      })) ?? [],
-    firstNumber: Number(volume.firstNumber) ?? -1,
-    lastNumber: Number(volume.lastNumber),
-    note: volume.note.trim() ?? '',
-    showAttachmentsAtTheEnd: volume.showAttachmentsAtTheEnd ?? false,
-    signature: volume.signature.trim() ?? '',
-    ownerId: volume.ownerId ?? '',
-    year: Number(volume.year) ?? -1,
-    publicationMark: volume.publicationMark.trim() ?? '',
-  }
-}

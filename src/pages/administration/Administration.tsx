@@ -70,9 +70,9 @@ const Administration = () => {
           {t('administration.meta_titles')}
         </Link>
         <Link
-          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t('urls.publications')}`}
+          to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t('urls.editions')}`}
         >
-          {t('administration.publications')}
+          {t('administration.editions')}
         </Link>
         <Link
           to={`/${i18n.resolvedLanguage}/${t('urls.administration')}/${t('urls.mutations')}`}

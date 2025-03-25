@@ -14,9 +14,11 @@ import ShowError from '../../components/ShowError'
 import { EditableOwnerSchema, TEditableOwner } from '../../schema/owner'
 import {
   useCreateOwnerMutation,
+  useGetSiglaListMutation,
   useOwnerListQuery,
   useUpdateOwnerMutation,
 } from '../../api/owner'
+import clone from 'lodash/clone'
 
 const Container = styled('div')(() => ({
   position: 'relative',
@@ -56,6 +58,7 @@ const SaveButton = styled(LoadingButton)(() => ({
 
 const initialState: TEditableOwner = {
   name: '',
+  shorthand: '',
   sigla: '',
 }
 
@@ -69,6 +72,7 @@ const Owners = () => {
     isLoading: ownersLoading,
     isError: ownersError,
   } = useOwnerListQuery()
+  const { mutateAsync: getSiglaList } = useGetSiglaListMutation()
 
   const { mutateAsync: doUpdate, isPending: updatingOwner } =
     useUpdateOwnerMutation()
@@ -78,21 +82,37 @@ const Owners = () => {
   const pendingMutation = updatingOwner || creatingOwner
 
   const handleSubmit = async () => {
-    const validation = EditableOwnerSchema.safeParse(owner)
+    let ownerClone = clone(owner)
+    const validation = EditableOwnerSchema.safeParse(ownerClone)
     if (!validation.success) {
       validation.error.errors.map((e) => toast.error(e.message))
       return
     }
+
     try {
-      if (owner.id) {
-        await doUpdate(owner)
-      } else {
-        await doCreate(owner)
+      const siglaResponse = await getSiglaList(ownerClone.sigla)
+
+      const foundSigla = siglaResponse.records?.find(
+        (s) => s.sigla === ownerClone.sigla
+      )
+      // Double check, if sigla is valid
+      if (!foundSigla?.id) {
+        toast.error(t('administration.invalid_sigla'))
+        return
       }
+
+      ownerClone = { ...ownerClone, name: foundSigla.title }
+
+      if (ownerClone.id) {
+        await doUpdate(ownerClone)
+      } else {
+        await doCreate(ownerClone)
+      }
+
       toast.success(t('common.saved_successfully'))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      toast.error(t('common.error_occurred_somewhere'))
+      // toast.error(t('common.error_occurred_somewhere'))
     }
   }
 
@@ -153,61 +173,74 @@ const Owners = () => {
                   },
                 }}
               >
-                {m.name}
+                <strong>{m.shorthand}</strong>
+                {m.name.length ? ` - ${m.name}` : null}
               </Typography>
             ))}
           </ScrollArea>
           <StyledDivider orientation="vertical" />
-          {owner ? (
-            <FieldsContainer>
-              <Typography variant="h5">
-                {owner.id
-                  ? owners?.find((o) => o.id === owner.id)?.name
-                  : t('administration.create_owner')}
-              </Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: 2,
-                }}
-              >
-                <TextField
-                  size="small"
-                  label={t('administration.name')}
-                  value={owner.name}
-                  // disabled={savingUser}
-                  onChange={(event) =>
-                    setOwner((prevState) => ({
-                      ...prevState,
-                      name: event.target.value,
-                    }))
-                  }
-                />
-                <TextField
-                  size="small"
-                  label={t('administration.sigla')}
-                  value={owner.sigla}
-                  // disabled={savingUser}
-                  onChange={(event) =>
-                    setOwner((prevState) => ({
-                      ...prevState,
-                      sigla: event.target.value,
-                    }))
-                  }
-                />
-              </Box>
-              <SaveButton
-                variant="contained"
-                onClick={() => handleSubmit()}
-                disabled={!owner.name.length || !owner.sigla.length}
-                loading={pendingMutation}
-              >
-                {owner.id
-                  ? t('administration.update')
-                  : t('administration.create')}
-              </SaveButton>
-            </FieldsContainer>
-          ) : null}
+          <FieldsContainer>
+            <Typography variant="h5">
+              {owner.id
+                ? owners?.find((o) => o.id === owner.id)?.shorthand +
+                  ' - ' +
+                  owners?.find((o) => o.id === owner.id)?.name
+                : t('administration.create_owner')}
+            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 2,
+              }}
+            >
+              <TextField
+                size="small"
+                label={t('administration.name')}
+                value={owner.name}
+                disabled={true}
+                onChange={(event) =>
+                  setOwner((prevState) => ({
+                    ...prevState,
+                    name: event.target.value,
+                  }))
+                }
+              />
+              <TextField
+                size="small"
+                label={t('administration.shorthand')}
+                value={owner.shorthand}
+                // disabled={savingUser}
+                onChange={(event) =>
+                  setOwner((prevState) => ({
+                    ...prevState,
+                    shorthand: event.target.value,
+                  }))
+                }
+              />
+              <TextField
+                size="small"
+                label={t('administration.sigla')}
+                value={owner.sigla}
+                // disabled={savingUser}
+                onChange={(event) =>
+                  setOwner((prevState) => ({
+                    ...prevState,
+                    sigla: event.target.value.trim(),
+                  }))
+                }
+              />
+            </Box>
+            <SaveButton
+              variant="contained"
+              onClick={() => handleSubmit()}
+              disabled={!owner.shorthand.length || !owner.sigla.length}
+              loading={pendingMutation}
+            >
+              {owner.id
+                ? t('administration.update')
+                : t('administration.create')}
+            </SaveButton>
+          </FieldsContainer>
         </InnerContainer>
       ) : null}
     </Container>

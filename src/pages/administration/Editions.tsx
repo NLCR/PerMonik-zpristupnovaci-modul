@@ -11,16 +11,13 @@ import { styled } from '@mui/material/styles'
 import { LoadingButton } from '@mui/lab'
 import Loader from '../../components/Loader'
 import ShowError from '../../components/ShowError'
-import { useLanguageCode } from '../../utils/helperHooks'
+import { EditableEditionSchema, TEditableEdition } from '../../schema/edition'
 import {
-  EditablePublicationSchema,
-  TEditablePublication,
-} from '../../schema/publication'
-import {
-  useCreatePublicationMutation,
-  usePublicationListQuery,
-  useUpdatePublicationMutation,
-} from '../../api/publication'
+  useCreateEditionMutation,
+  useEditionListQuery,
+  useUpdateEditionMutation,
+} from '../../api/edition'
+import { useLanguageCode } from '../../hooks/useLanguageCode'
 
 const Container = styled('div')(() => ({
   position: 'relative',
@@ -58,7 +55,7 @@ const SaveButton = styled(LoadingButton)(() => ({
   width: 'fit-content',
 }))
 
-const initialState: TEditablePublication = {
+const initialState: TEditableEdition = {
   name: {
     cs: '',
     sk: '',
@@ -69,42 +66,41 @@ const initialState: TEditablePublication = {
   isPeriodicAttachment: false,
 }
 
-const Publications = () => {
+const Editions = () => {
   const theme = useTheme()
   const { t } = useTranslation()
-  const [publication, setPublication] =
-    useState<TEditablePublication>(initialState)
+  const [edition, setEdition] = useState<TEditableEdition>(initialState)
   const { languageCode } = useLanguageCode()
 
   const {
-    data: publications,
-    isLoading: publicationsLoading,
-    isError: publicationsError,
-  } = usePublicationListQuery()
+    data: editions,
+    isLoading: editionsLoading,
+    isError: editionsError,
+  } = useEditionListQuery()
 
-  const { mutateAsync: doUpdate, isPending: updatingPublication } =
-    useUpdatePublicationMutation()
-  const { mutateAsync: doCreate, isPending: creatingPublication } =
-    useCreatePublicationMutation()
+  const { mutateAsync: doUpdate, isPending: updatingEdition } =
+    useUpdateEditionMutation()
+  const { mutateAsync: doCreate, isPending: creatingEdition } =
+    useCreateEditionMutation()
 
-  const pendingMutation = updatingPublication || creatingPublication
+  const pendingMutation = updatingEdition || creatingEdition
 
   const handleSubmit = async () => {
-    const validation = EditablePublicationSchema.safeParse(publication)
+    const validation = EditableEditionSchema.safeParse(edition)
     if (!validation.success) {
       validation.error.errors.map((e) => toast.error(e.message))
       return
     }
     try {
-      if (publication.id) {
-        await doUpdate(publication)
+      if (edition.id) {
+        await doUpdate(edition)
       } else {
-        await doCreate(publication)
+        await doCreate(edition)
       }
       toast.success(t('common.saved_successfully'))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      toast.error(t('common.error_occurred_somewhere'))
+      // toast.error(t('common.error_occurred_somewhere'))
     }
   }
 
@@ -114,18 +110,18 @@ const Publications = () => {
         variant="h5"
         sx={{ color: theme.palette.primary.main, fontWeight: '600' }}
       >
-        {t('administration.publications')}
+        {t('administration.editions')}
       </Typography>
-      {publicationsLoading ? <Loader /> : null}
-      {!publicationsLoading && publicationsError ? <ShowError /> : null}
-      {!publicationsLoading && !publicationsError ? (
+      {editionsLoading ? <Loader /> : null}
+      {!editionsLoading && editionsError ? <ShowError /> : null}
+      {!editionsLoading && !editionsError ? (
         <InnerContainer>
           <ScrollArea>
             <Typography
               component="div"
-              className={clsx({ active: !publication.id })}
+              className={clsx({ active: !edition.id })}
               onClick={() =>
-                !pendingMutation ? setPublication(initialState) : null
+                !pendingMutation ? setEdition(initialState) : null
               }
               sx={{
                 marginTop: theme.spacing(0.875),
@@ -143,14 +139,14 @@ const Publications = () => {
                 },
               }}
             >
-              {t('administration.create_publication')}
+              {t('administration.create_edition')}
             </Typography>
-            {publications?.map((m) => (
+            {editions?.map((m) => (
               <Typography
                 key={m.id}
                 component="div"
-                className={clsx({ active: m.id === publication?.id })}
-                onClick={() => (!pendingMutation ? setPublication(m) : null)}
+                className={clsx({ active: m.id === edition?.id })}
+                onClick={() => (!pendingMutation ? setEdition(m) : null)}
                 sx={{
                   marginTop: theme.spacing(0.875),
                   marginBottom: theme.spacing(0.875),
@@ -172,14 +168,14 @@ const Publications = () => {
             ))}
           </ScrollArea>
           <StyledDivider orientation="vertical" />
-          {publication ? (
+          {edition ? (
             <FieldsContainer>
               <Typography variant="h5">
-                {publication.id
-                  ? publications?.find((o) => o.id === publication.id)?.name[
+                {edition.id
+                  ? editions?.find((o) => o.id === edition.id)?.name[
                       languageCode
                     ]
-                  : t('administration.create_publication')}
+                  : t('administration.create_edition')}
               </Typography>
               <Box
                 sx={{
@@ -190,10 +186,10 @@ const Publications = () => {
                 <TextField
                   size="small"
                   label={t('administration.cs_name')}
-                  value={publication.name.cs}
+                  value={edition.name.cs}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setPublication((prevState) => ({
+                    setEdition((prevState) => ({
                       ...prevState,
                       name: { ...prevState.name, cs: event.target.value },
                     }))
@@ -202,10 +198,10 @@ const Publications = () => {
                 <TextField
                   size="small"
                   label={t('administration.sk_name')}
-                  value={publication.name.sk}
+                  value={edition.name.sk}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setPublication((prevState) => ({
+                    setEdition((prevState) => ({
                       ...prevState,
                       name: { ...prevState.name, sk: event.target.value },
                     }))
@@ -214,10 +210,10 @@ const Publications = () => {
                 <TextField
                   size="small"
                   label={t('administration.en_name')}
-                  value={publication.name.en}
+                  value={edition.name.en}
                   // disabled={savingUser}
                   onChange={(event) =>
-                    setPublication((prevState) => ({
+                    setEdition((prevState) => ({
                       ...prevState,
                       name: { ...prevState.name, en: event.target.value },
                     }))
@@ -227,12 +223,10 @@ const Publications = () => {
               <SaveButton
                 variant="contained"
                 onClick={() => handleSubmit()}
-                disabled={
-                  !Object.values(publication.name).every((e) => e.length)
-                }
+                disabled={!Object.values(edition.name).every((e) => e.length)}
                 loading={pendingMutation}
               >
-                {publication.id
+                {edition.id
                   ? t('administration.update')
                   : t('administration.create')}
               </SaveButton>
@@ -244,4 +238,4 @@ const Publications = () => {
   )
 }
 
-export default Publications
+export default Editions

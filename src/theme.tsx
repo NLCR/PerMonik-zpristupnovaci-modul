@@ -3,6 +3,18 @@ import { blue, red } from '@mui/material/colors'
 
 // A custom theme for this app
 const theme = createTheme({
+  typography: {
+    fontSize: 12,
+  },
+  components: {
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          fontSize: 12,
+        },
+      },
+    },
+  },
   // components: {
   //   MuiDatePicker: {
   //     styleOverrides: {

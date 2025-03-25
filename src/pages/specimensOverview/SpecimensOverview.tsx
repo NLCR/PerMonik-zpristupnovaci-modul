@@ -1,10 +1,7 @@
 import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
-import Modal from '@mui/material/Modal'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-import Backdrop from '@mui/material/Backdrop'
 import Button from '@mui/material/Button'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -22,41 +19,17 @@ import SpecimenDayDetailExampleImage from '../../assets/images/specimen-day-deta
 import Facets from './components/Facets'
 import Calendar from './components/Calendar'
 import CalendarToolbar from './components/CalendarToolbar'
-import Switch from '@mui/material/Switch'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import useSynchronizeYearsBetweenViews from '../../hooks/useSynchronizeYearsBetweenViews'
+import ModalContainer from '../../components/ModalContainer'
+import SynchronizeYearsSwitch from './components/SynchronizeYearsSwitch'
 
 const Table = React.lazy(() => import('./components/Table'))
-
-const modalStyle = {
-  position: 'absolute',
-  maxHeight: '250px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '600px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  p: 4,
-}
 
 const SpecimensOverview = () => {
   const { metaTitleId } = useParams()
   const [modalOpened, setModalOpened] = useState(false)
   const { t } = useTranslation()
   const view = useSpecimensOverviewStore((state) => state.view)
-  const synchronizeYearsBetweenViews = useSpecimensOverviewStore(
-    (state) => state.synchronizeYearsBetweenViews
-  )
   const setView = useSpecimensOverviewStore((state) => state.setView)
-  const setSynchronizeYearsBetweenViews = useSpecimensOverviewStore(
-    (state) => state.setSynchronizeYearsBetweenViews
-  )
-
-  useSynchronizeYearsBetweenViews(metaTitleId)
 
   const {
     data: metaTitle,
@@ -87,57 +60,35 @@ const SpecimensOverview = () => {
         width: '100%',
       }}
     >
-      <Modal
-        open={modalOpened}
+      <ModalContainer
         onClose={() => setModalOpened(false)}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            color: '#fff',
-            timeout: 500,
-          },
-        }}
+        closeButton={{ callback: () => setModalOpened(false) }}
+        opened={modalOpened}
+        header={t('specimens_overview.help')}
+        style="fitted"
       >
-        <Fade in={modalOpened}>
-          <Box sx={modalStyle}>
-            <Typography
-              sx={{
-                color: blue['900'],
-                fontSize: '24px',
-                fontWeight: 'bold',
-                marginBottom: '16px',
-              }}
-            >
-              {t('specimens_overview.help')}
-            </Typography>
-            <Typography
-              sx={{
-                marginBottom: '5px',
-                fontWeight: '600',
-              }}
-            >
-              {t('specimens_overview.help_desc_1')}
-            </Typography>
-            <Typography
-              sx={{
-                marginBottom: '5px',
-              }}
-            >
-              {t('specimens_overview.help_desc_2')}
-            </Typography>
-            <img
-              alt="Help"
-              src={SpecimenDayDetailExampleImage}
-              width={200}
-              style={{ marginBottom: '20px' }}
-            />
-            {/* <Text size="sm"> */}
-            {/*  {t('specimens_overview.help_desc_3')} */}
-            {/* </Text> */}
-          </Box>
-        </Fade>
-      </Modal>
+        <Typography
+          sx={{
+            marginBottom: '5px',
+            fontWeight: '600',
+          }}
+        >
+          {t('specimens_overview.help_desc_1')}
+        </Typography>
+        <Typography
+          sx={{
+            marginBottom: '5px',
+          }}
+        >
+          {t('specimens_overview.help_desc_2')}
+        </Typography>
+        <img
+          alt="Help"
+          src={SpecimenDayDetailExampleImage}
+          width={200}
+          style={{ marginBottom: '20px' }}
+        />
+      </ModalContainer>
       <Box
         sx={{
           // width: '20%',
@@ -230,25 +181,7 @@ const SpecimensOverview = () => {
               </Button>
             ) : null}
           </Box>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={synchronizeYearsBetweenViews}
-                onChange={(event) => {
-                  setSynchronizeYearsBetweenViews(event.target.checked)
-                }}
-              />
-            }
-            label={
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: t(
-                    'specimens_overview.synchronize_years_between_views'
-                  ),
-                }}
-              />
-            }
-          />
+          <SynchronizeYearsSwitch />
         </Box>
         {view === 'calendar' ? (
           <Calendar metaTitle={metaTitle} />
@@ -261,5 +194,7 @@ const SpecimensOverview = () => {
     </Box>
   )
 }
+
+// SpecimensOverview.whyDidYouRender = true
 
 export default SpecimensOverview

@@ -1,8 +1,5 @@
-import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
-import Modal from '@mui/material/Modal'
 import Table from '@mui/material/Table'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
@@ -17,53 +14,22 @@ import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import DriveFileMoveOutlinedIcon from '@mui/icons-material/DriveFileMoveOutlined'
-import { Link as ReactLink } from 'react-router-dom'
+import { Link as ReactLink, useNavigate, useParams } from 'react-router-dom'
 import { blue } from '@mui/material/colors'
 import { TSpecimen } from '../../../schema/specimen'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { TMetaTitle } from '../../../schema/metaTitle'
-import { getFirstMondayOfMonth } from '../../../utils/helperFunctions'
 import ShowInfoMessage from '../../../components/ShowInfoMessage'
 import { useMutationListQuery } from '../../../api/mutation'
-import { useLanguageCode } from '../../../utils/helperHooks'
 import Loader from '../../../components/Loader'
 import { useSpecimenListQuery } from '../../../api/specimen'
 import ShowError from '../../../components/ShowError'
-import VolumeOverviewStatsModal from './VolumeOverviewStatsModal'
-import { usePublicationListQuery } from '../../../api/publication'
+import VolumeStatsModalContent from '../../../components/VolumeStatsModalContent'
+import { useEditionListQuery } from '../../../api/edition'
 import { useOwnerListQuery } from '../../../api/owner'
-
-const mainModalStyle = {
-  overflowY: 'auto',
-  position: 'absolute' as const,
-  maxHeight: '600px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '1200px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  p: 4,
-}
-
-const subModalStyle = {
-  overflowY: 'auto',
-  position: 'absolute' as const,
-  maxHeight: '800px',
-  height: '80vh',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90vw',
-  maxWidth: '1000px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  p: 4,
-}
+import ModalContainer from '../../../components/ModalContainer'
+import { useLanguageCode } from '../../../hooks/useLanguageCode'
+import { generateVolumeUrlWithParams } from '../../../utils/generateVolumeUrlWithParams'
 
 type TProps = {
   metaTitle: TMetaTitle
@@ -75,19 +41,34 @@ type TSpecimensDay = {
   specimens: TSpecimen[][]
 }[]
 
+const getFirstMondayOfMonth = (date: Date | null) => {
+  if (!date) return null
+  const year = date.getFullYear()
+  const month = date.getMonth()
+
+  // Find the first Monday in the month
+  let firstMonday = dayjs().year(year).month(month).date(1)
+  while (firstMonday.day() !== 1) {
+    firstMonday = firstMonday.add(1, 'day')
+  }
+
+  return firstMonday
+}
+
 const Calendar: FC<TProps> = ({ metaTitle }) => {
   const { t, i18n } = useTranslation()
+  const { metaTitleId } = useParams()
+  const navigate = useNavigate()
   const calendarDate = useSpecimensOverviewStore((state) => state.calendarDate)
   const { data: mutations } = useMutationListQuery()
-  const { data: publications } = usePublicationListQuery()
+  const { data: editions } = useEditionListQuery()
   const { data: owners } = useOwnerListQuery()
   const { languageCode } = useLanguageCode()
-  const [mainModalOpened, setMainModalOpened] = useState(false)
+
   const [mainModalData, setMainModalData] = useState<{
     data: TSpecimen[]
     day: string
   } | null>(null)
-  const [subModalOpened, setSubModalOpened] = useState(false)
   const [subModalData, setSubModalData] = useState<TSpecimen | null>(null)
 
   const {
@@ -122,15 +103,15 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
   const specimensInDay: TSpecimensDay = []
 
   daysArray.forEach((day) => {
-    const found = groupedSpecimensByDay.find((group) => group.day === day)
+    const found = groupedSpecimensByDay.find((group) => group.day.includes(day))
     if (found) {
       const groupedBySameAttributes = Object.values(
         sortBy(
           groupBy(
             found.specimens,
-            (obj) => `${obj.mutationId}_${obj.publicationMark}_${obj.number}`
+            (obj) => `${obj.mutationId}_${obj.mutationMark}_${obj.number}`
           ),
-          (obj) => obj.map((o) => `${o.mutationId}_${o.publicationMark}`)
+          (obj) => obj.map((o) => `${o.mutationId}_${o.mutationMark}`)
         )
       )
       specimensInDay.push({
@@ -176,229 +157,210 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
         // overflowY: 'auto',
       }}
     >
-      <Modal
-        open={mainModalOpened}
+      <ModalContainer
         onClose={() => {
-          setMainModalOpened(false)
           setMainModalData(null)
         }}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            color: '#fff',
-            timeout: 500,
+        closeButton={{
+          callback: () => {
+            setMainModalData(null)
           },
         }}
+        opened={!!mainModalData}
+        header={metaTitle.name}
       >
-        <Fade in={mainModalOpened}>
-          <Box sx={mainModalStyle}>
-            <Typography
-              sx={{
-                color: blue['900'],
-                fontSize: '24px',
-                fontWeight: 'bold',
-                marginBottom: '16px',
-              }}
-            >
-              {metaTitle.name}
-            </Typography>
-            {/* {dayjs(day.day).format('dddd DD.MM.YYYY')} */}
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: '700',
-                }}
-              >
-                {t('specimens_overview.date')}
-              </Typography>
-              <Typography
-                sx={{
-                  marginBottom: '20px',
-                }}
-              >
-                {dayjs(mainModalData?.day).format('dddd DD.MM.YYYY')}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: '700',
-                }}
-              >
-                {t('specimens_overview.specimens')}
-              </Typography>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>{t('specimens_overview.mutation')}</TableCell>
-                    <TableCell>{t('specimens_overview.publication')}</TableCell>
-                    <TableCell>{t('specimens_overview.name')}</TableCell>
-                    <TableCell>{t('specimens_overview.sub_name')}</TableCell>
-                    <TableCell>{t('specimens_overview.owner')}</TableCell>
-                    <TableCell>
-                      {t('specimens_overview.digitization')}
-                    </TableCell>
-                    <TableCell>
-                      {t('specimens_overview.volume_overview_modal_link')}
-                    </TableCell>
-                    <TableCell>
-                      {t('specimens_overview.volume_detail_link')}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {mainModalData?.data.map((s) => (
-                    <TableRow key={s.id}>
-                      <TableCell>
-                        {
-                          mutations?.find((m) => m.id === s.mutationId)?.name[
-                            languageCode
-                          ]
-                        }
-                      </TableCell>
-                      <TableCell>
-                        {
-                          publications?.find((p) => p.id === s.publicationId)
-                            ?.name[languageCode]
-                        }
-                      </TableCell>
-                      <TableCell>{s.name}</TableCell>
-                      <TableCell
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: '700',
+            }}
+          >
+            {t('specimens_overview.date')}
+          </Typography>
+          <Typography
+            sx={{
+              marginBottom: '20px',
+            }}
+          >
+            {dayjs(mainModalData?.day).format('dddd DD.MM.YYYY')}
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: '700',
+            }}
+          >
+            {t('specimens_overview.specimens')}
+          </Typography>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>{t('specimens_overview.mutation')}</TableCell>
+                <TableCell>{t('specimens_overview.edition')}</TableCell>
+                <TableCell>{t('specimens_overview.name')}</TableCell>
+                <TableCell>{t('specimens_overview.sub_name')}</TableCell>
+                <TableCell>{t('specimens_overview.owner')}</TableCell>
+                <TableCell>{t('specimens_overview.digitization')}</TableCell>
+                <TableCell>
+                  {t('specimens_overview.volume_overview_modal_link')}
+                </TableCell>
+                <TableCell>
+                  {t('specimens_overview.volume_detail_link')}
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {mainModalData?.data.map((s) => (
+                <TableRow key={s.id}>
+                  <TableCell>
+                    {
+                      mutations?.find((m) => m.id === s.mutationId)?.name[
+                        languageCode
+                      ]
+                    }
+                  </TableCell>
+                  <TableCell>
+                    {
+                      editions?.find((p) => p.id === s.editionId)?.name[
+                        languageCode
+                      ]
+                    }
+                  </TableCell>
+                  <TableCell>{s.name}</TableCell>
+                  <TableCell
+                    sx={{
+                      maxWidth: '300px',
+                    }}
+                  >
+                    {s.subName}
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      component="a"
+                      href={`https://www.knihovny.cz/Search/Results?lookfor=${s.barCode}&type=AllFields&limit=20`}
+                      target="_blank"
+                      rel="noreferrer"
+                      sx={{
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        color: blue['700'],
+                        transition: 'color 0.1s',
+                        ':hover': {
+                          color: blue['900'],
+                        },
+                      }}
+                    >
+                      {owners?.find((o) => o.id === s.ownerId)?.shorthand}{' '}
+                      <OpenInNewIcon
                         sx={{
-                          maxWidth: '300px',
+                          marginLeft: '3px',
                         }}
-                      >
-                        {s.subName}
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          component="a"
-                          href={`https://www.knihovny.cz/Search/Results?lookfor=${s.barCode}&type=AllFields&limit=20`}
-                          target="_blank"
-                          rel="noreferrer"
-                          sx={{
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            alignItems: 'center',
-                            color: blue['700'],
-                            transition: 'color 0.1s',
-                            ':hover': {
-                              color: blue['900'],
-                            },
-                          }}
-                        >
-                          {owners?.find((o) => o.id === s.ownerId)?.name}{' '}
-                          <OpenInNewIcon
-                            sx={{
-                              marginLeft: '3px',
-                            }}
-                          />
-                        </Typography>
-                      </TableCell>
-                      <TableCell />
-                      <TableCell>
-                        <Typography
-                          sx={{
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            alignItems: 'center',
-                            color: blue['700'],
-                            transition: 'color 0.1s',
-                            ':hover': {
-                              color: blue['900'],
-                            },
-                          }}
-                          onClick={() => {
-                            setSubModalOpened(true)
-                            setSubModalData(s)
-                          }}
-                        >
-                          {t('specimens_overview.open')}
-                          <DriveFileMoveOutlinedIcon
-                            sx={{
-                              marginLeft: '3px',
-                            }}
-                          />
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          component={ReactLink}
-                          sx={{
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            alignItems: 'center',
-                            color: blue['700'],
-                            transition: 'color 0.1s',
-                            ':hover': {
-                              color: blue['900'],
-                            },
-                          }}
-                          to={`/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
-                            s.volumeId
-                          }`}
-                        >
-                          {s.barCode}{' '}
-                          <DriveFileMoveOutlinedIcon
-                            sx={{
-                              marginLeft: '3px',
-                            }}
-                          />
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-            {/* <CalendarModal row={row} day={day.day} /> */}
-          </Box>
-        </Fade>
-      </Modal>
-      <Modal
-        open={subModalOpened}
+                      />
+                    </Typography>
+                  </TableCell>
+                  <TableCell />
+                  <TableCell>
+                    <Typography
+                      sx={{
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        color: blue['700'],
+                        transition: 'color 0.1s',
+                        ':hover': {
+                          color: blue['900'],
+                        },
+                      }}
+                      onClick={() => {
+                        setSubModalData(s)
+                      }}
+                    >
+                      {t('specimens_overview.open')}
+                      <DriveFileMoveOutlinedIcon
+                        sx={{
+                          marginLeft: '3px',
+                        }}
+                      />
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      component={ReactLink}
+                      sx={{
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        color: blue['700'],
+                        transition: 'color 0.1s',
+                        ':hover': {
+                          color: blue['900'],
+                        },
+                      }}
+                      to={generateVolumeUrlWithParams(
+                        `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
+                          s.volumeId
+                        }`,
+                        metaTitleId || '',
+                        s.id
+                      )}
+                    >
+                      {s.barCode}{' '}
+                      <DriveFileMoveOutlinedIcon
+                        sx={{
+                          marginLeft: '3px',
+                        }}
+                      />
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+      </ModalContainer>
+      <ModalContainer
         onClose={() => {
-          setSubModalOpened(false)
           setSubModalData(null)
         }}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            color: '#fff',
-            timeout: 500,
+        closeButton={{
+          callback: () => {
+            setSubModalData(null)
           },
         }}
+        acceptButton={{
+          callback: () => {
+            if (subModalData?.volumeId) {
+              navigate(
+                generateVolumeUrlWithParams(
+                  `/${i18n.resolvedLanguage}/${t('urls.volume_overview')}/${
+                    subModalData.volumeId
+                  }`,
+                  metaTitleId || '',
+                  subModalData.id
+                )
+              )
+            }
+          },
+          text: t('specimens_overview.detailed_volume_overview'),
+        }}
+        opened={!!subModalData}
+        header={`${t('specimens_overview.volume_overview_modal_link')} ${subModalData?.barCode}`}
       >
-        <Fade in={subModalOpened}>
-          <Box sx={subModalStyle}>
-            <Typography
-              sx={{
-                color: blue['900'],
-                fontSize: '24px',
-                fontWeight: 'bold',
-                marginBottom: '16px',
-              }}
-            >
-              {t('specimens_overview.volume_overview_modal_link')}{' '}
-              {subModalData?.barCode}
-            </Typography>
-            <VolumeOverviewStatsModal volumeBarCode={subModalData?.volumeId} />
-          </Box>
-        </Fade>
-      </Modal>
+        <VolumeStatsModalContent volumeId={subModalData?.volumeId} />
+      </ModalContainer>
       {specimensInDay.map((day) => (
         <Box
           key={day.day}
@@ -443,7 +405,6 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                     cursor: 'pointer',
                   })}
                   onClick={() => {
-                    setMainModalOpened(true)
                     setMainModalData({ data: row, day: day.day })
                   }}
                 >
@@ -453,8 +414,8 @@ const Calendar: FC<TProps> = ({ metaTitle }) => {
                       mutations?.find((m) => m.id === firstInRow.mutationId)
                         ?.name[languageCode]
                     }{' '}
-                    {firstInRow.publicationMark.length
-                      ? firstInRow.publicationMark
+                    {firstInRow.mutationMark.length
+                      ? firstInRow.mutationMark
                       : t('specimens_overview.without_mark')}
                   </Typography>
                   <Box

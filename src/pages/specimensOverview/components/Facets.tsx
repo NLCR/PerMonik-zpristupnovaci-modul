@@ -5,14 +5,13 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'
-import { DateCalendar } from '@mui/x-date-pickers'
+import { DateCalendar } from '@mui/x-date-pickers-pro'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import { blue } from '@mui/material/colors'
 import FacetGroup from './FacetGroup'
 import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
 import { useMutationListQuery } from '../../../api/mutation'
-import { usePublicationListQuery } from '../../../api/publication'
-import { useLanguageCode } from '../../../utils/helperHooks'
+import { useEditionListQuery } from '../../../api/edition'
 import { useOwnerListQuery } from '../../../api/owner'
 import {
   useSpecimenFacetsQuery,
@@ -25,6 +24,7 @@ import { TSpecimenDamageTypes } from '../../../schema/specimen'
 import Loader from '../../../components/Loader'
 import ControlledSlider from './ControlledSlider'
 import ControlledBarCodeInput from './ControlledBarCodeInput'
+import { useLanguageCode } from '../../../hooks/useLanguageCode'
 
 type TProps = {
   metaTitle: TMetaTitle
@@ -33,7 +33,7 @@ type TProps = {
 const Facets: FC<TProps> = ({ metaTitle }) => {
   const { t } = useTranslation()
   const { data: mutations } = useMutationListQuery()
-  const { data: publications } = usePublicationListQuery()
+  const { data: editions } = useEditionListQuery()
   const { data: owners } = useOwnerListQuery()
   const { languageCode } = useLanguageCode()
   const [metaTitleIdChanged, setMetaTitleIdChanged] = useState(false)
@@ -272,45 +272,46 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
         <FacetGroup
           disabled={fetching}
           facets={
-            facets?.publicationIds.length
-              ? facets.publicationIds.map((m) => ({
+            facets?.editionIds.length
+              ? facets.editionIds.map((m) => ({
                   name: m.name,
                   count: m.count,
-                  displayedName: publications?.find((mc) => mc.id === m.name)
-                    ?.name[languageCode],
+                  displayedName: editions?.find((mc) => mc.id === m.name)?.name[
+                    languageCode
+                  ],
                 }))
-              : params.publicationIds.map((p) => ({
+              : params.editionIds.map((p) => ({
                   name: p,
                   count: 0,
-                  displayedName: publications?.find((mc) => mc.id === p)?.name[
+                  displayedName: editions?.find((mc) => mc.id === p)?.name[
                     languageCode
                   ],
                 }))
           }
-          header={t('specimens_overview.publication')}
+          header={t('specimens_overview.edition')}
           onChange={(value) =>
             setParams({
               ...params,
-              publicationIds: value,
+              editionIds: value,
             })
           }
-          values={params.publicationIds}
+          values={params.editionIds}
         />
         <FacetGroup
           disabled={fetching}
           facets={
-            facets?.publicationMarks.length
-              ? facets.publicationMarks
-              : params.publicationMarks.map((p) => ({ name: p, count: 0 }))
+            facets?.mutationMarks.length
+              ? facets.mutationMarks
+              : params.mutationMarks.map((p) => ({ name: p, count: 0 }))
           }
-          header={t('specimens_overview.publication_mark')}
+          header={t('specimens_overview.mutation_mark')}
           onChange={(value) =>
             setParams({
               ...params,
-              publicationMarks: value,
+              mutationMarks: value,
             })
           }
-          values={params.publicationMarks}
+          values={params.mutationMarks}
         />
         <FacetGroup
           disabled={fetching}
@@ -319,12 +320,13 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
               ? facets.ownerIds.map((m) => ({
                   name: m.name,
                   count: m.count,
-                  displayedName: owners?.find((mc) => mc.id === m.name)?.name,
+                  displayedName: owners?.find((mc) => mc.id === m.name)
+                    ?.shorthand,
                 }))
               : params.ownerIds.map((p) => ({
                   name: p,
                   count: 0,
-                  displayedName: owners?.find((mc) => mc.id === p)?.name,
+                  displayedName: owners?.find((mc) => mc.id === p)?.shorthand,
                 }))
           }
           header={t('specimens_overview.owner')}
@@ -351,7 +353,7 @@ const Facets: FC<TProps> = ({ metaTitle }) => {
                   displayedName: t(`facet_states.${p as TSpecimenDamageTypes}`),
                 }))
           }
-          header={t('specimens_overview.state')}
+          header={t('specimens_overview.damage_types')}
           onChange={(value) =>
             setParams({
               ...params,

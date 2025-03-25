@@ -1,6 +1,8 @@
 import type { TSpecimenDamageTypes } from '../schema/specimen'
+const { VITE_APP_TYPE } = import.meta.env
 
-// eslint-disable-next-line import/prefer-default-export
+export const APP_WITH_EDITING_ENABLED = VITE_APP_TYPE === 'admin'
+
 export const damageTypes: TSpecimenDamageTypes[] = [
   'OK',
   'ChCC',
@@ -15,3 +17,8 @@ export const damageTypes: TSpecimenDamageTypes[] = [
   'CzV',
   'ChDatum',
 ]
+
+export const BACK_META_TITLE_ID = 'backMetaTitleId'
+export const JUMP_TO_SPECIMEN_WITH_ID = 'jumpToSpecimenWithId'
+
+export const LOGIN_URL = '/login/shibboleth'

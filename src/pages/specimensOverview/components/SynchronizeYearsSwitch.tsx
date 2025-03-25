@@ -1,8 +1,15 @@
-import { useSpecimensOverviewStore } from '../slices/useSpecimensOverviewStore'
-import { useSpecimenListQuery } from '../api/specimen'
+import Switch from '@mui/material/Switch'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import React from 'react'
+import { useSpecimensOverviewStore } from '../../../slices/useSpecimensOverviewStore'
+import { useTranslation } from 'react-i18next'
+import { useSpecimenListQuery } from '../../../api/specimen'
+import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
 
-const useSynchronizeYearsBetweenViews = (metaTitleId?: string) => {
+const SynchronizeYearsSwitch = () => {
+  const { t } = useTranslation()
+  const { metaTitleId } = useParams()
   const { data: specimens } = useSpecimenListQuery(metaTitleId)
 
   const setCalendarDate = useSpecimensOverviewStore(
@@ -14,6 +21,12 @@ const useSynchronizeYearsBetweenViews = (metaTitleId?: string) => {
   const setParams = useSpecimensOverviewStore((state) => state.setParams)
   const setPagination = useSpecimensOverviewStore(
     (state) => state.setPagination
+  )
+  const synchronizeYearsBetweenViews = useSpecimensOverviewStore(
+    (state) => state.synchronizeYearsBetweenViews
+  )
+  const setSynchronizeYearsBetweenViews = useSpecimensOverviewStore(
+    (state) => state.setSynchronizeYearsBetweenViews
   )
 
   useSpecimensOverviewStore.subscribe((state, prevState) => {
@@ -51,6 +64,26 @@ const useSynchronizeYearsBetweenViews = (metaTitleId?: string) => {
       }
     }
   })
+
+  return (
+    <FormControlLabel
+      control={
+        <Switch
+          checked={synchronizeYearsBetweenViews}
+          onChange={(event) => {
+            setSynchronizeYearsBetweenViews(event.target.checked)
+          }}
+        />
+      }
+      label={
+        <span
+          dangerouslySetInnerHTML={{
+            __html: t('specimens_overview.synchronize_years_between_views'),
+          }}
+        />
+      }
+    />
+  )
 }
 
-export default useSynchronizeYearsBetweenViews
+export default SynchronizeYearsSwitch
